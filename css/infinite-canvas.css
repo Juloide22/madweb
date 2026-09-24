@@ -1,7 +1,8 @@
 /* ============================================================
-   MAD VIZ — INFINITE SPATIAL CANVAS (EXPERIMENTAL SECTION)
-   Inspired by the spatial curation feeling of early Are.na
-   Completely isolated styling — Does not affect the rest of the site
+   MAD VIZ — SCREEN-FITTED SPATIAL CANVAS (EXPERIMENTAL SECTION)
+   Fits screen size on PC & Phone · 3 Organization Modes
+   No text under images · Clean expand icon · Titles on zoom-in
+   100% isolated styling
    ============================================================ */
 
 /* ---- Fuentes Oficiales (Roobert) ---- */
@@ -34,7 +35,6 @@
   font-display: swap;
 }
 
-/* Reset y base scoped */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -43,14 +43,11 @@
 
 :root {
   --canvas-bg: #070707;
-  --canvas-dot: rgba(255, 255, 255, 0.07);
-  --canvas-text: #ffffff;
-  --canvas-muted: rgba(255, 255, 255, 0.45);
-  --canvas-dim: rgba(255, 255, 255, 0.25);
-  --canvas-border: rgba(255, 255, 255, 0.12);
-  --canvas-item-bg: #111111;
+  --canvas-dot: rgba(255, 255, 255, 0.06);
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.5);
   --font-sans: 'Roobert', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 html, body {
@@ -58,14 +55,16 @@ html, body {
   height: 100%;
   overflow: hidden;
   background-color: var(--canvas-bg);
-  color: var(--canvas-text);
+  color: var(--text-main);
   font-family: var(--font-sans);
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
 }
 
-/* Viewport principal de la galería espacial */
+/* ============================================================
+   CANVAS VIEWPORT & WORLD (Ajustado al tamaño de pantalla)
+   ============================================================ */
 .canvas-viewport {
   position: absolute;
   inset: 0;
@@ -74,7 +73,6 @@ html, body {
   overflow: hidden;
   cursor: grab;
   background-color: var(--canvas-bg);
-  /* Sutil cuadrícula de puntos arquitectónicos en el fondo infinito */
   background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1px);
   background-size: 32px 32px;
   background-position: 0 0;
@@ -84,7 +82,6 @@ html, body {
   cursor: grabbing;
 }
 
-/* Capa del mundo virtual transformable (X, Y, Scale) */
 .canvas-world {
   position: absolute;
   top: 0;
@@ -96,108 +93,238 @@ html, body {
   pointer-events: auto;
 }
 
-/* ============================================================
-   CANVAS ITEM — Bloque visual libre (Organized Chaos / Are.na style)
-   ============================================================ */
-.canvas-item {
+/* Etiquetas flotantes de sección (Aparecen en modo categorías o al enfocar) */
+.section-marker {
   position: absolute;
-  background: var(--canvas-item-bg);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-marker::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Título de proyecto — Oculto en vista general, emerge al seleccionar */
+.project-header-marker {
+  position: absolute;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  z-index: 120;
+}
+
+.project-header-marker.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.project-header-marker__num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.project-header-marker__title {
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85);
+}
+
+/* ============================================================
+   SPATIAL ITEM (Sin texto inferior · Animación 3D · Transición fluida)
+   ============================================================ */
+.spatial-item {
+  position: absolute;
   cursor: pointer;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
-  transform-origin: center center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  overflow: visible;
+  transform-style: preserve-3d;
+  will-change: transform, left, top, width, height, box-shadow, filter, opacity;
+  /* Transición fluida al cambiar de modo de ordenamiento y asentamiento suave */
+  transition:
+    left 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    top 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    width 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1),
+    box-shadow 0.25s ease,
+    filter 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.canvas-item:hover {
-  z-index: 99 !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.25);
-}
-
-.canvas-item__image-wrap {
+.spatial-item__card {
+  position: relative;
   width: 100%;
   height: 100%;
+  background: #111111;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.07);
   overflow: hidden;
-  position: relative;
-  background: #141414;
+  border-radius: 2px;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-.canvas-item__img {
+.spatial-item__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
   pointer-events: none;
-  transition: transform 0.4s ease, filter 0.4s ease;
-  filter: brightness(0.92) contrast(1.05);
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.45s ease;
+  filter: brightness(0.96) contrast(1.02);
 }
 
-.canvas-item:hover .canvas-item__img {
-  transform: scale(1.03);
-  filter: brightness(1) contrast(1.08);
-}
-
-/* Micro-metadatos estilo Are.na (minimalistas, sin invadir la composición) */
-.canvas-item__meta {
+/* Brillo especular 3D tipo cresta de ola */
+.spatial-item__shine {
   position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 1.3;
-  letter-spacing: 0.05em;
-  color: var(--canvas-dim);
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.28) 0%, transparent 65%);
+  opacity: 0;
   pointer-events: none;
-  transition: color 0.2s ease, opacity 0.2s ease;
-  white-space: nowrap;
+  transition: opacity 0.25s ease;
+  mix-blend-mode: overlay;
 }
 
-.canvas-item:hover .canvas-item__meta {
-  color: var(--canvas-muted);
+/* Hover 3D Atractivo estilo onda / ola */
+.spatial-item:hover {
+  z-index: 95 !important;
 }
 
-.canvas-item__meta-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 70%;
-  text-transform: uppercase;
+.spatial-item:hover .spatial-item__card {
+  box-shadow: 0 32px 75px rgba(0, 0, 0, 0.94), 0 0 0 1.5px rgba(255, 255, 255, 0.45);
 }
 
-.canvas-item__meta-dims {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.2);
+.spatial-item:hover .spatial-item__img {
+  filter: brightness(1.08) contrast(1.06);
 }
 
-/* Indicador de cluster espacial (sutil tag temático en el espacio) */
-.cluster-label {
+.spatial-item:hover .spatial-item__shine {
+  opacity: 1;
+}
+
+/* Estado Enfocado (Click 1) — Completamente normal, centrada y sin rotación residual */
+.spatial-item.is-focused,
+.spatial-item.is-focused:hover {
+  z-index: 100 !important;
+  transform: translateZ(28px) !important;
+}
+
+.spatial-item.is-focused .spatial-item__card,
+.spatial-item.is-focused:hover .spatial-item__card {
+  box-shadow: 0 36px 85px rgba(0, 0, 0, 0.96), 0 0 0 2px rgba(255, 255, 255, 0.85);
+  transform: none !important;
+}
+
+.spatial-item.is-focused .spatial-item__img,
+.spatial-item.is-focused:hover .spatial-item__img {
+  transform: none !important;
+  filter: brightness(1.08) contrast(1.08);
+}
+
+/* Ítems ocultos en modos filtrados (Exteriores / Interiores) */
+.spatial-item.is-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.35) !important;
+  transition: opacity 0.45s ease, transform 0.45s ease !important;
+}
+
+/* Al seleccionar una imagen: las demás se ponen en gris y con transparencia muy leve */
+.canvas-world.has-focused-item .spatial-item:not(.is-focused) {
+  filter: grayscale(100%) brightness(0.72);
+  opacity: 0.82;
+}
+
+.canvas-world.has-focused-item .spatial-item.is-focused {
+  filter: grayscale(0%) brightness(1.08);
+  opacity: 1;
+}
+
+/* TÍTULO DEL PROYECTO SOBRE LA IMAGEN (Superior Izquierda · Sin recuadro) */
+.spatial-item__project-tag {
   position: absolute;
-  pointer-events: none;
+  top: 14px;
+  left: 15px;
+  color: #ffffff;
   font-family: var(--font-sans);
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.25em;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 1),
+    0 2px 8px rgba(0, 0, 0, 0.95),
+    0 4px 16px rgba(0, 0, 0, 0.9),
+    0 0 24px rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 25;
   white-space: nowrap;
+  user-select: none;
 }
 
-.cluster-label::before {
-  content: '';
-  display: inline-block;
-  width: 18px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.2);
+.spatial-item.is-focused .spatial-item__project-tag {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* LOGO DE FLECHITAS SIN RECUADRO NI TEXTO (Click 1 -> Indicador para Click 2) */
+.spatial-item__expand-icon {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.9));
+  opacity: 0;
+  transform: scale(0.65);
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.spatial-item__expand-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.spatial-item.is-focused .spatial-item__expand-icon {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* ============================================================
-   HEADS-UP DISPLAY (HUD) — Interfaz discreta y minimalista
+   HEADS-UP DISPLAY (HUD)
    ============================================================ */
 .hud {
   position: fixed;
@@ -206,30 +333,150 @@ html, body {
   z-index: 1000;
 }
 
-/* Barra superior minimalista */
 .hud__header {
   position: absolute;
-  top: 24px;
-  left: 28px;
-  right: 28px;
+  top: 1.6rem;
+  left: 2.5rem;
+  right: 2.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 16px;
   pointer-events: auto;
+  z-index: 1000;
+}
+
+/* Izquierda: Logotipo + Selector de Idioma ES/EN */
+.site-header__left {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  height: 26px;
+  flex-shrink: 0;
 }
 
 .hud__brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 11px;
   text-decoration: none;
-  color: var(--canvas-text);
+  color: #ffffff;
+}
+
+/* Selector de idioma — ES / EN */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.lang-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+}
+
+.lang-btn.is-active {
+  color: #ffffff;
+}
+
+.lang-btn:hover:not(.is-active) {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.lang-sep {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.2);
+  user-select: none;
+}
+
+/* Contenedor del logotipo con efecto Glitch */
+.hud__logo-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  cursor: pointer;
+  line-height: 0;
+  overflow: visible;
+  flex-shrink: 0;
 }
 
 .hud__logo-mark {
-  width: 22px;
-  height: 22px;
-  opacity: 0.9;
+  height: 24px;
+  width: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  display: block;
+  opacity: 0.95;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+/* Capas de fractura Glitch */
+.hud__logo-wrap .glitch-logo__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.hud__logo-wrap .glitch-logo__layer img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.hud__logo-wrap .glitch-logo__layer--1 {
+  filter: drop-shadow(-3px 0 #00ffff);
+}
+
+.hud__logo-wrap .glitch-logo__layer--2 {
+  filter: drop-shadow(3px 0 #ff0055);
+}
+
+.hud__logo-wrap .glitch-logo__layer--3 {
+  filter: drop-shadow(0 -1.5px rgba(255, 255, 255, 0.85));
+}
+
+/* Glitch en Hover */
+.hud__brand:hover .hud__logo-mark,
+.hud__logo-wrap:hover .hud__logo-mark {
+  filter: drop-shadow(-2px 0 #00ffff) drop-shadow(2px 0 #ff0055);
+  animation: glitch-jitter 0.22s infinite;
+}
+
+.hud__brand:hover .glitch-logo__layer--1,
+.hud__logo-wrap:hover .glitch-logo__layer--1 {
+  opacity: 0.95;
+  animation: glitch-crack-1 0.36s steps(2, end) infinite;
+}
+
+.hud__brand:hover .glitch-logo__layer--2,
+.hud__logo-wrap:hover .glitch-logo__layer--2 {
+  opacity: 0.95;
+  animation: glitch-crack-2 0.3s steps(2, end) infinite;
+}
+
+.hud__brand:hover .glitch-logo__layer--3,
+.hud__logo-wrap:hover .glitch-logo__layer--3 {
+  opacity: 0.85;
+  animation: glitch-crack-3 0.42s steps(2, start) infinite;
 }
 
 .hud__title {
@@ -237,80 +484,296 @@ html, body {
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
+  transition: opacity 0.2s ease;
 }
 
-.hud__tag {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.4);
-  padding: 2px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  text-transform: uppercase;
+.hud__brand:hover .hud__title {
+  opacity: 1;
 }
 
-.hud__back-btn {
-  display: inline-flex;
+/* SELECTOR DE MODOS EN 2 FILAS (Centrado exacto en pantalla) */
+.hud__nav-matrix {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 6px;
+  user-select: none;
+  z-index: 105;
+}
+
+.hud__nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hud__nav-row--top {
   gap: 8px;
+}
+
+.hud__nav-row--bottom {
+  gap: 22px;
+}
+
+.hud__mode-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.42);
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-  text-decoration: none;
-  padding: 8px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all 0.2s ease;
+  padding: 4px 0;
+  border-radius: 0;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.22s ease, opacity 0.22s ease;
+  white-space: nowrap;
 }
 
-.hud__back-btn:hover {
+.hud__mode-btn:hover {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.hud__mode-btn.is-active {
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.08);
+  font-weight: 600;
+  background: transparent;
 }
 
-/* Indicador de coordenadas y ayuda (esquina inferior izquierda) */
-.hud__status {
+.hud__mode-btn.is-active::after {
+  content: '';
   position: absolute;
-  bottom: 24px;
-  left: 28px;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: #ffffff;
+  border-radius: 1px;
+}
+
+/* Botón Icono de Randomizar / Shuffle */
+.hud__shuffle-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.22s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
+}
+
+.hud__shuffle-btn:hover {
+  color: #ffffff;
+  transform: scale(1.18);
+}
+
+.hud__shuffle-btn:active,
+.hud__shuffle-btn.is-spinning {
+  transform: rotate(360deg) scale(1.1);
+  color: #ffffff;
+}
+
+.hud__shuffle-btn svg {
+  display: block;
+}
+
+/* ---- Navegación derecha (vertical tal cual el sitio general) ---- */
+.site-nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: flex-end;
+  gap: 0.32rem;
+  flex-shrink: 0;
+}
+
+.site-nav a {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.25s ease, transform 0.25s ease;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+
+.site-nav a:hover {
+  color: #ffffff;
+  transform: translateX(-4px);
+}
+
+.site-nav a.is-active {
+  color: #ffffff;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* Botón menú mobile */
+.menu-toggle-mobile {
+  display: none;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  transition: color 0.2s ease;
+}
+
+.menu-toggle-mobile:hover {
+  color: #ffffff;
+}
+
+/* Overlay de menú a pantalla completa (Mobile / Nav) */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: #070707;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 2.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+  pointer-events: none;
+}
+
+.menu-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.menu-overlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.menu-overlay__logo {
+  display: flex;
+  align-items: center;
+}
+
+.menu-overlay__logo img {
+  height: 26px;
+  width: auto;
+}
+
+.menu-overlay__close {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.menu-overlay__close:hover {
+  color: #ffffff;
+}
+
+.menu-overlay__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-left: 0;
+}
+
+.menu-overlay__nav a {
+  font-family: var(--font-sans);
+  font-size: clamp(2.8rem, 8vw, 6rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: 0em;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  text-decoration: none;
+  display: block;
+  transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+.menu-overlay__nav a:hover {
+  color: #ffffff;
+}
+
+.menu-overlay__nav a.is-active {
+  color: rgba(255, 255, 255, 0.18);
+  pointer-events: none;
+}
+
+.menu-overlay__footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 2rem;
+}
+
+.menu-overlay__footer p {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.25);
+  text-transform: uppercase;
+}
+
+/* Indicador inferior izquierdo */
+.hud__status {
+  position: absolute;
+  bottom: 22px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.35);
   pointer-events: none;
 }
 
-.hud__coords {
-  color: rgba(255, 255, 255, 0.6);
+.hud__status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
 }
 
-.hud__hint {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.25);
-}
-
-/* Controles de Zoom y Recentrado (esquina inferior derecha) */
+/* Controles de Zoom y Vista General */
 .hud__controls {
   position: absolute;
-  bottom: 24px;
-  right: 28px;
+  bottom: 22px;
+  right: 24px;
   display: flex;
   align-items: center;
   gap: 4px;
-  background: rgba(18, 18, 18, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(18, 18, 18, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   padding: 4px 6px;
@@ -323,8 +786,7 @@ html, body {
   border: none;
   color: rgba(255, 255, 255, 0.7);
   font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 14px;
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -336,12 +798,8 @@ html, body {
 }
 
 .hud__btn:hover {
-  color: #ffffff;
+  color: #fff;
   background: rgba(255, 255, 255, 0.12);
-}
-
-.hud__btn:active {
-  transform: scale(0.92);
 }
 
 .hud__zoom-label {
@@ -361,37 +819,313 @@ html, body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-family: var(--font-mono);
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
   margin-left: 4px;
 }
 
-/* Vista previa de cluster en minimapa (radar sutil) */
-.hud__minimap {
-  position: absolute;
-  top: 76px;
-  right: 28px;
-  width: 120px;
-  height: 90px;
-  background: rgba(12, 12, 12, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+/* ============================================================
+   LIGHTBOX / MODAL PANTALLA COMPLETA (CLICK 2)
+   ============================================================ */
+.spatial-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(4, 4, 4, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 3rem 2rem 2rem;
+  box-sizing: border-box;
+}
+
+.spatial-lightbox.is-open {
+  opacity: 1;
   pointer-events: auto;
-  overflow: hidden;
-  transition: opacity 0.3s ease;
 }
 
-.hud__minimap canvas {
+.spatial-lightbox__close {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.spatial-lightbox__close:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.spatial-lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.spatial-lightbox__nav:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.spatial-lightbox__nav--prev { left: 24px; }
+.spatial-lightbox__nav--next { right: 24px; }
+
+.spatial-lightbox__stage {
+  max-width: 90vw;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.spatial-lightbox__img {
+  max-width: 100%;
+  max-height: 76vh;
+  object-fit: contain;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+  border-radius: 2px;
+  transition: opacity 0.25s ease;
+}
+
+.spatial-lightbox__info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  height: 100%;
-  display: block;
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.5);
 }
 
-@media (max-width: 768px) {
-  .hud__header { top: 16px; left: 16px; right: 16px; }
-  .hud__status { bottom: 16px; left: 16px; font-size: 10px; }
-  .hud__controls { bottom: 16px; right: 16px; }
-  .hud__minimap { display: none; }
-  .hud__title { font-size: 11px; }
+.spatial-lightbox__title {
+  color: #ffffff;
+  text-transform: uppercase;
+  font-weight: 500;
 }
+
+.spatial-lightbox__counter {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN (PC & MOBILE)
+   ============================================================ */
+@media (max-width: 900px) {
+  .hud__header {
+    flex-wrap: wrap;
+    top: 14px;
+    left: 16px;
+    right: 16px;
+    gap: 10px;
+  }
+  .hud__nav-matrix {
+    position: static;
+    transform: none;
+    order: 3;
+    width: 100%;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .hud__nav-row--bottom {
+    gap: 14px;
+  }
+  .hud__mode-btn {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    padding: 3px 0;
+  }
+  .site-nav a {
+    display: none;
+  }
+  .menu-toggle-mobile {
+    display: block;
+  }
+  .hud__status { display: none; }
+  .hud__controls { bottom: 14px; right: 14px; }
+  .spatial-lightbox__nav { display: none; }
+}
+
+/* ============================================================
+   ANIMACIONES GLITCH (Logotipo MAD VIZ)
+   ============================================================ */
+@keyframes glitch-jitter {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-2px, 1px); }
+  50%  { transform: translate(1.5px, -1px); }
+  75%  { transform: translate(-1px, 0.5px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes glitch-crack-1 {
+  0% {
+    clip-path: polygon(0 0, 100% 0, 100% 42%, 0 50%);
+    transform: translate(-7px, -1px) skewX(-4deg);
+  }
+  25% {
+    clip-path: polygon(0 58%, 100% 48%, 100% 100%, 0 100%);
+    transform: translate(8px, 2px) skewX(5deg);
+  }
+  50% {
+    clip-path: polygon(0 15%, 100% 25%, 100% 65%, 0 55%);
+    transform: translate(-5px, 1px) skewX(-2deg);
+  }
+  75% {
+    clip-path: polygon(0 70%, 100% 62%, 100% 92%, 0 85%);
+    transform: translate(6px, -2px) skewX(3deg);
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 42%, 0 50%);
+    transform: translate(-7px, -1px) skewX(-4deg);
+  }
+}
+
+@keyframes glitch-crack-2 {
+  0% {
+    clip-path: polygon(0 45%, 100% 38%, 100% 100%, 0 95%);
+    transform: translate(7px, 1px) skewX(4deg);
+  }
+  30% {
+    clip-path: polygon(0 0, 100% 0, 100% 32%, 0 40%);
+    transform: translate(-6px, -2px) skewX(-5deg);
+  }
+  60% {
+    clip-path: polygon(0 60%, 100% 50%, 100% 88%, 0 80%);
+    transform: translate(5px, 2px) skewX(2deg);
+  }
+  100% {
+    clip-path: polygon(0 45%, 100% 38%, 100% 100%, 0 95%);
+    transform: translate(7px, 1px) skewX(4deg);
+  }
+}
+
+@keyframes glitch-crack-3 {
+  0% {
+    clip-path: polygon(0 30%, 100% 25%, 100% 55%, 0 60%);
+    transform: translate(-4px, 0) scaleY(1.05);
+  }
+  50% {
+    clip-path: polygon(0 48%, 100% 42%, 100% 72%, 0 78%);
+    transform: translate(4px, 0) scaleY(0.95);
+  }
+  100% {
+    clip-path: polygon(0 30%, 100% 25%, 100% 55%, 0 60%);
+    transform: translate(-4px, 0) scaleY(1.05);
+  }
+}
+
+/* ============================================================
+   PUNTERO CUSTOM (Punto minimalista monopo — Idéntico a toda la web)
+   ============================================================ */
+@media (pointer: fine) {
+  body,
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  [role="button"],
+  .canvas-viewport,
+  .canvas-viewport.is-dragging,
+  .spatial-item,
+  .hud,
+  .hud *,
+  .spatial-lightbox,
+  .spatial-lightbox * {
+    cursor: none !important;
+  }
+
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 7px;
+    height: 7px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.25s ease, transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+    mix-blend-mode: difference;
+    opacity: 0;
+    will-change: left, top, transform, opacity;
+  }
+
+  .cursor-dot.is-active {
+    opacity: 1;
+  }
+
+  /* Al posarse sobre enlaces, botones o tarjetas interactivas: se expande */
+  .cursor-dot.is-hovering {
+    transform: translate(-50%, -50%) scale(2.8);
+  }
+
+  /* Al arrastrar el lienzo espacial */
+  .cursor-dot.is-dragging {
+    transform: translate(-50%, -50%) scale(1.6);
+  }
+
+  .cursor-dot.is-hidden {
+    opacity: 0;
+  }
+
+  /* Puntos de la pequeña estela fluida (trail) */
+  .cursor-trail-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 7px;
+    height: 7px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: difference;
+    opacity: 0;
+    will-change: left, top, transform, opacity;
+  }
+}
+
+@media (pointer: coarse) {
+  .cursor-dot,
+  .cursor-trail-dot {
+    display: none !important;
+  }
+}
+

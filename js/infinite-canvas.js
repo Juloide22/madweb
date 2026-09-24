@@ -1,219 +1,240 @@
 /**
- * MAD VIZ — Infinite Spatial Canvas Engine
- * Experimental 2D unbounded spatial gallery inspired by early Are.na
- * Completely isolated from the rest of the website
+ * MAD VIZ — Screen-Fitted Spatial Canvas Engine
+ * 3 Organization Modes: Por Proyecto, Aleatorio, Interiores / Exteriores
+ * Screen-Fitted (PC & Mobile) · No text under images · Clean expand icon · Titles on zoom
+ * 100% isolated from the rest of the website
  */
 
 (function () {
   'use strict';
 
   // ============================================================
-  // PLACEHOLDER GENERATOR (High-End Architectural Visuals via SVG)
-  // Generates bespoke, crisp, architectural studies without external network requests
+  // CATÁLOGO DE IMÁGENES Y PROYECTOS (20 Renders Reales)
   // ============================================================
-  function createArchSvg(type, title, w, h, seed) {
-    const s = seed || 1;
-    let content = '';
+  const IMAGES_DATA = [
+    // 01. CASA FLEXA (0..3)
+    { id: 'img-0', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', tag: 'Arquitectura Residencial', folder: '01-casa-flexa', file: 'render-01.jpg', title: 'Perspectiva Hero', isInterior: false },
+    { id: 'img-1', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', tag: 'Arquitectura Residencial', folder: '01-casa-flexa', file: 'render-02.jpeg', title: 'Fachada y Acceso', isInterior: false },
+    { id: 'img-2', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', tag: 'Arquitectura Residencial', folder: '01-casa-flexa', file: 'render-03.jpeg', title: 'Detalle Vegetación', isInterior: false },
+    { id: 'img-3', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', tag: 'Arquitectura Residencial', folder: '01-casa-flexa', file: 'render-04.jpeg', title: 'Expansión Piscina', isInterior: false },
 
-    if (type === 'monolith') {
-      content = `
-        <defs>
-          <linearGradient id="g_${s}" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#2a2a2a"/>
-            <stop offset="50%" stop-color="#181818"/>
-            <stop offset="100%" stop-color="#0a0a0a"/>
-          </linearGradient>
-        </defs>
-        <rect width="${w}" height="${h}" fill="url(#g_${s})"/>
-        <!-- Brutalist Massing Volume -->
-        <polygon points="${w * 0.15},${h * 0.85} ${w * 0.15},${h * 0.28} ${w * 0.58},${h * 0.15} ${w * 0.58},${h * 0.72}" fill="#2e2e2e" stroke="#444" stroke-width="0.8"/>
-        <polygon points="${w * 0.58},${h * 0.15} ${w * 0.85},${h * 0.26} ${w * 0.85},${h * 0.83} ${w * 0.58},${h * 0.72}" fill="#161616" stroke="#444" stroke-width="0.8"/>
-        <!-- Sombra proyectada -->
-        <polygon points="${w * 0.15},${h * 0.85} ${w * 0.58},${h * 0.72} ${w * 0.85},${h * 0.83} ${w * 0.95},${h * 0.94} ${w * 0.3},${h * 0.96}" fill="#080808" opacity="0.8"/>
-        <!-- Líneas guía de perspectiva y modulación -->
-        <line x1="${w * 0.15}" y1="${h * 0.45}" x2="${w * 0.58}" y2="${h * 0.32}" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="3 3"/>
-        <line x1="${w * 0.15}" y1="${h * 0.62}" x2="${w * 0.58}" y2="${h * 0.49}" stroke="#ffffff" stroke-opacity="0.18" stroke-dasharray="3 3"/>
-        <line x1="${w * 0.36}" y1="${h * 0.21}" x2="${w * 0.36}" y2="${h * 0.78}" stroke="#ffffff" stroke-opacity="0.2"/>
-        <circle cx="${w * 0.58}" cy="${h * 0.15}" r="2.5" fill="#fff" opacity="0.6"/>
-      `;
-    } else if (type === 'light') {
-      content = `
-        <defs>
-          <linearGradient id="sky_${s}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#1f1b18"/>
-            <stop offset="60%" stop-color="#141416"/>
-            <stop offset="100%" stop-color="#0a0a0c"/>
-          </linearGradient>
-          <linearGradient id="beam_${s}" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#d4b483" stop-opacity="0.45"/>
-            <stop offset="100%" stop-color="#d4b483" stop-opacity="0.0"/>
-          </linearGradient>
-        </defs>
-        <rect width="${w}" height="${h}" fill="url(#sky_${s})"/>
-        <!-- Haz de luz arquitectónico cenital -->
-        <polygon points="${w * 0.35},0 ${w * 0.52},0 ${w * 0.92},${h} ${w * 0.2},${h}" fill="url(#beam_${s})"/>
-        <!-- Muro de corte en silueta -->
-        <rect x="0" y="${h * 0.35}" width="${w * 0.32}" height="${h * 0.65}" fill="#0d0d0f"/>
-        <line x1="${w * 0.32}" y1="${h * 0.35}" x2="${w * 0.32}" y2="${h}" stroke="#ffffff" stroke-opacity="0.25"/>
-        <circle cx="${w * 0.435}" cy="${h * 0.18}" r="1" fill="#fff" opacity="0.8"/>
-      `;
-    } else if (type === 'tectonic') {
-      content = `
-        <defs>
-          <pattern id="pat_${s}" width="18" height="18" patternUnits="userSpaceOnUse">
-            <line x1="0" y1="0" x2="18" y2="18" stroke="#333" stroke-width="0.7"/>
-            <line x1="18" y1="0" x2="0" y2="18" stroke="#222" stroke-width="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="${w}" height="${h}" fill="#111111"/>
-        <rect width="${w}" height="${h}" fill="url(#pat_${s})" opacity="0.6"/>
-        <!-- Costillas estructurales de hormigón -->
-        ${Array.from({ length: 6 }, (_, i) => {
-          const x = (w / 7) * (i + 1);
-          return `<line x1="${x}" y1="0" x2="${x}" y2="${h}" stroke="#2a2a2a" stroke-width="4"/><line x1="${x}" y1="0" x2="${x}" y2="${h}" stroke="#ffffff" stroke-opacity="0.15" stroke-width="0.8"/>`;
-        }).join('')}
-        <rect x="${w * 0.15}" y="${h * 0.2}" width="${w * 0.7}" height="${h * 0.6}" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.7"/>
-      `;
-    } else if (type === 'horizon') {
-      content = `
-        <defs>
-          <linearGradient id="hz_${s}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#141414"/>
-            <stop offset="48%" stop-color="#1c1c1c"/>
-            <stop offset="50%" stop-color="#2c2c2c"/>
-            <stop offset="100%" stop-color="#0c0c0c"/>
-          </linearGradient>
-        </defs>
-        <rect width="${w}" height="${h}" fill="url(#hz_${s})"/>
-        <!-- Línea de horizonte infinita -->
-        <line x1="0" y1="${h * 0.5}" x2="${w}" y2="${h * 0.5}" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.8"/>
-        <!-- Plataforma suspendida en perspectiva lejana -->
-        <polygon points="${w * 0.22},${h * 0.5} ${w * 0.78},${h * 0.5} ${w * 0.85},${h * 0.58} ${w * 0.15},${h * 0.58}" fill="#242424" stroke="#444" stroke-width="0.6"/>
-        <line x1="${w * 0.15}" y1="${h * 0.58}" x2="${w * 0.15}" y2="${h * 0.78}" stroke="#333" stroke-width="1.2"/>
-        <line x1="${w * 0.85}" y1="${h * 0.58}" x2="${w * 0.85}" y2="${h * 0.78}" stroke="#333" stroke-width="1.2"/>
-      `;
-    } else { // experiment / wireframe
-      content = `
-        <rect width="${w}" height="${h}" fill="#0e0e0e"/>
-        <!-- Proyección isométrica alambre -->
-        <g stroke="#ffffff" stroke-opacity="0.22" stroke-width="0.9" fill="none">
-          <ellipse cx="${w * 0.5}" cy="${h * 0.5}" rx="${w * 0.35}" ry="${h * 0.22}"/>
-          <ellipse cx="${w * 0.5}" cy="${h * 0.38}" rx="${w * 0.35}" ry="${h * 0.22}"/>
-          <line x1="${w * 0.15}" y1="${h * 0.5}" x2="${w * 0.15}" y2="${h * 0.38}"/>
-          <line x1="${w * 0.85}" y1="${h * 0.5}" x2="${w * 0.85}" y2="${h * 0.38}"/>
-          <line x1="${w * 0.5}" y1="${h * 0.16}" x2="${w * 0.5}" y2="${h * 0.84}" stroke-dasharray="2 2"/>
-        </g>
-        <circle cx="${w * 0.5}" cy="${h * 0.5}" r="3" fill="#ffffff" opacity="0.6"/>
-      `;
-    }
+    // 02. EDIFICIO AURA I (4..7)
+    { id: 'img-4', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', tag: 'Vivienda Colectiva', folder: '02-edificio-aura-i', file: 'render-05.png', title: 'Contra-picado', isInterior: false },
+    { id: 'img-5', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', tag: 'Vivienda Colectiva', folder: '02-edificio-aura-i', file: 'render-06.png', title: 'Remate y Cielo', isInterior: false },
+    { id: 'img-6', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', tag: 'Vivienda Colectiva', folder: '02-edificio-aura-i', file: 'render-07.png', title: 'Textura Hormigón', isInterior: false },
+    { id: 'img-7', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', tag: 'Vivienda Colectiva', folder: '02-edificio-aura-i', file: 'render-08.png', title: 'Living y Cocina', isInterior: true },
 
-    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-      ${content}
-      <!-- Tipografía y sello de coordenada en esquina -->
-      <text x="14" y="${h - 14}" fill="#ffffff" fill-opacity="0.3" font-family="monospace" font-size="9" letter-spacing="1.5">${title.toUpperCase()} // ${w}×${h}</text>
-    </svg>`;
+    // 03. EDIFICIO VERONA (8..11)
+    { id: 'img-8', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', tag: 'Desarrollo Urbano', folder: '03-edificio-verona', file: 'render-09.jpeg', title: 'Exterior Atardecer', isInterior: false },
+    { id: 'img-9', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', tag: 'Desarrollo Urbano', folder: '03-edificio-verona', file: 'render-10.jpeg', title: 'Contexto y Esquina', isInterior: false },
+    { id: 'img-10', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', tag: 'Desarrollo Urbano', folder: '03-edificio-verona', file: 'render-11.jpg', title: 'Comedor y Jardín', isInterior: true },
+    { id: 'img-11', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', tag: 'Desarrollo Urbano', folder: '03-edificio-verona', file: 'render-12.jpeg', title: 'Dormitorio Principal', isInterior: true },
 
-    return `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
-  }
+    // 04. VIVIENDAS CHIUSO (12..15)
+    { id: 'img-12', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', tag: 'Complejo Residencial', folder: '04-viviendas-chiuso', file: 'render-13.jpeg', title: 'Acceso y Cochera', isInterior: false },
+    { id: 'img-13', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', tag: 'Complejo Residencial', folder: '04-viviendas-chiuso', file: 'render-14.jpeg', title: 'Cocina y Barra', isInterior: true },
+    { id: 'img-14', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', tag: 'Complejo Residencial', folder: '04-viviendas-chiuso', file: 'render-15.jpeg', title: 'Living y Comedor', isInterior: true },
+    { id: 'img-15', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', tag: 'Complejo Residencial', folder: '04-viviendas-chiuso', file: 'render-16.jpeg', title: 'Dormitorio Suite', isInterior: true },
 
-  // ============================================================
-  // SPATIAL CLUSTERS & ITEMS DEFINITION
-  // Freeform layout, organized chaos, large negative spaces, intentional overlaps
-  // ============================================================
-  const CLUSTERS_DATA = [
-    {
-      id: 'cluster-1',
-      title: '01 · MONOLITH // MASSING & VOID',
-      labelPos: { x: -320, y: -380 },
-      items: [
-        { id: 'm1', title: 'Tower Massing Study', type: 'monolith', x: -300, y: -280, w: 420, h: 580, z: 2 },
-        { id: 'm2', title: 'Cantilevered Slab Study', type: 'monolith', x: 20, y: -160, w: 560, h: 360, z: 4 }, // Solapa a m1
-        { id: 'm3', title: 'Deep Axial Corridor', type: 'light', x: 480, y: 60, w: 360, h: 480, z: 3 },
-        { id: 'm4', title: 'Ground Podium Void', type: 'monolith', x: -400, y: 220, w: 480, h: 280, z: 1 },
-        { id: 'm5', title: 'Central Compression Cube', type: 'tectonic', x: -90, y: 110, w: 320, h: 320, z: 5 }, // Solapa m2 y m4
-        { id: 'm6', title: 'Slit Light Aperture', type: 'light', x: 260, y: -360, w: 280, h: 440, z: 1 },
-        { id: 'm7', title: 'Sub-grade Plinth Plan', type: 'monolith', x: -140, y: 460, w: 680, h: 240, z: 2 }
-      ]
-    },
-    {
-      id: 'cluster-2',
-      title: '02 · LIGHT & SHADOW // ATMOSPHERE',
-      labelPos: { x: 1400, y: -1100 },
-      items: [
-        { id: 'l1', title: 'Zenithal Beam Study', type: 'light', x: 1420, y: -1000, w: 520, h: 380, z: 2 },
-        { id: 'l2', title: 'Dusk Façade Reflection', type: 'light', x: 1840, y: -880, w: 400, h: 540, z: 3 }, // Solapa a l1
-        { id: 'l3', title: 'Atrium High Light', type: 'monolith', x: 1300, y: -680, w: 360, h: 460, z: 1 },
-        { id: 'l4', title: 'Threshold Chiaroscuro', type: 'light', x: 1580, y: -560, w: 580, h: 320, z: 4 },
-        { id: 'l5', title: 'Specular Glaze Detail', type: 'tectonic', x: 2100, y: -640, w: 320, h: 320, z: 2 },
-        { id: 'l6', title: 'Nocturne Massing', type: 'light', x: 1720, y: -300, w: 480, h: 340, z: 3 }
-      ]
-    },
-    {
-      id: 'cluster-3',
-      title: '03 · TECTONICS // RAW MATERIALS',
-      labelPos: { x: -2000, y: 800 },
-      items: [
-        { id: 't1', title: 'Board-formed Concrete', type: 'tectonic', x: -1980, y: 900, w: 380, h: 500, z: 2 },
-        { id: 't2', title: 'Mullion Extrusion 1:1', type: 'tectonic', x: -1680, y: 820, w: 540, h: 340, z: 3 }, // Solapa a t1
-        { id: 't3', title: 'Structural Ribs Section', type: 'tectonic', x: -2120, y: 1320, w: 460, h: 300, z: 1 },
-        { id: 't4', title: 'Tension Cable Joint', type: 'experiment', x: -1760, y: 1100, w: 340, h: 420, z: 4 },
-        { id: 't5', title: 'Rough Stone Relief', type: 'tectonic', x: -1480, y: 1040, w: 440, h: 560, z: 2 },
-        { id: 't6', title: 'Acoustic Slat System', type: 'monolith', x: -1920, y: 1540, w: 620, h: 260, z: 3 }
-      ]
-    },
-    {
-      id: 'cluster-4',
-      title: '04 · HORIZON // ARCHITECTURAL SCALE',
-      labelPos: { x: 1900, y: 1100 },
-      items: [
-        { id: 'h1', title: 'Desert Plateau Pavilion', type: 'horizon', x: 1920, y: 1200, w: 820, h: 360, z: 2 },
-        { id: 'h2', title: 'Coastal Escarpment Section', type: 'horizon', x: 2620, y: 1120, w: 420, h: 560, z: 3 }, // Solapa a h1
-        { id: 'h3', title: 'Endless Linear Pier', type: 'horizon', x: 1780, y: 1480, w: 760, h: 320, z: 1 },
-        { id: 'h4', title: 'Sunken Courtyard Horizon', type: 'monolith', x: 2420, y: 1560, w: 520, h: 380, z: 4 },
-        { id: 'h5', title: 'Distant Monolith Profile', type: 'horizon', x: 2100, y: 1780, w: 680, h: 280, z: 2 }
-      ]
-    },
-    {
-      id: 'cluster-5',
-      title: '05 · PROTOTYPES // UNTITLED EXPERIMENTS',
-      labelPos: { x: -1900, y: -1500 },
-      items: [
-        { id: 'e1', title: 'Parametric Shell Mesh', type: 'experiment', x: -1880, y: -1400, w: 460, h: 420, z: 2, rot: -2 },
-        { id: 'e2', title: 'Kinetic Facade Node', type: 'experiment', x: -1520, y: -1480, w: 380, h: 480, z: 3, rot: 1.5 },
-        { id: 'e3', title: 'Shadow Diagram [08:00]', type: 'light', x: -1980, y: -1080, w: 560, h: 320, z: 1, rot: 0.8 },
-        { id: 'e4', title: 'Folded Plate Geometry', type: 'experiment', x: -1500, y: -1120, w: 480, h: 380, z: 4, rot: -1.2 },
-        { id: 'e5', title: 'Atmospheric Fog Chamber', type: 'light', x: -1720, y: -820, w: 520, h: 340, z: 2, rot: 0 }
-      ]
-    }
+    // 05. EDIFICIO ANKARA II (16..19)
+    { id: 'img-16', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', tag: 'Arquitectura en Altura', folder: '05-edificio-ankara%20ii', file: 'render-17.jpg', title: 'Volumen Principal', isInterior: false },
+    { id: 'img-17', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', tag: 'Arquitectura en Altura', folder: '05-edificio-ankara%20ii', file: 'render-18.jpg', title: 'Living Vista Mar', isInterior: true },
+    { id: 'img-18', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', tag: 'Arquitectura en Altura', folder: '05-edificio-ankara%20ii', file: 'render-19.jpg', title: 'Comedor Vista Mar', isInterior: true },
+    { id: 'img-19', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', tag: 'Arquitectura en Altura', folder: '05-edificio-ankara%20ii', file: 'render-20.jpg', title: 'Comedor y Madera', isInterior: true }
   ];
 
   // ============================================================
-  // CAMERA ENGINE (Math, Inertia, Pan, Zoom, Touch)
+  // COORDENADAS PARA CADA UNO DE LOS 3 MODOS
   // ============================================================
-  class SpatialCanvas {
+  const LAYOUTS = {
+    // MODO 1: GALERIA (Distribución continua y orgánica de los 20 renders - DEFAULT)
+    gallery: {
+      bounds: { minX: 0, maxX: 1140, minY: 0, maxY: 700 },
+      markers: [],
+      coords: [
+        { x: 25,  y: 20,  w: 220, h: 160, z: 2 },
+        { x: 65,  y: 170, w: 175, h: 230, z: 5 },
+        { x: 15,  y: 380, w: 195, h: 160, z: 3 },
+        { x: 145, y: 500, w: 235, h: 160, z: 2 },
+        { x: 865, y: 235, w: 185, h: 225, z: 4 },
+        { x: 380, y: 20,  w: 175, h: 215, z: 3 },
+        { x: 470, y: 300, w: 185, h: 205, z: 3 },
+        { x: 390, y: 205, w: 185, h: 160, z: 4 },
+        { x: 210, y: 10,  w: 195, h: 150, z: 4 },
+        { x: 690, y: 155, w: 205, h: 160, z: 2 },
+        { x: 910, y: 20,  w: 140, h: 230, z: 3 },
+        { x: 620, y: 300, w: 215, h: 150, z: 4 },
+        { x: 705, y: 15,  w: 225, h: 165, z: 4 },
+        { x: 540, y: 140, w: 185, h: 180, z: 5 },
+        { x: 315, y: 345, w: 185, h: 195, z: 5 },
+        { x: 510, y: 480, w: 230, h: 160, z: 3 },
+        { x: 520, y: 0,   w: 210, h: 160, z: 2 },
+        { x: 210, y: 135, w: 215, h: 160, z: 3 },
+        { x: 180, y: 275, w: 175, h: 215, z: 4 },
+        { x: 810, y: 430, w: 205, h: 200, z: 5 }
+      ]
+    },
+
+    // MODO 2: PROYECTOS (Agrupados en clusters compactos por proyecto)
+    projects: {
+      bounds: { minX: 0, maxX: 1160, minY: 0, maxY: 710 },
+      markers: [
+        { id: 'm-casa-flexa', text: '01 · Casa Flexa', tag: 'Arquitectura Residencial', x: 20, y: 0, projId: 'casa-flexa' },
+        { id: 'm-edificio-aura', text: '02 · Edificio Aura I', tag: 'Vivienda Colectiva', x: 410, y: 0, projId: 'edificio-aura-i' },
+        { id: 'm-edificio-verona', text: '03 · Edificio Verona', tag: 'Desarrollo Urbano', x: 790, y: 10, projId: 'edificio-verona' },
+        { id: 'm-viviendas-chiuso', text: '04 · Viviendas Chiuso', tag: 'Complejo Residencial', x: 130, y: 350, projId: 'viviendas-chiuso' },
+        { id: 'm-edificio-ankara', text: '05 · Edificio Ankara II', tag: 'Arquitectura en Altura', x: 610, y: 350, projId: 'edificio-ankara-ii' }
+      ],
+      coords: [
+        // Casa Flexa (0..3)
+        { x: 0,   y: 25,  w: 210, h: 155, z: 2 },
+        { x: 160, y: 0,   w: 150, h: 210, z: 4 },
+        { x: 260, y: 100, w: 140, h: 170, z: 3 },
+        { x: 65,  y: 155, w: 230, h: 145, z: 5 },
+        // Edificio Aura I (4..7)
+        { x: 550, y: 10,  w: 165, h: 210, z: 3 },
+        { x: 400, y: 15,  w: 175, h: 160, z: 2 },
+        { x: 490, y: 115, w: 160, h: 175, z: 5 },
+        { x: 620, y: 125, w: 160, h: 160, z: 4 },
+        // Edificio Verona (8..11)
+        { x: 790,  y: 15,  w: 205, h: 160, z: 2 },
+        { x: 950,  y: 30,  w: 160, h: 175, z: 4 },
+        { x: 1060, y: 15,  w: 120, h: 210, z: 3 },
+        { x: 860,  y: 150, w: 215, h: 150, z: 5 },
+        // Viviendas Chiuso (12..15)
+        { x: 290, y: 375, w: 205, h: 150, z: 3 },
+        { x: 130, y: 375, w: 175, h: 165, z: 2 },
+        { x: 220, y: 475, w: 150, h: 175, z: 5 },
+        { x: 335, y: 500, w: 180, h: 145, z: 4 },
+        // Edificio Ankara II (16..19)
+        { x: 605, y: 375, w: 165, h: 210, z: 3 },
+        { x: 745, y: 375, w: 175, h: 145, z: 2 },
+        { x: 835, y: 465, w: 145, h: 185, z: 4 },
+        { x: 665, y: 515, w: 215, h: 145, z: 5 }
+      ]
+    },
+
+    // MODO 3: EXTERIORES (11 Renders de arquitectura exterior, fachadas y terrazas)
+    exteriors: {
+      bounds: { minX: 0, maxX: 1160, minY: 0, maxY: 720 },
+      markers: [
+        { id: 'cat-ext', text: 'Exteriores // Fachadas, Terrazas & Entorno (11 Renders)', tag: '11 Renders', x: 20, y: 0, isCategory: true, modeId: 'exteriors' }
+      ],
+      coords: [
+        // 0..3 Casa Flexa (4 exteriores)
+        { x: 20,  y: 40,  w: 230, h: 165, z: 2 },
+        { x: 200, y: 25,  w: 180, h: 235, z: 4 },
+        { x: 335, y: 130, w: 165, h: 185, z: 3 },
+        { x: 80,  y: 185, w: 250, h: 160, z: 5 },
+        // 4..6 Aura I (3 exteriores)
+        { x: 670, y: 25,  w: 185, h: 235, z: 3 },
+        { x: 500, y: 30,  w: 200, h: 180, z: 2 },
+        { x: 600, y: 135, w: 180, h: 195, z: 5 },
+        // 7 Aura I (Interior -> Oculto)
+        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
+        // 8..9 Verona (2 exteriores)
+        { x: 910, y: 35,  w: 235, h: 175, z: 2 },
+        { x: 810, y: 180, w: 220, h: 185, z: 4 },
+        // 10..11 Verona (Interiores -> Ocultos)
+        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
+        // 12 Chiuso (1 exterior)
+        { x: 190, y: 365, w: 250, h: 215, z: 4 },
+        // 13..15 Chiuso (Interiores -> Ocultos)
+        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
+        // 16 Ankara II (1 exterior)
+        { x: 530, y: 350, w: 225, h: 250, z: 4 },
+        // 17..19 Ankara II (Interiores -> Ocultos)
+        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true }
+      ]
+    },
+
+    // MODO 4: INTERIORES (9 Renders destacados en cuadrícula 3x3)
+    interiors: {
+      bounds: { minX: 0, maxX: 1140, minY: 0, maxY: 690 },
+      markers: [
+        { id: 'cat-int', text: 'Interiores // Living, Cocina & Dormitorios (9 Renders)', tag: '9 Renders', x: 20, y: 0, isCategory: true, modeId: 'interiors' }
+      ],
+      coords: [
+        // 0..6 (Exteriores -> Ocultos)
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        // 7 Aura I (Living y Cocina)
+        { x: 40,  y: 40,  w: 325, h: 195, z: 2 },
+        // 8..9 Verona (Exteriores -> Ocultos)
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        // 10 Verona (Comedor y Jardín)
+        { x: 410, y: 40,  w: 325, h: 195, z: 3 },
+        // 11 Verona (Dormitorio Principal)
+        { x: 775, y: 40,  w: 325, h: 195, z: 2 },
+        // 12 Chiuso (Exterior -> Oculto)
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        // 13 Chiuso (Cocina y Barra)
+        { x: 40,  y: 255, w: 325, h: 195, z: 3 },
+        // 14 Chiuso (Living y Comedor)
+        { x: 410, y: 255, w: 325, h: 195, z: 4 },
+        // 15 Chiuso (Dormitorio Suite)
+        { x: 775, y: 255, w: 325, h: 195, z: 3 },
+        // 16 Ankara II (Exterior -> Oculto)
+        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
+        // 17 Ankara II (Living Vista Mar)
+        { x: 40,  y: 470, w: 325, h: 195, z: 2 },
+        // 18 Ankara II (Comedor Vista Mar)
+        { x: 410, y: 470, w: 325, h: 195, z: 3 },
+        // 19 Ankara II (Comedor y Madera)
+        { x: 775, y: 470, w: 325, h: 195, z: 2 }
+      ]
+    }
+  };
+
+  // ============================================================
+  // MOTOR DEL LIENZO ESPACIAL AJUSTADO A LA PANTALLA
+  // ============================================================
+  class ScreenFittedCanvas {
     constructor() {
       this.viewport = document.getElementById('canvas-viewport');
       this.world = document.getElementById('canvas-world');
-      this.coordsDisplay = document.getElementById('hud-coords');
-      this.zoomDisplay = document.getElementById('hud-zoom');
-      this.minimapCanvas = document.getElementById('minimap-canvas');
+      this.zoomLabel = document.getElementById('hud-zoom');
+      this.statusText = document.getElementById('hud-status-text');
 
-      // Camera State
-      this.targetX = window.innerWidth / 2;
-      this.targetY = window.innerHeight / 2;
-      this.targetScale = 0.9;
+      // Lightbox
+      this.lightbox = document.getElementById('spatial-lightbox');
+      this.lightboxImg = document.getElementById('spatial-lightbox-img');
+      this.lightboxTitle = document.getElementById('spatial-lightbox-title');
+      this.lightboxCounter = document.getElementById('spatial-lightbox-counter');
+      this.lightboxClose = document.getElementById('spatial-lightbox-close');
+      this.lightboxPrev = document.getElementById('spatial-lightbox-prev');
+      this.lightboxNext = document.getElementById('spatial-lightbox-next');
 
-      this.currentX = this.targetX;
-      this.currentY = this.targetY;
-      this.currentScale = this.targetScale;
+      this.currentMode = 'gallery'; // 'gallery' (Galería libre) por defecto al abrir la web
+      this.isShuffling = false;
+      this.itemElements = [];
+      this.markerElements = [];
+      this.focusedItem = null;
+      this.activeProjectMarker = null;
+      this.currentLightboxIndex = 0;
 
-      this.minScale = 0.16;
-      this.maxScale = 2.4;
-      this.lerpFactor = 0.14; // Suavidad de inercia
+      // Estado de Cámara
+      this.targetX = 0;
+      this.targetY = 0;
+      this.targetScale = 1;
+      this.currentX = 0;
+      this.currentY = 0;
+      this.currentScale = 1;
+      this.lerpFactor = 0.14;
 
-      // Drag State
+      // Arrastre
       this.isDragging = false;
-      this.isSpaceDown = false;
       this.dragStartX = 0;
       this.dragStartY = 0;
       this.cameraStartX = 0;
@@ -222,142 +243,401 @@
       this.lastPointerY = 0;
       this.velocityX = 0;
       this.velocityY = 0;
-      this.friction = 0.91;
-
-      // Touch State (Pinch-to-zoom)
-      this.touchDistance = 0;
-      this.touchMidX = 0;
-      this.touchMidY = 0;
+      this.friction = 0.90;
 
       this.initWorld();
       this.initEvents();
-      this.initMinimap();
+      this.initCustomCursor();
+      this.fitToScreen(true);
       this.startLoop();
     }
 
-    // Inicializar elementos en el mundo virtual
+    // Inicializar elementos en el canvas
     initWorld() {
-      let seedCounter = 1;
+      if (!this.world) return;
+      this.world.innerHTML = '';
+      this.itemElements = [];
+      this.markerElements = [];
 
-      CLUSTERS_DATA.forEach(cluster => {
-        // Título del cluster
-        const label = document.createElement('div');
-        label.className = 'cluster-label';
-        label.textContent = cluster.title;
-        label.style.left = `${cluster.labelPos.x}px`;
-        label.style.top = `${cluster.labelPos.y}px`;
-        this.world.appendChild(label);
+      // 1. Crear marcadores de sección / proyecto
+      this.createMarkers();
 
-        // Ítems del cluster
-        cluster.items.forEach(item => {
-          const el = document.createElement('div');
-          el.className = 'canvas-item';
-          el.id = item.id;
-          el.style.left = `${item.x}px`;
-          el.style.top = `${item.y}px`;
-          el.style.width = `${item.w}px`;
-          el.style.height = `${item.h}px`;
-          el.style.zIndex = item.z || 1;
+      // 2. Crear los 20 ítems de imagen (sin descripciones bajo las imágenes)
+      IMAGES_DATA.forEach((data, index) => {
+        const item = document.createElement('div');
+        item.className = 'spatial-item';
+        item.dataset.index = index;
+        item.dataset.projId = data.projId;
 
-          if (item.rot) {
-            el.style.transform = `rotate(${item.rot}deg)`;
+        const card = document.createElement('div');
+        card.className = 'spatial-item__card';
+
+        const img = document.createElement('img');
+        img.className = 'spatial-item__img';
+        img.src = `images/proyectos/${data.folder}/${data.file}`;
+        img.alt = `${data.projTitle} — ${data.title}`;
+        img.loading = 'eager';
+
+        const shine = document.createElement('div');
+        shine.className = 'spatial-item__shine';
+
+        // LOGO DE FLECHITAS LIMPIO (Sin recuadro ni texto)
+        const expandIcon = document.createElement('div');
+        expandIcon.className = 'spatial-item__expand-icon';
+        expandIcon.title = 'Ampliar a pantalla completa';
+        expandIcon.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+        `;
+
+        // TÍTULO DEL PROYECTO SOBRE LA IMAGEN (Superior Izquierda)
+        const projectTag = document.createElement('div');
+        projectTag.className = 'spatial-item__project-tag';
+        projectTag.textContent = `${data.projNum} · ${data.projTitle.toUpperCase()}`;
+
+        card.appendChild(img);
+        card.appendChild(shine);
+        card.appendChild(projectTag);
+        card.appendChild(expandIcon);
+        item.appendChild(card);
+
+        // --- ANIMACIÓN DE HOVER ESTILO ONDA / OLA CON MOVIMIENTO SMOOTH ---
+        item.addEventListener('mousemove', (e) => {
+          if (this.focusedItem) return; // Si hay una imagen seleccionada, ninguna se inclina
+          const rect = item.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+
+          const tiltX = (x - centerX) / centerX;
+          const tiltY = (y - centerY) / centerY;
+          const dist = Math.hypot(tiltX, tiltY);
+
+          // Dinámica de ola: inclinación más pronunciada, torsión de cresta y elevación
+          const rotX = (-tiltY * 16).toFixed(2);
+          const rotY = (tiltX * 16).toFixed(2);
+          const rotZ = ((tiltX * -tiltY) * 5.2).toFixed(2);
+          const waveLift = (36 + Math.max(0, 1 - dist) * 14).toFixed(1);
+
+          item.style.transform = `perspective(850px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg) translateZ(${waveLift}px) scale3d(1.075, 1.075, 1.075)`;
+          img.style.transform = `scale(1.09) translate3d(${(-tiltX * 9).toFixed(1)}px, ${(-tiltY * 9).toFixed(1)}px, 0)`;
+          card.style.boxShadow = `${(-tiltX * 22).toFixed(1)}px ${(-tiltY * 22 + 30).toFixed(1)}px 70px rgba(0, 0, 0, 0.94), 0 0 0 1.5px rgba(255, 255, 255, 0.48)`;
+          shine.style.background = `radial-gradient(ellipse at ${x}px ${y}px, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.08) 40%, transparent 72%)`;
+          shine.style.opacity = '1';
+        });
+
+        item.addEventListener('mouseleave', () => {
+          if (this.focusedItem) return;
+          item.style.transform = '';
+          img.style.transform = '';
+          card.style.boxShadow = '';
+          shine.style.opacity = '0';
+        });
+
+        // --- INTERACCIÓN DE CLIC ---
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+
+          // Si ya estaba enfocado este ítem exacto -> CLICK 2: Abrir a pantalla completa
+          if (this.focusedItem === item) {
+            this.openLightbox(index);
+            return;
           }
 
-          const wrap = document.createElement('div');
-          wrap.className = 'canvas-item__image-wrap';
-
-          const img = document.createElement('img');
-          img.className = 'canvas-item__img';
-          img.alt = item.title;
-          img.loading = 'lazy';
-          img.src = createArchSvg(item.type, item.title, item.w, item.h, seedCounter++);
-
-          wrap.appendChild(img);
-          el.appendChild(wrap);
-
-          // Metadatos inferiores
-          const meta = document.createElement('div');
-          meta.className = 'canvas-item__meta';
-
-          const titleSpan = document.createElement('span');
-          titleSpan.className = 'canvas-item__meta-title';
-          titleSpan.textContent = item.title;
-
-          const dimsSpan = document.createElement('span');
-          dimsSpan.className = 'canvas-item__meta-dims';
-          dimsSpan.textContent = `[${item.w} × ${item.h}]`;
-
-          meta.appendChild(titleSpan);
-          meta.appendChild(dimsSpan);
-          el.appendChild(meta);
-
-          // Al hacer clic en un elemento, centrar suavemente en él con zoom óptimo
-          el.addEventListener('click', (e) => {
-            // Si hubo arrastre significativo, no considerar clic
-            if (Math.hypot(this.currentX - this.targetX, this.currentY - this.targetY) > 15) return;
-            this.focusItem(item);
-          });
-
-          this.world.appendChild(el);
+          // CLICK 1: Enfocar imagen y acercar al proyecto revelando su nombre
+          this.focusImageAndProject(index, item, data);
         });
+
+        this.world.appendChild(item);
+        this.itemElements.push(item);
+      });
+
+      this.applyLayout(this.currentMode);
+    }
+
+    createMarkers() {
+      // Marcadores de proyectos (Modo 'projects')
+      LAYOUTS.projects.markers.forEach(m => {
+        const el = document.createElement('div');
+        el.className = 'project-header-marker';
+        el.id = m.id;
+        el.innerHTML = `
+          <span class="project-header-marker__num">${m.text.split('·')[0].trim()}</span>
+          <h2 class="project-header-marker__title">${m.text.split('·')[1].trim()}</h2>
+        `;
+        el.style.left = `${m.x}px`;
+        el.style.top = `${m.y}px`;
+        this.world.appendChild(el);
+        this.markerElements.push({ el, type: 'project', projId: m.projId });
+      });
+
+      // Marcadores de categorías (Modos 'exteriors' e 'interiors')
+      const catMarkers = [
+        { id: 'cat-ext', text: 'Exteriores // Fachadas, Terrazas & Entorno (11 Renders)', tag: '11 Renders', x: 20, y: 0, isCategory: true, modeId: 'exteriors' },
+        { id: 'cat-int', text: 'Interiores // Living, Cocina & Dormitorios (9 Renders)', tag: '9 Renders', x: 20, y: 0, isCategory: true, modeId: 'interiors' }
+      ];
+      catMarkers.forEach(m => {
+        const el = document.createElement('div');
+        el.className = 'section-marker';
+        el.id = m.id;
+        el.textContent = m.text;
+        el.style.left = `${m.x}px`;
+        el.style.top = `${m.y}px`;
+        el.style.opacity = '0';
+        this.world.appendChild(el);
+        this.markerElements.push({ el, type: 'category', modeId: m.modeId });
       });
     }
 
-    // Centrar la vista en un ítem específico
-    focusItem(item) {
-      const centerX = item.x + item.w / 2;
-      const centerY = item.y + item.h / 2;
-      const desiredScale = Math.min(1.2, Math.max(0.7, (window.innerWidth * 0.45) / item.w));
+    // Aplicar coordenadas del modo seleccionado
+    applyLayout(modeName) {
+      this.currentMode = modeName;
 
-      this.targetScale = desiredScale;
-      this.targetX = window.innerWidth / 2 - centerX * desiredScale;
-      this.targetY = window.innerHeight / 2 - centerY * desiredScale;
+      // Si es un modo libre/moodboard (galería, exteriores o interiores), generar distribución orgánica fresca y mezclada
+      if (modeName !== 'projects') {
+        this.generateOrganicScatter(modeName);
+      }
+
+      const layout = LAYOUTS[modeName];
+      if (!layout) return;
+
+      // Desactivar selecciones anteriores
+      if (this.focusedItem) {
+        this.focusedItem.classList.remove('is-focused');
+        this.focusedItem = null;
+      }
+      this.world.classList.remove('has-focused-item');
+      this.hideAllProjectTitles();
+
+      // Posicionar los 20 ítems con transición fluida
+      layout.coords.forEach((c, idx) => {
+        const item = this.itemElements[idx];
+        if (item) {
+          if (c.hidden) {
+            item.classList.add('is-hidden');
+          } else {
+            item.classList.remove('is-hidden');
+            item.style.left = `${c.x}px`;
+            item.style.top = `${c.y}px`;
+            item.style.width = `${c.w}px`;
+            item.style.height = `${c.h}px`;
+            item.style.zIndex = c.z || 1;
+          }
+        }
+      });
+
+      // Actualizar visibilidad y posición de marcadores de categorías (exteriors / interiors)
+      this.markerElements.forEach(m => {
+        if (m.type === 'category') {
+          const isActive = m.modeId === modeName;
+          m.el.style.opacity = isActive ? '1' : '0';
+          if (isActive && layout.bounds) {
+            m.el.style.left = `${Math.max(20, layout.bounds.minX)}px`;
+            m.el.style.top = `${layout.bounds.minY}px`;
+          }
+        }
+      });
+
+      // Ajustar cámara para que todo quepa exactamente en la pantalla
+      setTimeout(() => this.fitToScreen(false), 80);
     }
 
-    // Zoom focal centrado exactamente en el cursor (focal zoom)
+    // Ajustar el canvas al tamaño exacto de la pantalla (PC o Móvil)
+    fitToScreen(instant = false) {
+      const layout = LAYOUTS[this.currentMode];
+      if (!layout) return;
+
+      const bounds = layout.bounds;
+      const contentW = bounds.maxX - bounds.minX;
+      const contentH = bounds.maxY - bounds.minY;
+
+      const isMobile = window.innerWidth <= 768;
+      const paddingX = isMobile ? 30 : 70;
+      const paddingY = isMobile ? 120 : 130;
+
+      const availW = window.innerWidth - paddingX;
+      const availH = window.innerHeight - paddingY;
+
+      // Escala óptima exacta para que quepa en pantalla
+      const scaleX = availW / contentW;
+      const scaleY = availH / contentH;
+      const fitScale = Math.min(scaleX, scaleY);
+
+      this.targetScale = fitScale;
+      this.targetX = (window.innerWidth - contentW * fitScale) / 2 - bounds.minX * fitScale;
+      this.targetY = (window.innerHeight - contentH * fitScale) / 2 - bounds.minY * fitScale + (isMobile ? 20 : 10);
+      this.velocityX = 0;
+      this.velocityY = 0;
+
+      if (instant) {
+        this.currentScale = this.targetScale;
+        this.currentX = this.targetX;
+        this.currentY = this.targetY;
+      }
+
+      if (this.focusedItem) {
+        this.focusedItem.classList.remove('is-focused');
+        this.focusedItem = null;
+      }
+      this.world.classList.remove('has-focused-item');
+      this.hideAllProjectTitles();
+      if (this.statusText) {
+        this.statusText.textContent = 'Arrastrar para explorar · Clic en una imagen para acercar';
+      }
+    }
+
+    // Limitar el desplazamiento de la cámara para que el canvas no se mueva demasiado hacia los costados
+    clampCamera() {
+      // Si hay una imagen enfocada, NO restringir la cámara: debe centrar libremente la imagen en pantalla
+      if (this.focusedItem) return;
+
+      const layout = LAYOUTS[this.currentMode];
+      if (!layout) return;
+      const bounds = layout.bounds;
+      const contentW = (bounds.maxX - bounds.minX) * this.targetScale;
+      const contentH = (bounds.maxY - bounds.minY) * this.targetScale;
+
+      // Holgura elástica mínima para evitar que el canvas vuele hacia los lados
+      const slackX = 35;
+      const slackY = 45;
+
+      let minX, maxX;
+      if (contentW <= window.innerWidth) {
+        // En vista general, el contenido cabe en pantalla: centrado con margen mínimo
+        const centerX = (window.innerWidth - contentW) / 2 - bounds.minX * this.targetScale;
+        minX = centerX - slackX;
+        maxX = centerX + slackX;
+      } else {
+        // Con zoom: permitir paneo delimitado por los extremos del lienzo
+        minX = window.innerWidth - bounds.maxX * this.targetScale - slackX;
+        maxX = -bounds.minX * this.targetScale + slackX;
+      }
+
+      let minY, maxY;
+      if (contentH <= window.innerHeight) {
+        const centerY = (window.innerHeight - contentH) / 2 - bounds.minY * this.targetScale;
+        minY = centerY - slackY;
+        maxY = centerY + slackY;
+      } else {
+        minY = window.innerHeight - bounds.maxY * this.targetScale - slackY;
+        maxY = -bounds.minY * this.targetScale + slackY;
+      }
+
+      this.targetX = Math.max(minX, Math.min(maxX, this.targetX));
+      this.targetY = Math.max(minY, Math.min(maxY, this.targetY));
+    }
+
+    // CLICK 1: Centrar la imagen seleccionada en pantalla y dejarla plana/normal sin inclinaciones
+    focusImageAndProject(index, item, data) {
+      if (this.focusedItem) {
+        this.focusedItem.classList.remove('is-focused');
+        this.focusedItem.style.removeProperty('transform');
+      }
+      this.focusedItem = item;
+      item.classList.add('is-focused');
+      this.world.classList.add('has-focused-item');
+
+      // Limpiar inmediatamente cualquier transformación de inclinación de la animación de hover
+      item.style.removeProperty('transform');
+      const img = item.querySelector('.spatial-item__img');
+      const card = item.querySelector('.spatial-item__card');
+      const shine = item.querySelector('.spatial-item__shine');
+      if (img) img.style.removeProperty('transform');
+      if (card) card.style.removeProperty('box-shadow');
+      if (shine) shine.style.opacity = '0';
+
+      // Ocultar marcadores flotantes antiguos (el nombre ahora aparece siempre en la parte superior izquierda de la tarjeta)
+      this.hideAllProjectTitles();
+
+      // Obtener posición del ítem en el mundo
+      const layout = LAYOUTS[this.currentMode];
+      const coord = layout && layout.coords[index] ? layout.coords[index] : { x: 0, y: 0, w: 200, h: 160 };
+      const itemLeft = parseFloat(item.style.left) || coord.x;
+      const itemTop = parseFloat(item.style.top) || coord.y;
+      const itemW = parseFloat(item.style.width) || coord.w;
+      const itemH = parseFloat(item.style.height) || coord.h;
+      const itemCenterX = itemLeft + itemW / 2;
+      const itemCenterY = itemTop + itemH / 2;
+
+      // Escala óptima para centrar y destacar la imagen en el centro exacto de la pantalla
+      const isMobile = window.innerWidth <= 768;
+      const zoomScale = isMobile 
+        ? Math.min(1.6, (window.innerWidth * 0.85) / itemW)
+        : Math.min(1.85, Math.max(1.3, (window.innerWidth * 0.40) / itemW));
+
+      this.targetScale = zoomScale;
+      this.targetX = window.innerWidth / 2 - itemCenterX * zoomScale;
+      this.targetY = window.innerHeight / 2 - itemCenterY * zoomScale;
+      this.velocityX = 0;
+      this.velocityY = 0;
+
+      if (this.statusText) {
+        this.statusText.textContent = `${data.projTitle} · Clic en la flecha o imagen para pantalla completa`;
+      }
+    }
+
+    hideAllProjectTitles() {
+      this.markerElements.forEach(m => {
+        if (m.type === 'project') {
+          m.el.classList.remove('is-visible');
+        }
+      });
+      this.activeProjectMarker = null;
+    }
+
     zoomAt(clientX, clientY, factor) {
-      const newScale = Math.min(this.maxScale, Math.max(this.minScale, this.targetScale * factor));
+      const newScale = Math.min(2.4, Math.max(0.2, this.targetScale * factor));
       if (newScale === this.targetScale) return;
 
-      // Coordenadas mundiales actuales bajo el puntero
       const worldX = (clientX - this.targetX) / this.targetScale;
       const worldY = (clientY - this.targetY) / this.targetScale;
 
       this.targetScale = newScale;
       this.targetX = clientX - worldX * newScale;
       this.targetY = clientY - worldY * newScale;
+      this.clampCamera();
     }
 
-    // Zoom centrado en el centro de la pantalla (para botones HUD)
     zoomCenter(factor) {
       this.zoomAt(window.innerWidth / 2, window.innerHeight / 2, factor);
     }
 
-    // Recentrar al origen (Cluster 1)
-    recenter() {
-      this.targetScale = 0.95;
-      this.targetX = window.innerWidth / 2;
-      this.targetY = window.innerHeight / 2;
-      this.velocityX = 0;
-      this.velocityY = 0;
-    }
-
-    // Eventos de entrada
     initEvents() {
-      // 1. Mouse Wheel Zoom (Focal)
+      // 1. Selector de Modos en el HUD
+      const modeBtns = document.querySelectorAll('.hud__mode-btn');
+      modeBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          modeBtns.forEach(b => b.classList.remove('is-active'));
+          btn.classList.add('is-active');
+          this.applyLayout(btn.dataset.mode);
+        });
+      });
+
+      // 1b. Botón Shuffle / Aleatorizar tablero
+      const shuffleBtn = document.getElementById('btn-shuffle');
+      if (shuffleBtn) {
+        shuffleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.shuffleGallery();
+        });
+      }
+
+      // 2. Zoom con Rueda
       window.addEventListener('wheel', (e) => {
         e.preventDefault();
-        // Zoom suave continuo con rueda o trackpad
         const factor = e.deltaY < 0 ? 1.14 : 0.88;
         this.zoomAt(e.clientX, e.clientY, factor);
       }, { passive: false });
 
-      // 2. Mouse Drag Pan
+      // 3. Arrastre del Canvas (Pan)
       window.addEventListener('mousedown', (e) => {
-        // Ignorar clics dentro del HUD
-        if (e.target.closest('.hud__controls') || e.target.closest('.hud__back-btn') || e.target.closest('.hud__minimap')) {
-          return;
-        }
+        if (e.target.closest('.hud') || e.target.closest('.spatial-lightbox')) return;
 
         this.isDragging = true;
         this.viewport.classList.add('is-dragging');
@@ -379,8 +659,8 @@
 
         this.targetX = this.cameraStartX + dx;
         this.targetY = this.cameraStartY + dy;
+        this.clampCamera();
 
-        // Calcular velocidad instantánea para inercia al soltar
         this.velocityX = e.clientX - this.lastPointerX;
         this.velocityY = e.clientY - this.lastPointerY;
         this.lastPointerX = e.clientX;
@@ -393,10 +673,27 @@
         this.viewport.classList.remove('is-dragging');
       });
 
-      // 3. Touch support (1 finger drag, 2 fingers pinch-to-zoom)
-      window.addEventListener('touchstart', (e) => {
-        if (e.target.closest('.hud')) return;
+      // 4. Clic en fondo vacío -> deseleccionar y volver a vista general
+      this.viewport.addEventListener('click', (e) => {
+        if (!e.target.closest('.spatial-item')) {
+          if (this.focusedItem) {
+            this.focusedItem.classList.remove('is-focused');
+            this.focusedItem.style.removeProperty('transform');
+            this.focusedItem = null;
+            this.world.classList.remove('has-focused-item');
+            this.hideAllProjectTitles();
+            if (this.statusText) {
+              this.statusText.textContent = 'Arrastrar para explorar · Clic en una imagen para acercar';
+            }
+            this.fitToScreen(false);
+          }
+        }
+      });
 
+      // 5. Touch Support
+      let touchDistance = 0;
+      window.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.hud') || e.target.closest('.spatial-lightbox')) return;
         if (e.touches.length === 1) {
           this.isDragging = true;
           this.dragStartX = e.touches[0].clientX;
@@ -409,11 +706,10 @@
           this.velocityY = 0;
         } else if (e.touches.length === 2) {
           this.isDragging = false;
-          const dx = e.touches[0].clientX - e.touches[1].clientX;
-          const dy = e.touches[0].clientY - e.touches[1].clientY;
-          this.touchDistance = Math.hypot(dx, dy);
-          this.touchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-          this.touchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          touchDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
         }
       }, { passive: true });
 
@@ -421,129 +717,502 @@
         if (e.touches.length === 1 && this.isDragging) {
           const dx = e.touches[0].clientX - this.dragStartX;
           const dy = e.touches[0].clientY - this.dragStartY;
-
           this.targetX = this.cameraStartX + dx;
           this.targetY = this.cameraStartY + dy;
-
+          this.clampCamera();
           this.velocityX = e.touches[0].clientX - this.lastPointerX;
           this.velocityY = e.touches[0].clientY - this.lastPointerY;
           this.lastPointerX = e.touches[0].clientX;
           this.lastPointerY = e.touches[0].clientY;
         } else if (e.touches.length === 2) {
-          const dx = e.touches[0].clientX - e.touches[1].clientX;
-          const dy = e.touches[0].clientY - e.touches[1].clientY;
-          const currentDist = Math.hypot(dx, dy);
-
-          if (this.touchDistance > 0) {
-            const factor = currentDist / this.touchDistance;
+          const curDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          if (touchDistance > 0) {
+            const factor = curDist / touchDistance;
             const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
             const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
             this.zoomAt(midX, midY, factor);
           }
-          this.touchDistance = currentDist;
+          touchDistance = curDist;
         }
       }, { passive: true });
 
       window.addEventListener('touchend', () => {
         this.isDragging = false;
-        this.touchDistance = 0;
+        touchDistance = 0;
       });
 
-      // 4. Keyboard Navigation (WASD, Arrows, Space, +, -, 0)
-      window.addEventListener('keydown', (e) => {
-        if (e.code === 'Space') {
-          this.isSpaceDown = true;
-          this.viewport.style.cursor = 'grab';
-        } else if (e.key === '+' || e.key === '=') {
-          this.zoomCenter(1.2);
-        } else if (e.key === '-' || e.key === '_') {
-          this.zoomCenter(0.83);
-        } else if (e.key === '0') {
-          this.recenter();
-        } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-          this.targetX -= 120;
-        } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-          this.targetX += 120;
-        } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-          this.targetY += 120;
-        } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-          this.targetY -= 120;
-        }
-      });
-
-      window.addEventListener('keyup', (e) => {
-        if (e.code === 'Space') {
-          this.isSpaceDown = false;
-          this.viewport.style.cursor = '';
-        }
-      });
-
-      // 5. HUD Controls
+      // 6. Botones HUD
       const btnZoomIn = document.getElementById('btn-zoom-in');
       const btnZoomOut = document.getElementById('btn-zoom-out');
       const btnRecenter = document.getElementById('btn-recenter');
 
       if (btnZoomIn) btnZoomIn.addEventListener('click', () => this.zoomCenter(1.25));
       if (btnZoomOut) btnZoomOut.addEventListener('click', () => this.zoomCenter(0.8));
-      if (btnRecenter) btnRecenter.addEventListener('click', () => this.recenter());
+      if (btnRecenter) btnRecenter.addEventListener('click', () => this.fitToScreen(false));
 
-      // 6. Resize handling
+      // 7. Resize -> recalcular ajuste a pantalla
       window.addEventListener('resize', () => {
-        if (this.minimapCanvas) this.initMinimap();
+        this.fitToScreen(false);
       });
-    }
 
-    // Inicializar Canvas del Minimapa
-    initMinimap() {
-      if (!this.minimapCanvas) return;
-      this.minimapCtx = this.minimapCanvas.getContext('2d');
-      this.minimapCanvas.width = 120 * window.devicePixelRatio;
-      this.minimapCanvas.height = 90 * window.devicePixelRatio;
-    }
+      // 8. Atajos de teclado
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const menuOverlay = document.getElementById('menu-overlay');
+          if (menuOverlay && menuOverlay.classList.contains('is-open')) {
+            menuOverlay.classList.remove('is-open');
+            return;
+          }
+          if (this.lightbox && this.lightbox.classList.contains('is-open')) {
+            this.closeLightbox();
+            return;
+          }
+        }
+        if (this.lightbox && this.lightbox.classList.contains('is-open')) {
+          if (e.key === 'ArrowRight') this.nextLightbox();
+          if (e.key === 'ArrowLeft') this.prevLightbox();
+          return;
+        }
+        if (e.key === '+' || e.key === '=') this.zoomCenter(1.2);
+        if (e.key === '-' || e.key === '_') this.zoomCenter(0.83);
+        if (e.key === '0') this.fitToScreen(false);
+      });
 
-    // Dibujar Minimapa en tiempo real
-    drawMinimap() {
-      if (!this.minimapCtx) return;
-      const ctx = this.minimapCtx;
-      const dpr = window.devicePixelRatio || 1;
-      const w = this.minimapCanvas.width;
-      const h = this.minimapCanvas.height;
+      // 9. Lightbox Events
+      if (this.lightboxClose) this.lightboxClose.addEventListener('click', () => this.closeLightbox());
+      if (this.lightboxPrev) this.lightboxPrev.addEventListener('click', (e) => { e.stopPropagation(); this.prevLightbox(); });
+      if (this.lightboxNext) this.lightboxNext.addEventListener('click', (e) => { e.stopPropagation(); this.nextLightbox(); });
+      if (this.lightbox) {
+        this.lightbox.addEventListener('click', (e) => {
+          if (e.target === this.lightbox) this.closeLightbox();
+        });
+      }
 
-      ctx.clearRect(0, 0, w, h);
+      // 10. Menu Overlay Mobile / Global
+      const menuOverlay = document.getElementById('menu-overlay');
+      const menuToggle = document.getElementById('menu-toggle');
+      const menuClose = document.querySelector('.menu-overlay__close');
 
-      // Espacio virtual visible en minimapa: [-2800, +2800] x [-2100, +2100]
-      const rangeX = 5600;
-      const rangeY = 4200;
-      const mapX = (x) => ((x + 2800) / rangeX) * w;
-      const mapY = (y) => ((y + 2100) / rangeY) * h;
+      const openMenu = () => {
+        if (!menuOverlay) return;
+        menuOverlay.classList.add('is-open');
+      };
 
-      // Dibujar bloques de clusters
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-      CLUSTERS_DATA.forEach(c => {
-        c.items.forEach(it => {
-          const ix = mapX(it.x);
-          const iy = mapY(it.y);
-          const iw = Math.max(1.5, (it.w / rangeX) * w);
-          const ih = Math.max(1.5, (it.h / rangeY) * h);
-          ctx.fillRect(ix, iy, iw, ih);
+      const closeMenu = () => {
+        if (!menuOverlay) return;
+        menuOverlay.classList.remove('is-open');
+      };
+
+      if (menuToggle) menuToggle.addEventListener('click', (e) => { e.stopPropagation(); openMenu(); });
+      if (menuClose) menuClose.addEventListener('click', (e) => { e.stopPropagation(); closeMenu(); });
+      if (menuOverlay) {
+        menuOverlay.addEventListener('click', (e) => {
+          if (e.target === menuOverlay) closeMenu();
+        });
+      }
+
+      // 11. Selector de Idioma (ES / EN)
+      const langBtns = document.querySelectorAll('.lang-btn');
+      let currentLang = localStorage.getItem('madviz-lang') || 'es';
+
+      const applyLanguage = (lang) => {
+        currentLang = lang;
+        localStorage.setItem('madviz-lang', lang);
+        document.documentElement.lang = lang === 'en' ? 'en' : 'es';
+        langBtns.forEach(btn => btn.classList.toggle('is-active', btn.dataset.lang === lang));
+        document.querySelectorAll('[data-es], [data-en]').forEach(el => {
+          const text = el.dataset[lang];
+          if (text !== undefined) el.textContent = text;
+        });
+      };
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          applyLanguage(btn.dataset.lang);
         });
       });
 
-      // Dibujar rectángulo del viewport de la cámara
-      const vpLeft = (-this.currentX) / this.currentScale;
-      const vpTop = (-this.currentY) / this.currentScale;
-      const vpWidth = window.innerWidth / this.currentScale;
-      const vpHeight = window.innerHeight / this.currentScale;
-
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
-      ctx.lineWidth = 1 * dpr;
-      ctx.strokeRect(mapX(vpLeft), mapY(vpTop), (vpWidth / rangeX) * w, (vpHeight / rangeY) * h);
+      if (currentLang !== 'es') {
+        applyLanguage(currentLang);
+      }
     }
 
-    // Loop de renderizado continuo (Physics Lerp & Transform)
+    // PUNTERO CUSTOM: Punto blanco minimalista con estela fluida (Idéntico a toda la web)
+    initCustomCursor() {
+      const cursorDot = document.getElementById('cursor-dot');
+      if (!cursorDot || !window.matchMedia('(pointer: fine)').matches) return;
+
+      const TRAIL_COUNT = 6;
+      const trailDots = [];
+      const trailConfig = [
+        { scale: 0.78, baseOpacity: 0.58, speed: 0.48 },
+        { scale: 0.64, baseOpacity: 0.44, speed: 0.40 },
+        { scale: 0.52, baseOpacity: 0.32, speed: 0.32 },
+        { scale: 0.40, baseOpacity: 0.22, speed: 0.25 },
+        { scale: 0.30, baseOpacity: 0.13, speed: 0.19 },
+        { scale: 0.20, baseOpacity: 0.06, speed: 0.14 }
+      ];
+
+      for (let i = 0; i < TRAIL_COUNT; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'cursor-trail-dot';
+        document.body.appendChild(dot);
+        trailDots.push({
+          el: dot,
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          scale: trailConfig[i].scale,
+          baseOpacity: trailConfig[i].baseOpacity,
+          speed: trailConfig[i].speed
+        });
+      }
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let prevMouseX = mouseX;
+      let prevMouseY = mouseY;
+      let cursorX = mouseX;
+      let cursorY = mouseY;
+      let isCursorVisible = false;
+      let isHovering = false;
+      let motionSpeed = 0;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isCursorVisible) {
+          isCursorVisible = true;
+          cursorDot.classList.add('is-active');
+        }
+      }, { passive: true });
+
+      document.addEventListener('mouseleave', () => {
+        cursorDot.classList.add('is-hidden');
+        trailDots.forEach(t => { t.el.style.opacity = '0'; });
+      });
+
+      document.addEventListener('mouseenter', () => {
+        cursorDot.classList.remove('is-hidden');
+      });
+
+      const animateCursor = () => {
+        const dx = mouseX - prevMouseX;
+        const dy = mouseY - prevMouseY;
+        const dist = Math.hypot(dx, dy);
+        prevMouseX = mouseX;
+        prevMouseY = mouseY;
+
+        motionSpeed += (dist - motionSpeed) * 0.18;
+        const motionAlpha = Math.min(1, Math.max(0, (motionSpeed - 0.2) / 6));
+
+        cursorX += (mouseX - cursorX) * 0.72;
+        cursorY += (mouseY - cursorY) * 0.72;
+
+        cursorDot.style.left = `${cursorX.toFixed(2)}px`;
+        cursorDot.style.top = `${cursorY.toFixed(2)}px`;
+
+        let leadX = cursorX;
+        let leadY = cursorY;
+
+        for (let i = 0; i < TRAIL_COUNT; i++) {
+          const t = trailDots[i];
+          t.x += (leadX - t.x) * t.speed;
+          t.y += (leadY - t.y) * t.speed;
+          leadX = t.x;
+          leadY = t.y;
+
+          const effectiveOpacity = (isCursorVisible && !isHovering) ? (t.baseOpacity * motionAlpha) : 0;
+          t.el.style.left = `${t.x.toFixed(2)}px`;
+          t.el.style.top = `${t.y.toFixed(2)}px`;
+          t.el.style.transform = `translate(-50%, -50%) scale(${t.scale})`;
+          t.el.style.opacity = effectiveOpacity.toFixed(3);
+        }
+
+        requestAnimationFrame(animateCursor);
+      };
+      animateCursor();
+
+      const interactiveSelector = 'a, button, .spatial-item, .hud__brand, .hud__mode-btn, .hud__shuffle-btn, .hud-zoom-ctrl__btn, .hud-zoom-ctrl__recenter, input, textarea, select, [role="button"]';
+      document.addEventListener('mouseover', (e) => {
+        if (e.target.closest(interactiveSelector)) {
+          isHovering = true;
+          cursorDot.classList.add('is-hovering');
+        }
+      });
+      document.addEventListener('mouseout', (e) => {
+        if (e.target.closest(interactiveSelector)) {
+          isHovering = false;
+          cursorDot.classList.remove('is-hovering');
+        }
+      });
+
+      window.addEventListener('mousedown', () => {
+        cursorDot.classList.add('is-dragging');
+      });
+      window.addEventListener('mouseup', () => {
+        cursorDot.classList.remove('is-dragging');
+      });
+    }
+
+    // Lightbox Modal (Click 2)
+    openLightbox(globalIndex) {
+      if (!this.lightbox || !IMAGES_DATA[globalIndex]) return;
+      this.currentLightboxIndex = globalIndex;
+      this.updateLightboxContent();
+      this.lightbox.classList.add('is-open');
+    }
+
+    closeLightbox() {
+      if (!this.lightbox) return;
+      this.lightbox.classList.remove('is-open');
+    }
+
+    updateLightboxContent() {
+      const data = IMAGES_DATA[this.currentLightboxIndex];
+      if (!data) return;
+
+      if (this.lightboxImg) {
+        this.lightboxImg.style.opacity = '0';
+        setTimeout(() => {
+          this.lightboxImg.src = `images/proyectos/${data.folder}/${data.file}`;
+          this.lightboxImg.alt = `${data.projTitle} — ${data.title}`;
+          this.lightboxImg.onload = () => { this.lightboxImg.style.opacity = '1'; };
+          if (this.lightboxImg.complete) this.lightboxImg.style.opacity = '1';
+        }, 120);
+      }
+
+      if (this.lightboxTitle) {
+        this.lightboxTitle.textContent = `${data.projTitle} · ${data.title}`;
+      }
+
+      if (this.lightboxCounter) {
+        const pad = (n) => String(n).padStart(2, '0');
+        this.lightboxCounter.textContent = `${pad(this.currentLightboxIndex + 1)} / ${pad(IMAGES_DATA.length)}`;
+      }
+
+      const nextIdx = (this.currentLightboxIndex + 1) % IMAGES_DATA.length;
+      const prevIdx = (this.currentLightboxIndex - 1 + IMAGES_DATA.length) % IMAGES_DATA.length;
+      new Image().src = `images/proyectos/${IMAGES_DATA[nextIdx].folder}/${IMAGES_DATA[nextIdx].file}`;
+      new Image().src = `images/proyectos/${IMAGES_DATA[prevIdx].folder}/${IMAGES_DATA[prevIdx].file}`;
+    }
+
+    nextLightbox() {
+      this.currentLightboxIndex = (this.currentLightboxIndex + 1) % IMAGES_DATA.length;
+      this.updateLightboxContent();
+    }
+
+    prevLightbox() {
+      this.currentLightboxIndex = (this.currentLightboxIndex - 1 + IMAGES_DATA.length) % IMAGES_DATA.length;
+      this.updateLightboxContent();
+    }
+
+    // Generador de disposición espacial orgánica / moodboard (sin cuadrícula rígida)
+    generateOrganicScatter(modeName = 'gallery') {
+      const MODE_INDICES = {
+        gallery: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        exteriors: [0, 1, 2, 3, 4, 5, 6, 8, 9, 12, 16], // 11 renders exteriores
+        interiors: [7, 10, 11, 13, 14, 15, 17, 18, 19]  // 9 renders interiores
+      };
+
+      const activeIndices = MODE_INDICES[modeName] || MODE_INDICES.gallery;
+      const count = activeIndices.length;
+
+      let streamPatterns, areaW, areaH;
+      if (count === 20) {
+        // Galería completa (20 renders): 5 columnas/flujos irregulares con silueta asimétrica
+        streamPatterns = [
+          [3, 5, 4, 5, 3],
+          [4, 4, 4, 4, 4],
+          [3, 4, 6, 4, 3],
+          [4, 5, 3, 5, 3]
+        ];
+        areaW = 1140;
+        areaH = 680;
+      } else if (count === 11) {
+        // Exteriores (11 renders): 4 flujos compactos muy juntos y mezclados en el centro
+        streamPatterns = [
+          [2, 4, 3, 2],
+          [3, 3, 3, 2],
+          [2, 3, 4, 2]
+        ];
+        areaW = 960;
+        areaH = 620;
+      } else {
+        // Interiores (9 renders): 3 flujos compactos muy juntos y mezclados en el centro
+        streamPatterns = [
+          [3, 3, 3],
+          [2, 4, 3],
+          [3, 4, 2]
+        ];
+        areaW = 880;
+        areaH = 580;
+      }
+
+      const streamCounts = streamPatterns[Math.floor(Math.random() * streamPatterns.length)];
+      const numStreams = streamCounts.length;
+
+      // Mezclar aleatoriamente el orden de las imágenes activas (Fisher-Yates)
+      const shuffled = [...activeIndices];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      const colSpacing = (areaW - 220) / Math.max(1, numStreams - 1);
+      const coords = new Array(20).fill(null);
+
+      // Inactivas: marcadas como hidden
+      for (let i = 0; i < 20; i++) {
+        coords[i] = { x: Math.round(areaW / 2), y: Math.round(areaH / 2), w: 0, h: 0, z: 0, hidden: true };
+      }
+
+      let itemIdx = 0;
+      let minX = 9999, maxX = -9999, minY = 9999, maxY = -9999;
+
+      for (let s = 0; s < numStreams; s++) {
+        const n = streamCounts[s];
+        const baseX = s * colSpacing + (Math.random() - 0.5) * 35 + 20;
+        const startY = n <= 3 ? (45 + Math.random() * 45) : (15 + Math.random() * 20);
+        const availH = areaH - startY - 20;
+        const stepY = availH / Math.max(1, n);
+
+        for (let k = 0; k < n; k++) {
+          if (itemIdx >= shuffled.length) break;
+          const targetIdx = shuffled[itemIdx++];
+
+          // Variedad de tamaños y proporciones para romper cualquier recuadro
+          const typeRnd = Math.random();
+          let w, h;
+          if (typeRnd < 0.45) {
+            // Horizontal / apaisado
+            w = Math.round(215 + Math.random() * 45);
+            h = Math.round(150 + Math.random() * 30);
+          } else if (typeRnd < 0.85) {
+            // Vertical / retrato
+            w = Math.round(165 + Math.random() * 35);
+            h = Math.round(215 + Math.random() * 45);
+          } else {
+            // Cuadrado / medio
+            w = Math.round(190 + Math.random() * 30);
+            h = Math.round(185 + Math.random() * 30);
+          }
+
+          // Desplazamiento orgánico con solapamiento
+          const x = Math.max(10, Math.round(baseX + (Math.random() - 0.5) * 35));
+          const y = Math.max(15, Math.round(startY + k * stepY + (Math.random() - 0.5) * 30));
+          const z = Math.floor(Math.random() * 7) + 1;
+
+          coords[targetIdx] = { x, y, w, h, z, hidden: false };
+          minX = Math.min(minX, x);
+          maxX = Math.max(maxX, x + w);
+          minY = Math.min(minY, y);
+          maxY = Math.max(maxY, y + h);
+        }
+      }
+
+      const titleOffsetY = (modeName === 'exteriors' || modeName === 'interiors') ? 35 : 0;
+      const effectiveMinY = minY - titleOffsetY;
+
+      const layoutData = {
+        coords,
+        bounds: { minX, maxX, minY: effectiveMinY, maxY }
+      };
+
+      if (LAYOUTS[modeName]) {
+        LAYOUTS[modeName].coords = coords;
+        LAYOUTS[modeName].bounds = { minX, maxX, minY: effectiveMinY, maxY };
+      }
+
+      return layoutData;
+    }
+
+    // MEZCLAR TABLERO: Transición suave de deslizamiento y mezcla (sin explosión hacia afuera)
+    shuffleGallery() {
+      if (this.isShuffling) return;
+      this.isShuffling = true;
+
+      // Desactivar selecciones previas
+      if (this.focusedItem) {
+        this.focusedItem.classList.remove('is-focused');
+        this.focusedItem.style.removeProperty('transform');
+        this.focusedItem = null;
+      }
+      this.world.classList.remove('has-focused-item');
+      this.hideAllProjectTitles();
+
+      // Determinar modo a mezclar: si estaba en 'projects', pasa a 'gallery'
+      if (this.currentMode === 'projects') {
+        this.currentMode = 'gallery';
+        const modeBtns = document.querySelectorAll('.hud__mode-btn');
+        modeBtns.forEach(b => b.classList.toggle('is-active', b.dataset.mode === 'gallery'));
+      }
+
+      // Animación de giro para el botón de shuffle en el HUD
+      const shuffleBtn = document.getElementById('btn-shuffle');
+      if (shuffleBtn) {
+        shuffleBtn.classList.add('is-spinning');
+        setTimeout(() => shuffleBtn.classList.remove('is-spinning'), 650);
+      }
+
+      // Generar nuevo desorden orgánico completamente distinto
+      const layoutData = this.generateOrganicScatter(this.currentMode);
+      const newCoords = layoutData.coords;
+
+      // Actualizar posición de encabezados de categoría si corresponde
+      this.markerElements.forEach(m => {
+        if (m.type === 'category') {
+          const isActive = m.modeId === this.currentMode;
+          m.el.style.opacity = isActive ? '1' : '0';
+          if (isActive && layoutData.bounds) {
+            m.el.style.left = `${Math.max(20, layoutData.bounds.minX)}px`;
+            m.el.style.top = `${layoutData.bounds.minY}px`;
+          }
+        }
+      });
+
+      // Desplazamiento suave directo hacia las nuevas posiciones (solo mezcla, sin disparo hacia afuera)
+      newCoords.forEach((c, idx) => {
+        const item = this.itemElements[idx];
+        if (item) {
+          if (c.hidden) {
+            item.classList.add('is-hidden');
+          } else {
+            item.classList.remove('is-hidden');
+            item.style.transition = 'left 0.75s cubic-bezier(0.16, 1, 0.3, 1), top 0.75s cubic-bezier(0.16, 1, 0.3, 1), width 0.75s cubic-bezier(0.16, 1, 0.3, 1), height 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+            item.style.left = `${c.x}px`;
+            item.style.top = `${c.y}px`;
+            item.style.width = `${c.w}px`;
+            item.style.height = `${c.h}px`;
+            item.style.zIndex = c.z;
+            item.style.removeProperty('transform');
+          }
+        }
+      });
+
+      // Limpiar transiciones temporales y reajustar cámara a pantalla
+      setTimeout(() => {
+        this.itemElements.forEach(item => {
+          item.style.transition = '';
+          item.style.removeProperty('transform');
+          const img = item.querySelector('.spatial-item__img');
+          const card = item.querySelector('.spatial-item__card');
+          const shine = item.querySelector('.spatial-item__shine');
+          if (img) img.style.removeProperty('transform');
+          if (card) card.style.removeProperty('box-shadow');
+          if (shine) shine.style.opacity = '0';
+        });
+        this.isShuffling = false;
+        this.fitToScreen(false);
+      }, 760);
+    }
+
+    // Render loop con amortiguación continua
     startLoop() {
       const tick = () => {
-        // Inercia al soltar el drag
         if (!this.isDragging && (Math.abs(this.velocityX) > 0.05 || Math.abs(this.velocityY) > 0.05)) {
           this.targetX += this.velocityX;
           this.targetY += this.velocityY;
@@ -551,26 +1220,17 @@
           this.velocityY *= this.friction;
         }
 
-        // Amortiguación continua (Lerp damping)
+        this.clampCamera();
+
         this.currentX += (this.targetX - this.currentX) * this.lerpFactor;
         this.currentY += (this.targetY - this.currentY) * this.lerpFactor;
         this.currentScale += (this.targetScale - this.currentScale) * this.lerpFactor;
 
-        // Aplicar transformación con aceleración por hardware (translate3d + scale)
         this.world.style.transform = `translate3d(${this.currentX.toFixed(2)}px, ${this.currentY.toFixed(2)}px, 0) scale(${this.currentScale.toFixed(4)})`;
 
-        // Actualizar HUD
-        if (this.zoomDisplay) {
-          this.zoomDisplay.textContent = `${Math.round(this.currentScale * 100)}%`;
+        if (this.zoomLabel) {
+          this.zoomLabel.textContent = `${Math.round(this.currentScale * 100)}%`;
         }
-        if (this.coordsDisplay) {
-          const worldCenterX = Math.round((-this.currentX + window.innerWidth / 2) / this.currentScale);
-          const worldCenterY = Math.round((-this.currentY + window.innerHeight / 2) / this.currentScale);
-          this.coordsDisplay.textContent = `X: ${worldCenterX} · Y: ${worldCenterY}`;
-        }
-
-        // Actualizar Minimapa
-        this.drawMinimap();
 
         requestAnimationFrame(tick);
       };
@@ -579,10 +1239,9 @@
     }
   }
 
-  // Inicializar al cargar el DOM
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => new SpatialCanvas());
+    document.addEventListener('DOMContentLoaded', () => new ScreenFittedCanvas());
   } else {
-    new SpatialCanvas();
+    new ScreenFittedCanvas();
   }
 })();

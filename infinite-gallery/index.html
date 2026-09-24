@@ -3,58 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="Infinite Spatial Canvas — MAD VIZ Experimental Gallery. Boundless spatial visual territory inspired by early Are.na.">
-  <title>Infinite Canvas — MAD VIZ (Experimental)</title>
+  <meta name="description" content="Galería Espacial — MAD VIZ. Lienzo interactivo ajustado a la pantalla con 3 modos de organización: Por Proyecto, Aleatorio e Interiores / Exteriores.">
+  <title>Galería Espacial — MAD VIZ (Experimental)</title>
   <link rel="icon" type="image/png" href="../images/logo-bg.png">
   <link rel="stylesheet" href="../css/infinite-canvas.css">
 </head>
-<body>
+<body class="page-infinite-gallery">
 
-  <!-- Viewport del Lienzo Espacial Infinito -->
-  <div id="canvas-viewport" class="canvas-viewport" role="region" aria-label="Lienzo infinito 2D">
+  <!-- Puntero custom dot (monopo style - idéntico a toda la web) -->
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+
+  <!-- Menu Overlay (Mobile / Navegación Global) -->
+  <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true">
+    <div class="menu-overlay__header">
+      <a href="../index.html" class="menu-overlay__logo">
+        <img src="../images/logo-white.png" alt="MADVIZ">
+      </a>
+      <button class="menu-overlay__close">Close</button>
+    </div>
+    <nav class="menu-overlay__nav">
+      <a href="../index.html" data-es="Inicio" data-en="Home">Inicio</a>
+      <a href="../archive.html" class="is-active" data-es="Galería" data-en="Gallery">Galería</a>
+      <a href="../services.html" data-es="Servicios" data-en="Services">Servicios</a>
+      <a href="../about.html" data-es="Nosotros" data-en="About">Nosotros</a>
+      <a href="../contact.html" data-es="Contacto" data-en="Contact">Contacto</a>
+    </nav>
+    <div class="menu-overlay__footer">
+      <p>Mar del Plata, Argentina</p>
+      <p>© 2025 MAD 3D Studio</p>
+    </div>
+  </div>
+
+  <!-- Viewport del Lienzo Espacial Ajustado a la Pantalla -->
+  <div id="canvas-viewport" class="canvas-viewport" role="region" aria-label="Lienzo espacial">
     <div id="canvas-world" class="canvas-world"></div>
   </div>
 
-  <!-- Heads-Up Display (HUD) minimalista -->
+  <!-- Heads-Up Display (HUD) con Navegación General y Selector de Modos -->
   <aside class="hud" aria-hidden="false">
-    <!-- Encabezado superior -->
+    <!-- Encabezado superior con Secciones Generales y Selector de Modos -->
     <header class="hud__header">
-      <a href="../index.html" class="hud__brand" title="Volver al inicio">
-        <img src="../images/logo-white.png" alt="MADVIZ" class="hud__logo-mark">
-        <span class="hud__title">MAD VIZ</span>
-        <span class="hud__tag">SPATIAL CANVAS EXP</span>
-      </a>
+      <!-- Izquierda: Logotipo MAD VIZ + ES/EN -->
+      <div class="site-header__left">
+        <a href="../index.html" class="hud__brand" title="Volver al inicio" aria-label="MADVIZ Inicio">
+          <div class="hud__logo-wrap glitch-logo">
+            <img src="../images/logo-white.png" alt="MADVIZ" class="hud__logo-mark">
+            <div class="glitch-logo__layer glitch-logo__layer--1" aria-hidden="true">
+              <img src="../images/logo-white.png" alt="">
+            </div>
+            <div class="glitch-logo__layer glitch-logo__layer--2" aria-hidden="true">
+              <img src="../images/logo-white.png" alt="">
+            </div>
+            <div class="glitch-logo__layer glitch-logo__layer--3" aria-hidden="true">
+              <img src="../images/logo-white.png" alt="">
+            </div>
+          </div>
+          <span class="hud__title">MAD VIZ</span>
+        </a>
+        <div class="lang-switcher" aria-label="Idioma">
+          <button class="lang-btn is-active" data-lang="es" aria-label="Español">ES</button>
+          <span class="lang-sep" aria-hidden="true">/</span>
+          <button class="lang-btn" data-lang="en" aria-label="English">EN</button>
+        </div>
+      </div>
 
-      <a href="../index.html" class="hud__back-btn">
-        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-        <span>Volver al sitio</span>
-      </a>
+      <!-- SELECTOR DE MODOS EN 2 FILAS (Centrado exacto en pantalla) -->
+      <nav class="hud__nav-matrix" aria-label="Modos de visualización">
+        <!-- Fila 1: GALERIA + ICONO ALEATORIZADOR -->
+        <div class="hud__nav-row hud__nav-row--top">
+          <button class="hud__mode-btn is-active" data-mode="gallery">GALERIA</button>
+          <button id="btn-shuffle" class="hud__shuffle-btn" title="Mezclar tablero aleatoriamente" aria-label="Aleatorizar tablero">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="20" x2="21" y2="3"></line>
+              <polyline points="21 16 21 21 16 21"></polyline>
+              <line x1="15" y1="15" x2="21" y2="21"></line>
+              <line x1="4" y1="4" x2="9" y2="9"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Fila 2: PROYECTOS · EXTERIORES · INTERIORES -->
+        <div class="hud__nav-row hud__nav-row--bottom">
+          <button class="hud__mode-btn" data-mode="projects">PROYECTOS</button>
+          <button class="hud__mode-btn" data-mode="exteriors">EXTERIORES</button>
+          <button class="hud__mode-btn" data-mode="interiors">INTERIORES</button>
+        </div>
+      </nav>
+
+      <!-- Derecha: Secciones del sitio general (sin botón 'Volver al sitio') -->
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a href="../archive.html" class="is-active" data-es="Galería" data-en="Gallery">Galería</a>
+        <a href="../services.html" data-es="Servicios" data-en="Services">Servicios</a>
+        <a href="../about.html" data-es="Nosotros" data-en="About">Nosotros</a>
+        <a href="../contact.html" data-es="Contacto" data-en="Contact">Contacto</a>
+        <button class="menu-toggle-mobile" id="menu-toggle" aria-label="Abrir menú">Menu</button>
+      </nav>
     </header>
 
-    <!-- Minimapa / Radar de clusters -->
-    <div class="hud__minimap" title="Radar espacial">
-      <canvas id="minimap-canvas"></canvas>
-    </div>
-
-    <!-- Indicador de coordenadas y atajos (inferior izquierdo) -->
+    <!-- Indicador inferior izquierdo -->
     <div class="hud__status">
-      <div id="hud-coords" class="hud__coords">X: 0 · Y: 0</div>
-      <div class="hud__hint">Arrastrar para navegar · Rueda para zoom · Clic para enfocar · 0 para recentrar</div>
+      <span class="hud__status-dot"></span>
+      <span id="hud-status-text">Arrastrar para explorar · Clic en una imagen para acercar</span>
     </div>
 
-    <!-- Controles de navegación y zoom (inferior derecho) -->
+    <!-- Controles de Zoom y Vista General (inferior derecho) -->
     <div class="hud__controls">
       <button id="btn-zoom-out" class="hud__btn" aria-label="Alejar zoom" title="Alejar (-)">−</button>
       <span id="hud-zoom" class="hud__zoom-label">100%</span>
       <button id="btn-zoom-in" class="hud__btn" aria-label="Acercar zoom" title="Acercar (+)">+</button>
-      <button id="btn-recenter" class="hud__btn hud__btn-recenter" title="Recentrar vista (0)">Recentrar</button>
+      <button id="btn-recenter" class="hud__btn hud__btn-recenter" title="Vista General (0)">Vista General</button>
     </div>
   </aside>
 
-  <!-- Script del Motor Espacial -->
+  <!-- Lightbox / Modal a Pantalla Completa (Click 2) -->
+  <div id="spatial-lightbox" class="spatial-lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <button id="spatial-lightbox-close" class="spatial-lightbox__close">Cerrar</button>
+    <button id="spatial-lightbox-prev" class="spatial-lightbox__nav spatial-lightbox__nav--prev" aria-label="Anterior">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <div class="spatial-lightbox__stage">
+      <img id="spatial-lightbox-img" class="spatial-lightbox__img" src="" alt="Render arquitectónico">
+      <div class="spatial-lightbox__info">
+        <span id="spatial-lightbox-title" class="spatial-lightbox__title"></span>
+        <span id="spatial-lightbox-counter" class="spatial-lightbox__counter"></span>
+      </div>
+    </div>
+    <button id="spatial-lightbox-next" class="spatial-lightbox__nav spatial-lightbox__nav--next" aria-label="Siguiente">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Motor del Lienzo Espacial -->
   <script src="../js/infinite-canvas.js"></script>
 </body>
 </html>

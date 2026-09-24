@@ -2,25 +2,18 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Galería — MAD 3D Studio. Visualización arquitectónica, renders 3D e IA.">
   <title>Gallery — MADVIZ</title>
   <link rel="icon" type="image/png" href="images/logo-bg.png">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/infinite-canvas.css">
 </head>
-<body class="page-archive">
+<body class="page-archive page-infinite-gallery">
 
-  <!-- Puntero custom dot (monopo style) -->
+  <!-- Puntero custom dot (monopo style - idéntico a toda la web) -->
   <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
 
-  <div class="fixed-video-bg" aria-hidden="true">
-    <video class="video-bg" autoplay muted loop playsinline>
-      <source src="images/video/Verona%20para%20sitio%20web.mp4" type="video/mp4">
-    </video>
-    <div class="video-bg__overlay"></div>
-    <div class="video-bg__grain"></div>
-  </div>
-
+  <!-- Menu Overlay (Mobile / Navegación Global) -->
   <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true">
     <div class="menu-overlay__header">
       <a href="index.html" class="menu-overlay__logo">
@@ -41,85 +34,122 @@
     </div>
   </div>
 
-  <header class="site-header">
-    <div class="site-header__left">
-      <a href="index.html" class="site-header__logo">
-        <img src="images/logo-white.png" alt="MADVIZ">
-      </a>
-      <div class="lang-switcher">
-        <button class="lang-btn is-active" data-lang="es">ES</button>
-        <span class="lang-sep">/</span>
-        <button class="lang-btn" data-lang="en">EN</button>
-      </div>
-    </div>
-    <div class="header-center">
-      <a href="contact.html" class="header-cta-btn" data-es="INICIAR PROYECTO" data-en="START A PROJECT">INICIAR PROYECTO</a>
-    </div>
-    <nav class="site-nav">
-      <a href="archive.html" class="is-active" data-es="Galería" data-en="Gallery">Galería</a>
-      <a href="services.html" data-es="Servicios" data-en="Services">Servicios</a>
-      <a href="about.html" data-es="Nosotros" data-en="About">Nosotros</a>
-      <a href="contact.html" data-es="Contacto" data-en="Contact">Contacto</a>
-      <button class="menu-toggle-mobile" id="menu-toggle" aria-label="Abrir menú">Menu</button>
-    </nav>
-  </header>
-
-  <main>
-    <div class="archive-grid" id="general-gallery-grid">
-      <a href="images/galeria/render-01.jpg" class="archive-item" data-index="0" aria-label="MADVIZ — Render 01"><img src="images/galeria/render-01.jpg" alt="MADVIZ — Render 01" loading="lazy"></a>
-      <a href="images/galeria/render-02.jpeg" class="archive-item" data-index="1" aria-label="MADVIZ — Render 02"><img src="images/galeria/render-02.jpeg" alt="MADVIZ — Render 02" loading="lazy"></a>
-      <a href="images/galeria/render-03.jpeg" class="archive-item" data-index="2" aria-label="MADVIZ — Render 03"><img src="images/galeria/render-03.jpeg" alt="MADVIZ — Render 03" loading="lazy"></a>
-      <a href="images/galeria/render-04.jpeg" class="archive-item" data-index="3" aria-label="MADVIZ — Render 04"><img src="images/galeria/render-04.jpeg" alt="MADVIZ — Render 04" loading="lazy"></a>
-      <a href="images/galeria/render-05.png" class="archive-item" data-index="4" aria-label="MADVIZ — Render 05"><img src="images/galeria/render-05.png" alt="MADVIZ — Render 05" loading="lazy"></a>
-      <a href="images/galeria/render-06.png" class="archive-item" data-index="5" aria-label="MADVIZ — Render 06"><img src="images/galeria/render-06.png" alt="MADVIZ — Render 06" loading="lazy"></a>
-      <a href="images/galeria/render-07.png" class="archive-item" data-index="6" aria-label="MADVIZ — Render 07"><img src="images/galeria/render-07.png" alt="MADVIZ — Render 07" loading="lazy"></a>
-      <a href="images/galeria/render-08.png" class="archive-item" data-index="7" aria-label="MADVIZ — Render 08"><img src="images/galeria/render-08.png" alt="MADVIZ — Render 08" loading="lazy"></a>
-      <a href="images/galeria/render-09.jpeg" class="archive-item" data-index="8" aria-label="MADVIZ — Render 09"><img src="images/galeria/render-09.jpeg" alt="MADVIZ — Render 09" loading="lazy"></a>
-      <a href="images/galeria/render-10.jpeg" class="archive-item" data-index="9" aria-label="MADVIZ — Render 10"><img src="images/galeria/render-10.jpeg" alt="MADVIZ — Render 10" loading="lazy"></a>
-      <a href="images/galeria/render-11.jpg" class="archive-item" data-index="10" aria-label="MADVIZ — Render 11"><img src="images/galeria/render-11.jpg" alt="MADVIZ — Render 11" loading="lazy"></a>
-      <a href="images/galeria/render-12.jpeg" class="archive-item" data-index="11" aria-label="MADVIZ — Render 12"><img src="images/galeria/render-12.jpeg" alt="MADVIZ — Render 12" loading="lazy"></a>
-      <a href="images/galeria/render-13.jpeg" class="archive-item" data-index="12" aria-label="MADVIZ — Render 13"><img src="images/galeria/render-13.jpeg" alt="MADVIZ — Render 13" loading="lazy"></a>
-      <a href="images/galeria/render-14.jpeg" class="archive-item" data-index="13" aria-label="MADVIZ — Render 14"><img src="images/galeria/render-14.jpeg" alt="MADVIZ — Render 14" loading="lazy"></a>
-      <a href="images/galeria/render-15.jpeg" class="archive-item" data-index="14" aria-label="MADVIZ — Render 15"><img src="images/galeria/render-15.jpeg" alt="MADVIZ — Render 15" loading="lazy"></a>
-      <a href="images/galeria/render-16.jpeg" class="archive-item" data-index="15" aria-label="MADVIZ — Render 16"><img src="images/galeria/render-16.jpeg" alt="MADVIZ — Render 16" loading="lazy"></a>
-      <a href="images/galeria/render-17.jpg" class="archive-item" data-index="16" aria-label="MADVIZ — Render 17"><img src="images/galeria/render-17.jpg" alt="MADVIZ — Render 17" loading="lazy"></a>
-      <a href="images/galeria/render-18.jpg" class="archive-item" data-index="17" aria-label="MADVIZ — Render 18"><img src="images/galeria/render-18.jpg" alt="MADVIZ — Render 18" loading="lazy"></a>
-      <a href="images/galeria/render-19.jpg" class="archive-item" data-index="18" aria-label="MADVIZ — Render 19"><img src="images/galeria/render-19.jpg" alt="MADVIZ — Render 19" loading="lazy"></a>
-      <a href="images/galeria/render-20.jpg" class="archive-item" data-index="19" aria-label="MADVIZ — Render 20"><img src="images/galeria/render-20.jpg" alt="MADVIZ — Render 20" loading="lazy"></a>
-    </div>
-  </main>
-
-  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
-    <button class="lightbox__close" aria-label="Cerrar">Close</button>
-    <button class="lightbox__nav lightbox__nav--prev" aria-label="Anterior"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
-    <div class="lightbox__stage">
-      <img id="lightbox-img" class="lightbox__img" src="" alt="Render">
-      <div class="lightbox__info">
-        <div class="lightbox__project-meta">
-          <span id="lightbox-project-name" class="lightbox__project-name" style="display: none;"></span>
-          <a id="lightbox-project-link" href="#" class="lightbox__project-btn" style="display: none;">
-            <span data-es="Ver galería del proyecto" data-en="View project gallery">Ver galería del proyecto</span>
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-        <span id="lightbox-counter" class="lightbox__counter">01 / 20</span>
-      </div>
-    </div>
-    <button class="lightbox__nav lightbox__nav--next" aria-label="Siguiente"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+  <!-- Viewport del Lienzo Espacial Ajustado a la Pantalla -->
+  <div id="canvas-viewport" class="canvas-viewport" role="region" aria-label="Lienzo espacial">
+    <div id="canvas-world" class="canvas-world"></div>
   </div>
 
-  <footer class="site-footer">
-    <p>© 2025 MAD 3D Studio</p>
-    <p>@mad__viz</p>
-  </footer>
+  <!-- Heads-Up Display (HUD) con Navegación General y Selector de Modos -->
+  <aside class="hud" aria-hidden="false">
+    <!-- Encabezado superior con Secciones Generales y Selector de Modos -->
+    <header class="hud__header">
+      <!-- Izquierda: Logotipo MAD VIZ + ES/EN -->
+      <div class="site-header__left">
+        <a href="index.html" class="hud__brand" title="Volver al inicio" aria-label="MADVIZ Inicio">
+          <div class="hud__logo-wrap glitch-logo">
+            <img src="images/logo-white.png" alt="MADVIZ" class="hud__logo-mark">
+            <div class="glitch-logo__layer glitch-logo__layer--1" aria-hidden="true">
+              <img src="images/logo-white.png" alt="">
+            </div>
+            <div class="glitch-logo__layer glitch-logo__layer--2" aria-hidden="true">
+              <img src="images/logo-white.png" alt="">
+            </div>
+            <div class="glitch-logo__layer glitch-logo__layer--3" aria-hidden="true">
+              <img src="images/logo-white.png" alt="">
+            </div>
+          </div>
+          <span class="hud__title">MAD VIZ</span>
+        </a>
+        <div class="lang-switcher" aria-label="Idioma">
+          <button class="lang-btn is-active" data-lang="es" aria-label="Español">ES</button>
+          <span class="lang-sep" aria-hidden="true">/</span>
+          <button class="lang-btn" data-lang="en" aria-label="English">EN</button>
+        </div>
+      </div>
 
-  <!-- GSAP Core & ScrollTrigger (locales) -->
-  <script src="images/galeria/galeria-datos.js"></script>
-  <script src="js/gsap.min.js"></script>
-  <script src="js/ScrollTrigger.min.js"></script>
-  <script src="js/main.js"></script>
+      <!-- SELECTOR DE MODOS EN 2 FILAS (Centrado exacto en pantalla) -->
+      <nav class="hud__nav-matrix" aria-label="Modos de visualización">
+        <!-- Fila 1: GALERIA + ICONO ALEATORIZADOR -->
+        <div class="hud__nav-row hud__nav-row--top">
+          <button class="hud__mode-btn is-active" data-mode="gallery">GALERIA</button>
+          <button id="btn-shuffle" class="hud__shuffle-btn" title="Mezclar tablero aleatoriamente" aria-label="Aleatorizar tablero">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="20" x2="21" y2="3"></line>
+              <polyline points="21 16 21 21 16 21"></polyline>
+              <line x1="15" y1="15" x2="21" y2="21"></line>
+              <line x1="4" y1="4" x2="9" y2="9"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Fila 2: PROYECTOS · EXTERIORES · INTERIORES -->
+        <div class="hud__nav-row hud__nav-row--bottom">
+          <button class="hud__mode-btn" data-mode="projects">PROYECTOS</button>
+          <button class="hud__mode-btn" data-mode="exteriors">EXTERIORES</button>
+          <button class="hud__mode-btn" data-mode="interiors">INTERIORES</button>
+        </div>
+      </nav>
+
+      <!-- Derecha: Secciones del sitio general (sin botón 'Volver al sitio') -->
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a href="archive.html" class="is-active" data-es="Galería" data-en="Gallery">Galería</a>
+        <a href="services.html" data-es="Servicios" data-en="Services">Servicios</a>
+        <a href="about.html" data-es="Nosotros" data-en="About">Nosotros</a>
+        <a href="contact.html" data-es="Contacto" data-en="Contact">Contacto</a>
+        <button class="menu-toggle-mobile" id="menu-toggle" aria-label="Abrir menú">Menu</button>
+      </nav>
+    </header>
+
+    <!-- Indicador contextual inferior izquierdo -->
+    <div class="hud__status" aria-live="polite">
+      <span class="hud__status-dot"></span>
+      <span id="hud-status-text">Arrastrar para explorar · Clic en una imagen para acercar</span>
+    </div>
+
+    <!-- Controles de Navegación y Zoom -->
+    <div class="hud__controls">
+      <div class="hud-zoom-ctrl">
+        <button id="btn-zoom-out" class="hud-zoom-ctrl__btn" title="Alejar (-)" aria-label="Alejar">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <span id="hud-zoom" class="hud-zoom-ctrl__label">100%</span>
+        <button id="btn-zoom-in" class="hud-zoom-ctrl__btn" title="Acercar (+)" aria-label="Acercar">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <button id="btn-recenter" class="hud-zoom-ctrl__recenter" title="Reajustar a pantalla (0)">VISTA GENERAL</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Lightbox / Modal a Pantalla Completa (Click 2) -->
+  <div id="spatial-lightbox" class="spatial-lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <button id="spatial-lightbox-close" class="spatial-lightbox__close">Cerrar</button>
+    <button id="spatial-lightbox-prev" class="spatial-lightbox__nav spatial-lightbox__nav--prev" aria-label="Anterior">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <div class="spatial-lightbox__stage">
+      <img id="spatial-lightbox-img" class="spatial-lightbox__img" src="" alt="Render arquitectónico">
+      <div class="spatial-lightbox__info">
+        <span id="spatial-lightbox-title" class="spatial-lightbox__title"></span>
+        <span id="spatial-lightbox-counter" class="spatial-lightbox__counter"></span>
+      </div>
+    </div>
+    <button id="spatial-lightbox-next" class="spatial-lightbox__nav spatial-lightbox__nav--next" aria-label="Siguiente">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Motor del Lienzo Espacial -->
+  <script src="js/infinite-canvas.js"></script>
 </body>
 </html>
