@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Servicios — MAD 3D Studio. Visualización arquitectónica, render 3D e IA. Mar del Plata, Argentina.">
+  <title>Services — MADVIZ</title>
+  <link rel="icon" type="image/png" href="images/logo-bg.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-services">
+
+  <!-- Puntero custom dot (monopo style) -->
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+
+  <div class="fixed-video-bg" aria-hidden="true">
+    <video class="video-bg" autoplay muted loop playsinline>
+      <source src="images/video/Verona%20para%20sitio%20web.mp4" type="video/mp4">
+    </video>
+    <div class="video-bg__overlay" style="background: rgba(0,0,0,0.72);"></div>
+    <div class="video-bg__grain"></div>
+  </div>
+
+  <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true">
+    <div class="menu-overlay__header">
+      <a href="index.html" class="menu-overlay__logo"><img src="images/logo-white.png" alt="MADVIZ"></a>
+      <button class="menu-overlay__close" aria-label="Cerrar">Close</button>
+    </div>
+    <nav class="menu-overlay__nav">
+      <a href="index.html" data-es="Inicio" data-en="Home">Inicio</a>
+      <a href="archive.html" data-es="Galería" data-en="Gallery">Galería</a>
+      <a href="services.html" class="is-active" data-es="Servicios" data-en="Services">Servicios</a>
+      <a href="about.html" data-es="Nosotros" data-en="About">Nosotros</a>
+      <a href="contact.html" data-es="Contacto" data-en="Contact">Contacto</a>
+    </nav>
+    <div class="menu-overlay__footer">
+      <p>Mar del Plata, Argentina</p>
+      <p>© 2025 MAD 3D Studio</p>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="site-header__left">
+      <a href="index.html" class="site-header__logo" aria-label="MADVIZ"><img src="images/logo-white.png" alt="MADVIZ"></a>
+      <div class="lang-switcher" aria-label="Idioma">
+        <button class="lang-btn is-active" data-lang="es" aria-label="Español">ES</button>
+        <span class="lang-sep" aria-hidden="true">/</span>
+        <button class="lang-btn" data-lang="en" aria-label="English">EN</button>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <a href="contact.html" class="header-cta-btn" data-es="INICIAR PROYECTO" data-en="START A PROJECT">INICIAR PROYECTO</a>
+    </div>
+
+    <nav class="site-nav" aria-label="Navegación principal">
+      <a href="archive.html" data-es="Galería" data-en="Gallery">Galería</a>
+      <a href="services.html" class="is-active" data-es="Servicios" data-en="Services">Servicios</a>
+      <a href="about.html" data-es="Nosotros" data-en="About">Nosotros</a>
+      <a href="contact.html" data-es="Contacto" data-en="Contact">Contacto</a>
+      <button class="menu-toggle-mobile" id="menu-toggle" aria-label="Abrir menú">Menu</button>
+    </nav>
+  </header>
+
+  <main class="about-wrap services-wrap">
+
+    <p class="about-eyebrow fade-in" data-es="Capacidades" data-en="Capabilities">Capacidades</p>
+
+    <h2 class="fade-in" data-es="Servicios" data-en="Services">Servicios</h2>
+
+    <div class="about-services fade-in" style="margin-top: 1.5rem; border-top: none; padding-top: 0;">
+      <ul>
+        <li data-es="Render Exterior" data-en="Exterior Render">Render Exterior</li>
+        <li data-es="Render Interior" data-en="Interior Render">Render Interior</li>
+        <li data-es="Visualización Hiperrealista" data-en="Hyper-realistic Visualization">Visualización Hiperrealista</li>
+        <li data-es="Modelado 3D" data-en="3D Modeling">Modelado 3D</li>
+        <li data-es="Archviz con IA" data-en="Archviz with AI">Archviz con IA</li>
+        <li data-es="Animación Arquitectónica" data-en="Architectural Animation">Animación Arquitectónica</li>
+      </ul>
+    </div>
+
+    <div class="fade-in" style="margin-top: 3.5rem;">
+      <a href="contact.html" class="contact-email" data-es="Iniciar un proyecto" data-en="Start a project">Iniciar un proyecto</a>
+    </div>
+
+    <p class="about-location fade-in">Mar del Plata, Argentina</p>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 MAD 3D Studio</p>
+    <p><a href="contact.html" style="color:inherit;" data-es="Contacto" data-en="Contact">Contacto</a></p>
+  </footer>
+
+  <!-- GSAP Core & ScrollTrigger (locales) -->
+  <script src="js/gsap.min.js"></script>
+  <script src="js/ScrollTrigger.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Edificio Aura I — Galería completa de renders de arquitectura por MAD 3D Studio.">
+  <title>Edificio Aura I — MADVIZ</title>
+  <link rel="icon" type="image/png" href="images/logo-bg.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-project-detail">
+
+  <!-- Puntero custom dot (monopo style) -->
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+
+  <!-- Video de fondo fijo -->
+  <div class="fixed-video-bg" aria-hidden="true">
+    <video class="video-bg" autoplay muted loop playsinline>
+      <source src="images/video/Verona%20para%20sitio%20web.mp4" type="video/mp4">
+    </video>
+    <div class="video-bg__overlay" style="background: rgba(0, 0, 0, 0.78);"></div>
+    <div class="video-bg__grain"></div>
+  </div>
+
+  <!-- Menu overlay -->
+  <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true">
+    <div class="menu-overlay__header">
+      <a href="index.html" class="menu-overlay__logo">
+        <img src="images/logo-white.png" alt="MADVIZ">
+      </a>
+      <button class="menu-overlay__close">Close</button>
+    </div>
+    <nav class="menu-overlay__nav">
+      <a href="index.html" data-es="Inicio" data-en="Home">Inicio</a>
+      <a href="archive.html" data-es="Galería" data-en="Gallery">Galería</a>
+      <a href="services.html" data-es="Servicios" data-en="Services">Servicios</a>
+      <a href="about.html" data-es="Nosotros" data-en="About">Nosotros</a>
+      <a href="contact.html" data-es="Contacto" data-en="Contact">Contacto</a>
+    </nav>
+    <div class="menu-overlay__footer">
+      <p>Mar del Plata, Argentina</p>
+      <p>© 2025 MAD 3D Studio</p>
+    </div>
+  </div>
+
+  <!-- Site header -->
+  <header class="site-header">
+    <div class="site-header__left">
+      <a href="index.html" class="site-header__logo">
+        <img src="images/logo-white.png" alt="MADVIZ">
+      </a>
+      <div class="lang-switcher">
+        <button class="lang-btn is-active" data-lang="es">ES</button>
+        <span class="lang-sep">/</span>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+    </div>
+    <div class="header-center">
+      <a href="contact.html" class="header-cta-btn" data-es="INICIAR PROYECTO" data-en="START A PROJECT">INICIAR PROYECTO</a>
+    </div>
+    <nav class="site-nav">
+      <a href="archive.html" data-es="Galería" data-en="Gallery">Galería</a>
+      <a href="services.html" data-es="Servicios" data-en="Services">Servicios</a>
+      <a href="about.html" data-es="Nosotros" data-en="About">Nosotros</a>
+      <a href="contact.html" data-es="Contacto" data-en="Contact">Contacto</a>
+      <button class="menu-toggle-mobile" id="menu-toggle" aria-label="Abrir menú">Menu</button>
+    </nav>
+  </header>
+
+  <!-- Contenido de la Galería del Proyecto -->
+  <main class="project-page-wrap">
+    <div class="project-page-header fade-in">
+      <div class="project-page-back">
+        <a href="index.html" class="project-back-link">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span data-es="VOLVER AL INICIO" data-en="BACK TO HOME">VOLVER AL INICIO</span>
+        </a>
+      </div>
+
+      <div class="project-page-title-block">
+        <p class="project-page-eyebrow" data-es="PROYECTO 02 · DESARROLLO URBANO" data-en="PROJECT 02 · URBAN DEVELOPMENT">PROYECTO 02 · DESARROLLO URBANO</p>
+        <h1 class="project-page-title">Edificio Aura I</h1>
+      </div>
+    </div>
+
+    <!-- Grilla completa de imágenes del proyecto -->
+    <div class="project-page-grid archive-grid">
+      <a href="images/proyectos/02-edificio-aura-i/render-05.png" class="archive-item" data-index="0" aria-label="Edificio Aura I — Render 05" data-project-name="Edificio Aura I" data-project-url="edificio-aura-i.html">
+        <img src="images/proyectos/02-edificio-aura-i/render-05.png" alt="Edificio Aura I — Render 05" loading="lazy">
+      </a>
+      <a href="images/proyectos/02-edificio-aura-i/render-06.png" class="archive-item" data-index="1" aria-label="Edificio Aura I — Render 06" data-project-name="Edificio Aura I" data-project-url="edificio-aura-i.html">
+        <img src="images/proyectos/02-edificio-aura-i/render-06.png" alt="Edificio Aura I — Render 06" loading="lazy">
+      </a>
+      <a href="images/proyectos/02-edificio-aura-i/render-07.png" class="archive-item" data-index="2" aria-label="Edificio Aura I — Render 07" data-project-name="Edificio Aura I" data-project-url="edificio-aura-i.html">
+        <img src="images/proyectos/02-edificio-aura-i/render-07.png" alt="Edificio Aura I — Render 07" loading="lazy">
+      </a>
+      <a href="images/proyectos/02-edificio-aura-i/render-08.png" class="archive-item" data-index="3" aria-label="Edificio Aura I — Render 08" data-project-name="Edificio Aura I" data-project-url="edificio-aura-i.html">
+        <img src="images/proyectos/02-edificio-aura-i/render-08.png" alt="Edificio Aura I — Render 08" loading="lazy">
+      </a>
+    </div>
+
+    <!-- Navegación entre proyectos al pie -->
+    <div class="project-page-footer-nav fade-in">
+      <a href="casa-flexa.html" class="project-footer-btn" data-es="← Proyecto Anterior: Casa Flexa" data-en="← Previous Project: Casa Flexa">← Proyecto Anterior: Casa Flexa</a>
+      <a href="edificio-verona.html" class="project-footer-btn" data-es="Siguiente Proyecto: Edificio Verona →" data-en="Next Project: Edificio Verona →">Siguiente Proyecto: Edificio Verona →</a>
+    </div>
+  </main>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <button class="lightbox__close" aria-label="Cerrar">Close</button>
+    <button class="lightbox__nav lightbox__nav--prev" aria-label="Anterior">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <div class="lightbox__stage">
+      <img id="lightbox-img" class="lightbox__img" src="" alt="Render">
+      <div class="lightbox__info">
+        <div class="lightbox__project-meta">
+          <span id="lightbox-project-name" class="lightbox__project-name">Edificio Aura I</span>
+          <a id="lightbox-project-link" href="edificio-aura-i.html" class="lightbox__project-btn">
+            <span data-es="Ver galería del proyecto" data-en="View project gallery">Ver galería del proyecto</span>
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+        <span id="lightbox-counter" class="lightbox__counter">01 / 04</span>
+      </div>
+    </div>
+    <button class="lightbox__nav lightbox__nav--next" aria-label="Siguiente">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2025 MAD 3D Studio</p>
+    <p>Mar del Plata, Argentina</p>
+  </footer>
+
+  <script src="js/gsap.min.js"></script>
+  <script src="js/ScrollTrigger.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

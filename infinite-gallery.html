@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Infinite Spatial Canvas — MAD VIZ Experimental Gallery. Boundless spatial visual territory inspired by early Are.na.">
+  <title>Infinite Canvas — MAD VIZ (Experimental)</title>
+  <link rel="icon" type="image/png" href="images/logo-bg.png">
+  <link rel="stylesheet" href="css/infinite-canvas.css">
+</head>
+<body>
+
+  <!-- Viewport del Lienzo Espacial Infinito -->
+  <div id="canvas-viewport" class="canvas-viewport" role="region" aria-label="Lienzo infinito 2D">
+    <div id="canvas-world" class="canvas-world"></div>
+  </div>
+
+  <!-- Heads-Up Display (HUD) minimalista -->
+  <aside class="hud" aria-hidden="false">
+    <!-- Encabezado superior -->
+    <header class="hud__header">
+      <a href="index.html" class="hud__brand" title="Volver al inicio">
+        <img src="images/logo-white.png" alt="MADVIZ" class="hud__logo-mark">
+        <span class="hud__title">MAD VIZ</span>
+        <span class="hud__tag">SPATIAL CANVAS EXP</span>
+      </a>
+
+      <a href="index.html" class="hud__back-btn">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Volver al sitio</span>
+      </a>
+    </header>
+
+    <!-- Minimapa / Radar de clusters -->
+    <div class="hud__minimap" title="Radar espacial">
+      <canvas id="minimap-canvas"></canvas>
+    </div>
+
+    <!-- Indicador de coordenadas y atajos (inferior izquierdo) -->
+    <div class="hud__status">
+      <div id="hud-coords" class="hud__coords">X: 0 · Y: 0</div>
+      <div class="hud__hint">Arrastrar para navegar · Rueda para zoom · Clic para enfocar · 0 para recentrar</div>
+    </div>
+
+    <!-- Controles de navegación y zoom (inferior derecho) -->
+    <div class="hud__controls">
+      <button id="btn-zoom-out" class="hud__btn" aria-label="Alejar zoom" title="Alejar (-)">−</button>
+      <span id="hud-zoom" class="hud__zoom-label">100%</span>
+      <button id="btn-zoom-in" class="hud__btn" aria-label="Acercar zoom" title="Acercar (+)">+</button>
+      <button id="btn-recenter" class="hud__btn hud__btn-recenter" title="Recentrar vista (0)">Recentrar</button>
+    </div>
+  </aside>
+
+  <!-- Script del Motor Espacial -->
+  <script src="js/infinite-canvas.js"></script>
+</body>
+</html>

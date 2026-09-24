@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MAD 3D Studio — Visualización Arquitectónica, Render 3D y IA. Mar del Plata, Argentina.">
+  <title>MADVIZ — Render · Archviz · IA</title>
+  <link rel="icon" type="image/png" href="images/logo-bg.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-home">
+
+  <!-- ============================================
+       MENU OVERLAY (mobile / full-screen)
+       ============================================ -->
+  <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true" aria-label="Navegación">
+    <div class="menu-overlay__header">
+      <a href="index.html" class="menu-overlay__logo">
+        <img src="images/logo-white.png" alt="MADVIZ">
+      </a>
+      <button class="menu-overlay__close" aria-label="Cerrar menú">Close</button>
+    </div>
+    <nav class="menu-overlay__nav">
+      <a href="index.html" class="is-active" data-es="Inicio" data-en="Home">Inicio</a>
+      <a href="archive.html" data-es="Galería" data-en="Gallery">Galería</a>
+      <a href="services.html" data-es="Servicios" data-en="Services">Servicios</a>
+      <a href="about.html" data-es="Nosotros" data-en="About">Nosotros</a>
+      <a href="#contact" data-es="Contacto" data-en="Contact">Contacto</a>
+    </nav>
+    <div class="menu-overlay__footer">
+      <p>Mar del Plata, Argentina</p>
+      <p>© 2025 MAD 3D Studio</p>
+    </div>
+  </div>
+
+
+  <!-- ============================================
+       HEADER — Logo · ES/EN · Nav
+       ============================================ -->
+  <header class="site-header">
+    <div class="site-header__left">
+      <a href="index.html" class="site-header__logo" aria-label="MADVIZ">
+        <img src="images/logo-white.png" alt="MADVIZ">
+      </a>
+      <div class="lang-switcher" aria-label="Idioma">
+        <button class="lang-btn is-active" data-lang="es" aria-label="Español">ES</button>
+        <span class="lang-sep" aria-hidden="true">/</span>
+        <button class="lang-btn" data-lang="en" aria-label="English">EN</button>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <a href="#contact" class="header-cta-btn" data-es="INICIAR PROYECTO" data-en="START A PROJECT">INICIAR PROYECTO</a>
+    </div>
+
+    <nav class="site-nav" aria-label="Navegación principal">
+      <a href="archive.html" data-es="Galería" data-en="Gallery">Galería</a>
+      <a href="services.html" data-es="Servicios" data-en="Services">Servicios</a>
+      <a href="about.html" data-es="Nosotros" data-en="About">Nosotros</a>
+      <a href="#contact" data-es="Contacto" data-en="Contact">Contacto</a>
+      <button class="menu-toggle-mobile" id="menu-toggle" aria-label="Abrir menú">Menu</button>
+    </nav>
+  </header>
+
+
+  <!-- Puntero custom dot (monopo style) -->
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+
+  <!-- ============================================
+       VIDEO FONDO FIJO (con parallax de mouse + grain)
+       ============================================ -->
+  <div class="fixed-video-bg" aria-hidden="true">
+    <video class="video-bg" autoplay muted loop playsinline>
+      <source src="images/video/Verona%20para%20sitio%20web.mp4" type="video/mp4">
+    </video>
+    <div class="video-bg__overlay"></div>
+    <div class="video-bg__grain"></div>
+  </div>
+
+
+  <!-- ============================================
+       SCROLLYTELLING STAGE (Home)
+       Hero Inicial + 5 Proyectos Cinemáticos
+       ============================================ -->
+  <main id="gallery" class="scrolly-gallery">
+    <div class="scrolly-stage">
+
+      <!-- HERO INICIAL — Logo + Servicios rotativos + Ticker -->
+      <div class="hero-stage-layer" id="hero-stage-layer">
+        <div class="hero__content">
+          <a href="#gallery" class="hero__link" aria-label="Ver proyectos">
+            <div class="glitch-logo">
+              <img src="images/logo-white.png" alt="MADVIZ" class="hero__logo">
+              <div class="glitch-logo__layer glitch-logo__layer--1" aria-hidden="true">
+                <img src="images/logo-white.png" alt="">
+              </div>
+              <div class="glitch-logo__layer glitch-logo__layer--2" aria-hidden="true">
+                <img src="images/logo-white.png" alt="">
+              </div>
+              <div class="glitch-logo__layer glitch-logo__layer--3" aria-hidden="true">
+                <img src="images/logo-white.png" alt="">
+              </div>
+            </div>
+            <div class="hero__rotator" id="hero-rotator" aria-live="polite">
+              <span class="hero__rotator-item">VISUALIZACIÓN ARQUITECTÓNICA</span>
+            </div>
+          </a>
+        </div>
+        <a href="#gallery" class="hero-scroll-btn" id="hero-scroll-projects" aria-label="Ver proyectos destacados">
+          <span class="hero-scroll-btn__text" data-es="PROYECTOS DESTACADOS" data-en="FEATURED PROJECTS">PROYECTOS DESTACADOS</span>
+          <svg class="hero-scroll-btn__icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <polyline points="19 12 12 19 5 12"></polyline>
+          </svg>
+        </a>
+        <div class="ticker" aria-hidden="true">
+          <div class="ticker__track">
+            <span class="ticker__item">
+              MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp;
+            </span>
+            <span class="ticker__item">
+              MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp; MADVIZ &nbsp;&nbsp;·&nbsp;&nbsp;
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROYECTO 01 (Fila 1) — Casa Flexa -->
+      <div class="project-row" data-project="0">
+        <div class="project-header">
+          <a href="casa-flexa.html" class="project-title-link" aria-label="Ver galería completa de Casa Flexa">
+            <h3 class="project-name" data-es="Casa Flexa" data-en="Casa Flexa">Casa Flexa</h3>
+            <span class="project-title-badge">
+              <span data-es="Ver galería" data-en="View gallery">Ver galería</span>
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </span>
+          </a>
+        </div>
+        <div class="project-grid">
+          <a href="images/proyectos/01-casa-flexa/render-01.jpg" class="archive-item" data-index="0" aria-label="Casa Flexa — Render 01" data-project-name="Casa Flexa" data-project-url="casa-flexa.html">
+            <img src="images/proyectos/01-casa-flexa/render-01.jpg" alt="Casa Flexa" loading="lazy">
+          </a>
+          <a href="images/proyectos/01-casa-flexa/render-02.jpeg" class="archive-item" data-index="1" aria-label="Casa Flexa — Render 02" data-project-name="Casa Flexa" data-project-url="casa-flexa.html">
+            <img src="images/proyectos/01-casa-flexa/render-02.jpeg" alt="Casa Flexa" loading="lazy">
+          </a>
+          <a href="images/proyectos/01-casa-flexa/render-03.jpeg" class="archive-item" data-index="2" aria-label="Casa Flexa — Render 03" data-project-name="Casa Flexa" data-project-url="casa-flexa.html">
+            <img src="images/proyectos/01-casa-flexa/render-03.jpeg" alt="Casa Flexa" loading="lazy">
+          </a>
+          <a href="images/proyectos/01-casa-flexa/render-04.jpeg" class="archive-item" data-index="3" aria-label="Casa Flexa — Render 04" data-project-name="Casa Flexa" data-project-url="casa-flexa.html">
+            <img src="images/proyectos/01-casa-flexa/render-04.jpeg" alt="Casa Flexa" loading="lazy">
+          </a>
+        </div>
+      </div>
+
+      <!-- PROYECTO 02 (Fila 2) — Edificio Aura I -->
+      <div class="project-row" data-project="1">
+        <div class="project-header">
+          <a href="edificio-aura-i.html" class="project-title-link" aria-label="Ver galería completa de Edificio Aura I">
+            <h3 class="project-name" data-es="Edificio Aura I" data-en="Edificio Aura I">Edificio Aura I</h3>
+            <span class="project-title-badge">
+              <span data-es="Ver galería" data-en="View gallery">Ver galería</span>
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </span>
+          </a>
+        </div>
+        <div class="project-grid">
+          <a href="images/proyectos/02-edificio-aura-i/render-05.png" class="archive-item" data-index="4" aria-label="Edificio Aura I — Render 05" data-project-name="Edificio Aura I" data-project-url="edificio-aura-i.html">
+            <img src="images/proyectos/02-edificio-aura-i/render-05.png" alt="Edificio Aura I" loading="lazy">
+          </a>
+          <a href="images/proyectos/02-edificio-aura-i/render-06.png" class="archive-item" data-index="5" aria-label="Edificio Aura I — Render 06" data-project-name="Edificio Aura I" data-project-url="edificio-aura-i.html">
+            <img src="images/proyectos/02-edificio-aura-i/render-06.png" alt="Edificio Aura I" loading="lazy">
+          </a>
+          <a href="images/proyectos/02-edificio-aura-i/render-07.png" class="archive-item" data-index="6" aria-label="Edificio Aura I — Render 07" data-project-name="Edificio Aura I" data-project-url="edificio-aura-i.html">
+            <img src="images/proyectos/02-edificio-aura-i/render-07.png" alt="Edificio Aura I" loading="lazy">
+          </a>
+          <a href="images/proyectos/02-edificio-aura-i/render-08.png" class="archive-item" data-index="7" aria-label="Edificio Aura I — Render 08" data-project-name="Edificio Aura I" data-project-url="edificio-aura-i.html">
+            <img src="images/proyectos/02-edificio-aura-i/render-08.png" alt="Edificio Aura I" loading="lazy">
+          </a>
+        </div>
+      </div>
+
+      <!-- PROYECTO 03 (Fila 3) — Edificio Verona -->
+      <div class="project-row" data-project="2">
+        <div class="project-header">
+          <a href="edificio-verona.html" class="project-title-link" aria-label="Ver galería completa de Edificio Verona">
+            <h3 class="project-name" data-es="Edificio Verona" data-en="Edificio Verona">Edificio Verona</h3>
+            <span class="project-title-badge">
+              <span data-es="Ver galería" data-en="View gallery">Ver galería</span>
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </span>
+          </a>
+        </div>
+        <div class="project-grid">
+          <a href="images/proyectos/03-edificio-verona/render-09.jpeg" class="archive-item" data-index="8" aria-label="Edificio Verona — Render 09" data-project-name="Edificio Verona" data-project-url="edificio-verona.html">
+            <img src="images/proyectos/03-edificio-verona/render-09.jpeg" alt="Edificio Verona" loading="lazy">
+          </a>
+          <a href="images/proyectos/03-edificio-verona/render-10.jpeg" class="archive-item" data-index="9" aria-label="Edificio Verona — Render 10" data-project-name="Edificio Verona" data-project-url="edificio-verona.html">
+            <img src="images/proyectos/03-edificio-verona/render-10.jpeg" alt="Edificio Verona" loading="lazy">
+          </a>
+          <a href="images/proyectos/03-edificio-verona/render-11.jpg" class="archive-item" data-index="10" aria-label="Edificio Verona — Render 11" data-project-name="Edificio Verona" data-project-url="edificio-verona.html">
+            <img src="images/proyectos/03-edificio-verona/render-11.jpg" alt="Edificio Verona" loading="lazy">
+          </a>
+          <a href="images/proyectos/03-edificio-verona/render-12.jpeg" class="archive-item" data-index="11" aria-label="Edificio Verona — Render 12" data-project-name="Edificio Verona" data-project-url="edificio-verona.html">
+            <img src="images/proyectos/03-edificio-verona/render-12.jpeg" alt="Edificio Verona" loading="lazy">
+          </a>
+        </div>
+      </div>
+
+      <!-- PROYECTO 04 (Fila 4) — Viviendas Chiuso -->
+      <div class="project-row" data-project="3">
+        <div class="project-header">
+          <a href="viviendas-chiuso.html" class="project-title-link" aria-label="Ver galería completa de Viviendas Chiuso">
+            <h3 class="project-name" data-es="Viviendas Chiuso" data-en="Viviendas Chiuso">Viviendas Chiuso</h3>
+            <span class="project-title-badge">
+              <span data-es="Ver galería" data-en="View gallery">Ver galería</span>
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </span>
+          </a>
+        </div>
+        <div class="project-grid">
+          <a href="images/proyectos/04-viviendas-chiuso/render-13.jpeg" class="archive-item" data-index="12" aria-label="Viviendas Chiuso — Render 13" data-project-name="Viviendas Chiuso" data-project-url="viviendas-chiuso.html">
+            <img src="images/proyectos/04-viviendas-chiuso/render-13.jpeg" alt="Viviendas Chiuso" loading="lazy">
+          </a>
+          <a href="images/proyectos/04-viviendas-chiuso/render-14.jpeg" class="archive-item" data-index="13" aria-label="Viviendas Chiuso — Render 14" data-project-name="Viviendas Chiuso" data-project-url="viviendas-chiuso.html">
+            <img src="images/proyectos/04-viviendas-chiuso/render-14.jpeg" alt="Viviendas Chiuso" loading="lazy">
+          </a>
+          <a href="images/proyectos/04-viviendas-chiuso/render-15.jpeg" class="archive-item" data-index="14" aria-label="Viviendas Chiuso — Render 15" data-project-name="Viviendas Chiuso" data-project-url="viviendas-chiuso.html">
+            <img src="images/proyectos/04-viviendas-chiuso/render-15.jpeg" alt="Viviendas Chiuso" loading="lazy">
+          </a>
+          <a href="images/proyectos/04-viviendas-chiuso/render-16.jpeg" class="archive-item" data-index="15" aria-label="Viviendas Chiuso — Render 16" data-project-name="Viviendas Chiuso" data-project-url="viviendas-chiuso.html">
+            <img src="images/proyectos/04-viviendas-chiuso/render-16.jpeg" alt="Viviendas Chiuso" loading="lazy">
+          </a>
+        </div>
+      </div>
+
+      <!-- PROYECTO 05 (Fila 5) — Edificio Ankara II -->
+      <div class="project-row" data-project="4">
+        <div class="project-header">
+          <a href="edificio-ankara-ii.html" class="project-title-link" aria-label="Ver galería completa de Edificio Ankara II">
+            <h3 class="project-name" data-es="Edificio Ankara II" data-en="Edificio Ankara II">Edificio Ankara II</h3>
+            <span class="project-title-badge">
+              <span data-es="Ver galería" data-en="View gallery">Ver galería</span>
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </span>
+          </a>
+        </div>
+        <div class="project-grid">
+          <a href="images/proyectos/05-edificio-ankara%20ii/render-17.jpg" class="archive-item" data-index="16" aria-label="Edificio Ankara II — Render 17" data-project-name="Edificio Ankara II" data-project-url="edificio-ankara-ii.html">
+            <img src="images/proyectos/05-edificio-ankara%20ii/render-17.jpg" alt="Edificio Ankara II" loading="lazy">
+          </a>
+          <a href="images/proyectos/05-edificio-ankara%20ii/render-18.jpg" class="archive-item" data-index="17" aria-label="Edificio Ankara II — Render 18" data-project-name="Edificio Ankara II" data-project-url="edificio-ankara-ii.html">
+            <img src="images/proyectos/05-edificio-ankara%20ii/render-18.jpg" alt="Edificio Ankara II" loading="lazy">
+          </a>
+          <a href="images/proyectos/05-edificio-ankara%20ii/render-19.jpg" class="archive-item" data-index="18" aria-label="Edificio Ankara II — Render 19" data-project-name="Edificio Ankara II" data-project-url="edificio-ankara-ii.html">
+            <img src="images/proyectos/05-edificio-ankara%20ii/render-19.jpg" alt="Edificio Ankara II" loading="lazy">
+          </a>
+          <a href="images/proyectos/05-edificio-ankara%20ii/render-20.jpg" class="archive-item" data-index="19" aria-label="Edificio Ankara II — Render 20" data-project-name="Edificio Ankara II" data-project-url="edificio-ankara-ii.html">
+            <img src="images/proyectos/05-edificio-ankara%20ii/render-20.jpg" alt="Edificio Ankara II" loading="lazy">
+          </a>
+        </div>
+      </div>
+
+      <!-- CAPA FINAL (Scrollytelling) — CONTACTO -->
+      <div class="contact-stage-layer" id="contact">
+        <div class="contact-stage-content">
+          <p class="contact-eyebrow scrolly-contact-item" data-es="Trabajemos juntos" data-en="Let's work together">Trabajemos juntos</p>
+
+          <h2 class="contact-title scrolly-contact-item" data-es="Contacto" data-en="Contact">Contacto</h2>
+
+          <div class="contact-email-wrap scrolly-contact-item">
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=studiomad.3d@gmail.com"
+               target="_blank" rel="noopener"
+               class="contact-email">
+              studiomad.3d@gmail.com
+            </a>
+          </div>
+
+          <form id="quick-gmail-form" class="quick-gmail-form" onsubmit="return sendViaGmail(event);">
+            <div class="form-group scrolly-contact-item" id="contact-field-subject">
+              <label for="gmail-subject" class="form-label" data-es="Asunto" data-en="Subject">Asunto</label>
+              <input type="text"
+                     id="gmail-subject"
+                     class="form-input"
+                     value="Quiero cotizar mi proyecto"
+                     data-val-es="Quiero cotizar mi proyecto"
+                     data-val-en="I want to quote my project"
+                     required>
+            </div>
+
+            <div class="form-group scrolly-contact-item" id="contact-field-message">
+              <label for="gmail-message" class="form-label" data-es="Mensaje" data-en="Message">Mensaje</label>
+              <textarea id="gmail-message"
+                        class="form-textarea"
+                        rows="3"
+                        placeholder="Escribe aquí los detalles de tu proyecto (tipología, renders necesarios, plazos)..."
+                        data-placeholder-es="Escribe aquí los detalles de tu proyecto (tipología, renders necesarios, plazos)..."
+                        data-placeholder-en="Write your project details here (typology, required renders, deadlines)..."
+                        required></textarea>
+            </div>
+
+            <div class="contact-btn-wrap scrolly-contact-item" id="contact-field-btn">
+              <button type="submit" class="contact-send-btn">
+                <span data-es="ENVIAR VÍA GMAIL" data-en="SEND VIA GMAIL">ENVIAR VÍA GMAIL</span>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </div>
+          </form>
+
+          <div class="contact-social scrolly-contact-item" id="contact-field-social">
+            <a href="https://www.instagram.com/mad__viz/" target="_blank" rel="noopener">Instagram</a>
+            <span class="sep">·</span>
+            <a href="https://www.behance.net/madviz" target="_blank" rel="noopener">Behance</a>
+          </div>
+        </div>
+
+        <footer class="contact-stage-footer scrolly-contact-item">
+          <p>© 2025 MAD 3D Studio</p>
+          <p>Mar del Plata, Argentina</p>
+        </footer>
+      </div>
+
+    </div>
+  </main>
+
+
+  <!-- ============================================
+       LIGHTBOX
+       ============================================ -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <button class="lightbox__close" aria-label="Cerrar">Close</button>
+    <button class="lightbox__nav lightbox__nav--prev" aria-label="Anterior">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <div class="lightbox__stage">
+      <img id="lightbox-img" class="lightbox__img" src="" alt="Render">
+      <div class="lightbox__info">
+        <div class="lightbox__project-meta">
+          <span id="lightbox-project-name" class="lightbox__project-name">Casa Flexa</span>
+          <a id="lightbox-project-link" href="casa-flexa.html" class="lightbox__project-btn">
+            <span data-es="Ver galería del proyecto" data-en="View project gallery">Ver galería del proyecto</span>
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+        <span id="lightbox-counter" class="lightbox__counter">01 / 20</span>
+      </div>
+    </div>
+    <button class="lightbox__nav lightbox__nav--next" aria-label="Siguiente">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+  </div>
+
+
+  <!-- GSAP Core & ScrollTrigger (locales) -->
+  <script src="js/gsap.min.js"></script>
+  <script src="js/ScrollTrigger.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+============================================================
+   MADVIZ — CARPETA DE GALERÍA GENERAL
+============================================================
+
+¡Bienvenido! En esta carpeta podés guardar todas las imágenes
+que quieras mostrar en la sección Galería del sitio web.
+
+No tienen ningún orden de proyectos obligatorio: podés colocar
+todos los renders, vistas y fotos que desees.
+
+------------------------------------------------------------
+¿CÓMO AGREGAR NUEVAS IMÁGENES?
+------------------------------------------------------------
+
+OPCIÓN 1 (Recomendada y 100% Automática):
+1. Copiá o arrastrá tus imágenes (.jpg, .jpeg, .png, .webp)
+   directamente dentro de esta carpeta ('images/galeria/').
+   Pueden tener el nombre que vos quieras (ej: 'casa-mar.jpg',
+   'fachada_plaza.png', 'render-21.jpg', etc.).
+2. Hacé DOBLE CLIC en el archivo 'actualizar_galeria.bat'
+   ubicado en la carpeta principal del sitio.
+3. ¡Listo! El programa detecta automáticamente todas las fotos
+   y actualiza la galería al instante.
+
+OPCIÓN 2 (Manual):
+1. Copiá tus imágenes a esta carpeta.
+2. Abrí el archivo 'images/galeria/galeria-datos.js' con un
+   editor de texto (o Bloc de Notas) y agregá el nombre de
+   tu archivo a la lista, por ejemplo:
+   "mi-nuevo-render.jpg",
+3. Guardá el archivo y listo.
+
+------------------------------------------------------------
+FORMATOS ADMITIDOS:
+.jpg · .jpeg · .png · .webp · .avif
+============================================================

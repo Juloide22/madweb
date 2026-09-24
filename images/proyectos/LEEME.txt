@@ -1,0 +1,21 @@
+============================================================
+MADVIZ — CARPETAS DE PROYECTOS
+============================================================
+
+Cada carpeta contiene las imágenes correspondientes a cada proyecto mostrado en el sitio web (tanto en el Inicio / Scrollytelling como en la Galería).
+
+ESTRUCTURA DE CARPETAS:
+-----------------------
+01-casa-flexa/         -> Proyecto 01: Casa Flexa
+02-edificio-aura-i/     -> Proyecto 02: Edificio Aura I
+03-edificio-verona/     -> Proyecto 03: Edificio Verona
+04-edificio-blumen/     -> Proyecto 04: Edificio Blumen
+05-edificio-mood/       -> Proyecto 05: Edificio Mood
+
+CÓMO CARGAR NUEVAS IMÁGENES:
+----------------------------
+1. Entra a la carpeta del proyecto que quieras actualizar (ej: 01-casa-flexa).
+2. Puedes reemplazar los archivos existentes manteniendo el mismo nombre (ej: render-01.png, render-02.png...)
+   O agregar tus imágenes con el nombre que prefieras y avisarnos para vincularlas.
+3. Se recomienda una resolución de alta calidad en formato JPG o PNG con proporción vertical o cuadrada (3:4 o similar).
+============================================================
