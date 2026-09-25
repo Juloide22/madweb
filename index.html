@@ -6,7 +6,28 @@
   <meta name="description" content="MAD 3D Studio — Visualización Arquitectónica, Render 3D y IA. Mar del Plata, Argentina.">
   <title>MADVIZ — Render · Archviz · IA</title>
   <link rel="icon" type="image/png" href="images/logo-bg.png">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=20260924_v3">
+  <style>
+    /* Inline fail-safe para garantizar que en móvil NUNCA se muestre Verona aun con caché */
+    .video-bg--desktop { display: block; }
+    .video-bg--mobile { display: none; }
+    html.is-mobile-view .video-bg--desktop { display: none !important; }
+    html.is-mobile-view .video-bg--mobile { display: block !important; }
+    @media (max-width: 900px), (pointer: coarse), (hover: none) {
+      .video-bg--desktop { display: none !important; }
+      .video-bg--mobile { display: block !important; }
+    }
+  </style>
+  <script>
+    (function() {
+      var isMobile = (window.innerWidth <= 900) ||
+                     (window.matchMedia && window.matchMedia('(max-width: 900px), (pointer: coarse), (hover: none)').matches) ||
+                     /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        document.documentElement.classList.add('is-mobile-view');
+      }
+    })();
+  </script>
 </head>
 <body class="page-home">
 
@@ -70,8 +91,13 @@
        VIDEO FONDO FIJO (con parallax de mouse + grain)
        ============================================ -->
   <div class="fixed-video-bg" aria-hidden="true">
-    <video class="video-bg" autoplay muted loop playsinline>
+    <!-- Video Desktop (Horizontal 16:9) -->
+    <video class="video-bg video-bg--desktop" autoplay muted loop playsinline webkit-playsinline preload="auto">
       <source src="images/video/Verona%20para%20sitio%20web.mp4" type="video/mp4">
+    </video>
+    <!-- Video Mobile (Vertical 9:16 - Nativas para WEB) -->
+    <video class="video-bg video-bg--mobile" autoplay muted loop playsinline webkit-playsinline preload="auto">
+      <source src="images/video/Nativas%20para%20WEB.mp4" type="video/mp4">
     </video>
     <div class="video-bg__overlay"></div>
     <div class="video-bg__grain"></div>
@@ -359,6 +385,6 @@
   <!-- GSAP Core & ScrollTrigger (locales) -->
   <script src="js/gsap.min.js"></script>
   <script src="js/ScrollTrigger.min.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=20260924_v3"></script>
 </body>
 </html>

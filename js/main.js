@@ -22,10 +22,11 @@ window.scrollTo(0, 0);
 // ============================================
 // PARALLAX DE MOUSE — fondo dinámico
 // Movimiento suave del video siguiendo el cursor
+// Activo exclusivamente en desktop / dispositivos con puntero fino
 // ============================================
 const parallaxBg = document.querySelector('.fixed-video-bg');
 
-if (parallaxBg) {
+if (parallaxBg && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
   let targetX = 0, targetY = 0;
   let currentX = 0, currentY = 0;
   let rafId = null;
@@ -407,12 +408,95 @@ document.addEventListener('keydown', (e) => {
 
 
 // ============================================
-// BACKGROUND VIDEO — AUTOPLAY
+// BACKGROUND VIDEO — RESPONSIVE AUTOPLAY & MOBILE OPTIMIZATION
+// Desktop: Verona para sitio web.mp4 (16:9)
+// Mobile: Nativas para WEB.mp4 (9:16)
 // ============================================
-const bgVideos = document.querySelectorAll('.video-bg');
-bgVideos.forEach(vid => {
-  vid.muted = true;
-  vid.play().catch(() => {});
+function checkIsMobile() {
+  return window.innerWidth <= 900 ||
+         (window.matchMedia && window.matchMedia('(max-width: 900px), (pointer: coarse), (hover: none)').matches) ||
+         /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+function initBackgroundVideos() {
+  const isMobile = checkIsMobile();
+  document.documentElement.classList.toggle('is-mobile-view', isMobile);
+
+  const desktopVids = document.querySelectorAll('.video-bg--desktop');
+  const mobileVids = document.querySelectorAll('.video-bg--mobile');
+  const legacyVids = document.querySelectorAll('.video-bg:not(.video-bg--desktop):not(.video-bg--mobile)');
+
+  function setupAndPlay(v) {
+    if (!v) return;
+    v.muted = true;
+    v.defaultMuted = true;
+    v.setAttribute('muted', '');
+    v.setAttribute('playsinline', '');
+    v.setAttribute('webkit-playsinline', '');
+    const p = v.play();
+    if (p && p.catch) p.catch(() => {});
+  }
+
+  function pauseVid(v) {
+    if (!v) return;
+    try {
+      v.pause();
+      v.currentTime = 0;
+    } catch (e) {}
+  }
+
+  if (isMobile) {
+    desktopVids.forEach(v => {
+      pauseVid(v);
+      v.style.display = 'none';
+      v.style.visibility = 'hidden';
+    });
+    mobileVids.forEach(v => {
+      v.style.display = 'block';
+      v.style.visibility = 'visible';
+      setupAndPlay(v);
+    });
+  } else {
+    mobileVids.forEach(v => {
+      pauseVid(v);
+      v.style.display = 'none';
+      v.style.visibility = 'hidden';
+    });
+    desktopVids.forEach(v => {
+      v.style.display = 'block';
+      v.style.visibility = 'visible';
+      setupAndPlay(v);
+    });
+  }
+  legacyVids.forEach(setupAndPlay);
+}
+
+// Inicializar videos inmediatamente
+initBackgroundVideos();
+
+// Reanudar inmediatamente en primera interacción del usuario en dispositivos móviles
+// (resuelve bloqueos de autoplay por ahorro de batería / directivas estrictas de iOS Safari / Android)
+const resumeVideosOnGesture = () => {
+  initBackgroundVideos();
+  window.removeEventListener('touchstart', resumeVideosOnGesture);
+  window.removeEventListener('touchend', resumeVideosOnGesture);
+  window.removeEventListener('scroll', resumeVideosOnGesture);
+  window.removeEventListener('click', resumeVideosOnGesture);
+};
+window.addEventListener('touchstart', resumeVideosOnGesture, { passive: true });
+window.addEventListener('touchend', resumeVideosOnGesture, { passive: true });
+window.addEventListener('scroll', resumeVideosOnGesture, { passive: true });
+window.addEventListener('click', resumeVideosOnGesture, { passive: true });
+
+// Sincronizar en cambios de tamaño o giro de pantalla
+window.addEventListener('resize', initBackgroundVideos, { passive: true });
+window.addEventListener('orientationchange', initBackgroundVideos, { passive: true });
+
+// Reanudar cuando la pestaña vuelve a primer plano
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    initBackgroundVideos();
+  }
 });
 
 
