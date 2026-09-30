@@ -418,6 +418,136 @@ function checkIsMobile() {
          /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
+// Sincronización exacta en píxeles para iPhone X (iOS WebKit), Android y Tablets
+// Garantiza que las 4 imágenes (2x2) ocupen la pantalla con el título arriba sin desbordar jamás
+function syncMobileProjectLayout() {
+  const activeTag = document.activeElement ? document.activeElement.tagName : '';
+  if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') {
+    return;
+  }
+
+  const vh = (window.visualViewport && window.visualViewport.height)
+    ? window.visualViewport.height
+    : (window.innerHeight || document.documentElement.clientHeight);
+  const vw = window.innerWidth || document.documentElement.clientWidth;
+
+  if (vh && vh > 100) {
+    document.documentElement.style.setProperty('--app-height', `${Math.round(vh)}px`);
+  }
+
+  const scrollyGallery = document.querySelector('.scrolly-gallery');
+  if (!scrollyGallery) return;
+
+  const stage = scrollyGallery.querySelector('.scrolly-stage');
+  const rows = scrollyGallery.querySelectorAll('.project-row');
+  const isCompactDevice = (vw <= 900) ||
+    (window.matchMedia && window.matchMedia('(pointer: coarse) and (max-width: 1024px)').matches);
+
+  if (isCompactDevice && vh > 100) {
+    const roundedVh = Math.round(vh);
+    scrollyGallery.style.setProperty('height', `${roundedVh}px`, 'important');
+    scrollyGallery.style.setProperty('max-height', `${roundedVh}px`, 'important');
+    if (stage) {
+      stage.style.setProperty('height', `${roundedVh}px`, 'important');
+      stage.style.setProperty('max-height', `${roundedVh}px`, 'important');
+    }
+
+    const siteHeader = document.querySelector('.site-header');
+    let topOffset = 64;
+    if (siteHeader) {
+      const hRect = siteHeader.getBoundingClientRect();
+      if (hRect.bottom > 30 && hRect.bottom < 130) {
+        topOffset = Math.round(hRect.bottom + 4);
+      }
+    } else if (vw <= 480) {
+      topOffset = 62;
+    }
+
+    const bottomMargin = vw <= 480 ? 14 : 18;
+    const headerHeight = 30;
+    const rowInternalGap = 6;
+    const gridGap = vw <= 480 ? 5 : 6;
+
+    const rowHeight = Math.max(240, Math.floor(roundedVh - topOffset - bottomMargin));
+    const gridHeight = Math.max(190, rowHeight - headerHeight - rowInternalGap);
+    const cardHeight = Math.max(90, Math.floor((gridHeight - gridGap) / 2));
+
+    rows.forEach(row => {
+      row.style.setProperty('top', `${topOffset}px`, 'important');
+      row.style.setProperty('bottom', 'auto', 'important');
+      row.style.setProperty('height', `${rowHeight}px`, 'important');
+      row.style.setProperty('max-height', `${rowHeight}px`, 'important');
+      row.style.setProperty('transform', 'none', 'important');
+      row.style.setProperty('gap', `${rowInternalGap}px`, 'important');
+
+      const header = row.querySelector('.project-header');
+      if (header) {
+        header.style.setProperty('height', `${headerHeight}px`, 'important');
+        header.style.setProperty('min-height', `${headerHeight}px`, 'important');
+        header.style.setProperty('max-height', `${headerHeight}px`, 'important');
+        header.style.setProperty('flex', `0 0 ${headerHeight}px`, 'important');
+      }
+
+      const grid = row.querySelector('.project-grid');
+      if (grid) {
+        grid.style.setProperty('height', `${gridHeight}px`, 'important');
+        grid.style.setProperty('max-height', `${gridHeight}px`, 'important');
+        grid.style.setProperty('grid-template-columns', 'repeat(2, minmax(0, 1fr))', 'important');
+        grid.style.setProperty('grid-template-rows', `${cardHeight}px ${cardHeight}px`, 'important');
+        grid.style.setProperty('gap', `${gridGap}px`, 'important');
+      }
+
+      const items = row.querySelectorAll('.archive-item');
+      items.forEach(item => {
+        item.style.setProperty('height', `${cardHeight}px`, 'important');
+        item.style.setProperty('max-height', `${cardHeight}px`, 'important');
+        item.style.setProperty('min-height', '0px', 'important');
+        item.style.setProperty('aspect-ratio', 'unset', 'important');
+      });
+    });
+  } else {
+    scrollyGallery.style.removeProperty('height');
+    scrollyGallery.style.removeProperty('max-height');
+    if (stage) {
+      stage.style.removeProperty('height');
+      stage.style.removeProperty('max-height');
+    }
+    rows.forEach(row => {
+      row.style.removeProperty('top');
+      row.style.removeProperty('bottom');
+      row.style.removeProperty('height');
+      row.style.removeProperty('max-height');
+      row.style.removeProperty('transform');
+      row.style.removeProperty('gap');
+
+      const header = row.querySelector('.project-header');
+      if (header) {
+        header.style.removeProperty('height');
+        header.style.removeProperty('min-height');
+        header.style.removeProperty('max-height');
+        header.style.removeProperty('flex');
+      }
+
+      const grid = row.querySelector('.project-grid');
+      if (grid) {
+        grid.style.removeProperty('height');
+        grid.style.removeProperty('max-height');
+        grid.style.removeProperty('grid-template-columns');
+        grid.style.removeProperty('grid-template-rows');
+        grid.style.removeProperty('gap');
+      }
+
+      const items = row.querySelectorAll('.archive-item');
+      items.forEach(item => {
+        item.style.removeProperty('height');
+        item.style.removeProperty('max-height');
+        item.style.removeProperty('min-height');
+        item.style.removeProperty('aspect-ratio');
+      });
+    });
+  }
+}
+
 function initBackgroundVideos() {
   const isMobile = checkIsMobile();
   document.documentElement.classList.toggle('is-mobile-view', isMobile);
@@ -471,11 +601,11 @@ function initBackgroundVideos() {
   legacyVids.forEach(setupAndPlay);
 }
 
-// Inicializar videos inmediatamente
+// Inicializar layout mobile y videos inmediatamente
+syncMobileProjectLayout();
 initBackgroundVideos();
 
 // Reanudar inmediatamente en primera interacción del usuario en dispositivos móviles
-// (resuelve bloqueos de autoplay por ahorro de batería / directivas estrictas de iOS Safari / Android)
 const resumeVideosOnGesture = () => {
   initBackgroundVideos();
   window.removeEventListener('touchstart', resumeVideosOnGesture);
@@ -488,9 +618,21 @@ window.addEventListener('touchend', resumeVideosOnGesture, { passive: true });
 window.addEventListener('scroll', resumeVideosOnGesture, { passive: true });
 window.addEventListener('click', resumeVideosOnGesture, { passive: true });
 
-// Sincronizar en cambios de tamaño o giro de pantalla
-window.addEventListener('resize', initBackgroundVideos, { passive: true });
-window.addEventListener('orientationchange', initBackgroundVideos, { passive: true });
+// Sincronizar en cambios de tamaño, barras de navegador iOS o giro de pantalla
+const onViewportChange = () => {
+  syncMobileProjectLayout();
+  initBackgroundVideos();
+  if (typeof ScrollTrigger !== 'undefined') {
+    ScrollTrigger.refresh();
+  }
+};
+window.addEventListener('resize', onViewportChange, { passive: true });
+window.addEventListener('orientationchange', () => {
+  setTimeout(onViewportChange, 120);
+}, { passive: true });
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', syncMobileProjectLayout, { passive: true });
+}
 
 // Reanudar cuando la pestaña vuelve a primer plano
 document.addEventListener('visibilitychange', () => {
@@ -501,11 +643,9 @@ document.addEventListener('visibilitychange', () => {
 
 
 // ============================================
-// SCROLLYTELLING GALLERY — GSAP ScrollTrigger
-// Hero inicial + 5 Proyectos Cinemáticos
-// Entrada individual pausada desde el borde derecho en gris
-// Transición a color normal al quedar centrado en pantalla
-// Salida simultánea hacia la derecha mientras el siguiente proyecto aparece por debajo
+// SCROLLYTELLING GALLERY — GSAP ScrollTrigger + Sistema de "Tope" por Proyecto
+// Hero inicial + 5 Proyectos Cinemáticos + Contacto
+// Cada proyecto tiene un "tope" firme para evitar pasar de largo con un scroll largo
 // ============================================
 if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -515,6 +655,9 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
 
   const scrollyGallery = document.querySelector('.scrolly-gallery');
   if (scrollyGallery) {
+    // Desactivar scroll-behavior: smooth de CSS para que el tope y el scrub de GSAP sean instantáneos y exactos
+    document.documentElement.style.scrollBehavior = 'auto';
+
     const heroLayer = scrollyGallery.querySelector('#hero-stage-layer');
     const projectRows = Array.from(scrollyGallery.querySelectorAll('.project-row'));
     const numProjects = projectRows.length; // 5 proyectos
@@ -541,7 +684,6 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
 
     // Inicializar estado de las filas y tarjetas
     projectRows.forEach((row, rIdx) => {
-      // zIndex decreciente: row k queda por encima de row k+1 ("apareciendo por debajo")
       gsap.set(row, {
         autoAlpha: 0,
         pointerEvents: 'none',
@@ -561,22 +703,26 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     });
 
     // Timeline principal con ScrollTrigger fijado (pin: true)
-    // Distancia de scroll extendida para que el movimiento sea pausado, cinematográfico y elegante
     const mainTl = gsap.timeline({
       scrollTrigger: {
         trigger: scrollyGallery,
         pin: true,
         start: 'top top',
-        end: () => '+=' + (window.innerHeight * 12.5),
-        scrub: 1,
+        end: () => '+=' + (window.innerHeight * 9.5),
+        scrub: 0.2,
         anticipatePin: 1,
-        invalidateOnRefresh: true
+        invalidateOnRefresh: true,
+        onRefreshInit: () => {
+          syncMobileProjectLayout();
+        }
       }
     });
 
+    mainTl.addLabel('hero_tope', 0);
+
     // FASE 0: El Hero inicial se desplaza hacia arriba como en un scroll natural
     if (heroLayer) {
-      mainTl.addLabel('hero_exit');
+      mainTl.addLabel('hero_exit', 0);
       mainTl.fromTo(heroLayer,
         {
           y: 0,
@@ -585,39 +731,39 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         {
           y: () => -window.innerHeight * 1.08,
           autoAlpha: 0,
-          duration: 1.8,
+          duration: 1.4,
           ease: 'power1.inOut'
         },
-        'hero_exit'
+        0
       );
     }
 
-    // Procesar cada uno de los 5 proyectos secuencialmente
+    // Tiempos numéricos explícitos para cada proyecto (evita desfasajes de posiciones relativas)
+    let prevExitStart = 0;
+
     projectRows.forEach((row, k) => {
       const cards = Array.from(row.querySelectorAll('.archive-item'));
       const imgs = Array.from(row.querySelectorAll('.archive-item img'));
       const header = row.querySelector('.project-header');
 
-      // Determinar punto de inicio en el timeline
-      // Proyecto 0 empieza a entrar mientras el hero va subiendo hacia arriba
-      // Proyecto k empieza a entrar mientras el proyecto k-1 se oculta hacia la izquierda
-      const entranceLabel = k === 0 ? 'hero_exit+=0.7' : `proj_${k - 1}_exit+=0.25`;
+      const enterStart = (k === 0) ? 0.55 : (prevExitStart + 0.25);
 
       // 1. Activar visibilidad de la fila k
-      mainTl.set(row, { autoAlpha: 1, pointerEvents: 'auto' }, entranceLabel);
+      mainTl.set(row, { autoAlpha: 1, pointerEvents: 'auto' }, enterStart);
 
-      // 2. Cabecera (nombre del proyecto) entra suavemente
+      // 2. Cabecera (nombre del proyecto arriba) entra suavemente
       if (header) {
         mainTl.to(header, {
           opacity: 1,
           y: 0,
-          duration: 0.6,
+          duration: 0.5,
           ease: 'power2.out'
-        }, entranceLabel);
+        }, enterStart);
       }
 
-      // 3. Entrada de a una imagen desde el extremo derecho de la pantalla en escala de grises
-      // Movimiento pausado, suave y deliberado (duración 1.3, escalonado con overlap -0.9)
+      // 3. Entrada escalonada de cada una de las 4 imágenes desde la derecha en escala de grises
+      const cardStagger = 0.28;
+      const cardDur = 1.05;
       cards.forEach((card, cIndex) => {
         mainTl.fromTo(card,
           {
@@ -627,53 +773,57 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
           {
             x: 0,
             opacity: 1,
-            duration: 1.3,
+            duration: cardDur,
             ease: 'power2.out'
           },
-          cIndex === 0 ? entranceLabel : '-=0.9'
+          enterStart + (cIndex * cardStagger)
         );
       });
 
-      // 4. MOMENTO EN QUE TODAS LAS IMÁGENES ESTÁN EN SU LUGAR Y CENTRADAS:
-      // Las imágenes de este proyecto pasan a COLOR NORMAL
+      const cardsArrivalEnd = enterStart + ((cards.length - 1) * cardStagger) + cardDur; // enterStart + 1.89
+      const colorStart = cardsArrivalEnd - 0.25; // enterStart + 1.64
+      const colorDur = 0.55;
+      const colorEnd = colorStart + colorDur; // enterStart + 2.19
+
+      // 4. Paso a COLOR NORMAL al quedar en su lugar
       mainTl.to(imgs, {
         filter: 'grayscale(0%) brightness(1)',
-        duration: 0.8,
+        duration: colorDur,
         ease: 'power2.out'
-      });
+      }, colorStart);
 
-      // 5. Pausa / reposo con el proyecto 100% visible en color en el centro exacto de la pantalla
-      mainTl.to({}, { duration: 1.1 });
+      // 5. Meseta de reposo en color + TOPE EXACTO del proyecto
+      const topeTime = colorEnd + 0.35; // enterStart + 2.54 (100% en color y centrado)
+      const exitStart = colorEnd + 0.85; // enterStart + 3.04
 
-      // 6. Transición / salida del proyecto hacia la IZQUIERDA (para todos los proyectos):
-      const exitLabel = `proj_${k}_exit`;
-      mainTl.addLabel(exitLabel);
+      mainTl.addLabel(`proj_${k}_tope`, topeTime);
+      mainTl.addLabel(`proj_${k}_exit`, exitStart);
 
-      // Los proyectos continúan su recorrido hacia la IZQUIERDA y se ocultan de a uno
+      // 6. Transición / salida del proyecto hacia la IZQUIERDA al volver a scrollear
       mainTl.to(cards, {
         x: (i, target) => getCardExitLeftX(target),
         opacity: 0,
-        duration: 1.3,
-        stagger: 0.12, // Se van de a una hacia la izquierda consecutivamente
+        duration: 1.05,
+        stagger: 0.09,
         ease: 'power2.in'
-      }, exitLabel);
+      }, exitStart);
 
       if (header) {
-        mainTl.to(header, { opacity: 0, x: -30, duration: 0.5 }, exitLabel);
+        mainTl.to(header, { opacity: 0, x: -30, duration: 0.45 }, exitStart);
       }
 
       mainTl.to(imgs, {
         filter: 'grayscale(100%) brightness(0.5)',
-        duration: 0.5
-      }, exitLabel);
+        duration: 0.45
+      }, exitStart);
 
-      mainTl.set(row, { autoAlpha: 0, pointerEvents: 'none' }, `${exitLabel}+=1.75`);
+      mainTl.set(row, { autoAlpha: 0, pointerEvents: 'none' }, exitStart + 1.45);
+
+      prevExitStart = exitStart;
     });
 
     // ============================================
     // CAPA FINAL: CONTACTO SCROLLYTELLING
-    // Aparece inmediatamente mientras el último proyecto va desapareciendo
-    // Elementos animados consecutivamente desde abajo
     // ============================================
     const contactLayer = scrollyGallery.querySelector('#contact');
     if (contactLayer) {
@@ -687,7 +837,6 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       const contactFooterEl  = contactLayer.querySelector('.contact-stage-footer');
       const headerCenterEl   = document.querySelector('.header-center');
 
-      // Estado inicial: capa oculta y elementos desplazados 40px hacia abajo con opacidad 0
       gsap.set(contactLayer, { autoAlpha: 0, pointerEvents: 'none' });
       gsap.set([
         contactEyebrowEl,
@@ -703,24 +852,15 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         opacity: 0
       });
 
-      // El usuario especificó:
-      // "Apenas termina el ultimo proyecto mientras sigo scrolleando y va desapareciendo el proyecto
-      // debe ir apareciendo de manera animada la informacion de contacto. Debe ir apareciendo estilo scrollytelling
-      // pero proveniente desde abajo. Primero el texto contacto, luego el correo, luego el asunto y asi sucesivamente"
+      const contactStart = prevExitStart + 0.25;
 
-      // Punto de entrada: mientras el proyecto 4 (último) está saliendo hacia la izquierda
-      const lastProjExitLabel = `proj_${numProjects - 1}_exit`;
-      const contactStart = `${lastProjExitLabel}+=0.2`;
-
-      // 1. Activar visibilidad de la capa e intensificar el fondo negro completo
       mainTl.set(contactLayer, { autoAlpha: 1, pointerEvents: 'auto' }, contactStart);
       mainTl.fromTo(contactLayer,
         { opacity: 0 },
-        { opacity: 1, duration: 0.9, ease: 'power1.out' },
+        { opacity: 1, duration: 0.8, ease: 'power1.out' },
         contactStart
       );
 
-      // Ocultar sutilmente el botón "INICIAR PROYECTO" de la cabecera
       if (headerCenterEl) {
         mainTl.to(headerCenterEl, {
           opacity: 0,
@@ -730,82 +870,413 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         }, contactStart);
       }
 
-      // 2. Primero: Texto Contacto (Epígrafe "Trabajemos juntos" + Título "CONTACTO")
       mainTl.to([contactEyebrowEl, contactTitleEl], {
         y: 0,
         opacity: 1,
-        duration: 0.85,
-        stagger: 0.1,
+        duration: 0.7,
+        stagger: 0.08,
         ease: 'power2.out'
-      }, `${contactStart}+=0.35`);
+      }, contactStart + 0.3);
 
-      // 3. Luego: El Correo (studiomad.3d@gmail.com)
       mainTl.to(contactEmailEl, {
         y: 0,
         opacity: 1,
-        duration: 0.75,
+        duration: 0.6,
         ease: 'power2.out'
-      }, '-=0.35');
+      }, contactStart + 0.7);
 
-      // 4. Luego: El Asunto (#contact-field-subject)
       mainTl.to(contactSubjectEl, {
         y: 0,
         opacity: 1,
-        duration: 0.75,
+        duration: 0.6,
         ease: 'power2.out'
-      }, '-=0.35');
+      }, contactStart + 1.0);
 
-      // 5. Luego: El Mensaje (#contact-field-message)
       mainTl.to(contactMessageEl, {
         y: 0,
         opacity: 1,
-        duration: 0.75,
+        duration: 0.6,
         ease: 'power2.out'
-      }, '-=0.35');
+      }, contactStart + 1.3);
 
-      // 6. Luego: El Botón ENVIAR VÍA GMAIL (#contact-field-btn)
       mainTl.to(contactBtnEl, {
         y: 0,
         opacity: 1,
-        duration: 0.75,
+        duration: 0.6,
         ease: 'power2.out'
-      }, '-=0.35');
+      }, contactStart + 1.6);
 
-      // 7. Y finalmente: Redes sociales (Instagram · Behance) y pie de página
       mainTl.to([contactSocialEl, contactFooterEl], {
         y: 0,
         opacity: 1,
-        duration: 0.75,
-        stagger: 0.1,
+        duration: 0.6,
+        stagger: 0.08,
         ease: 'power2.out'
-      }, '-=0.35');
+      }, contactStart + 1.9);
 
-      // 8. Pausa / reposo final con la pantalla de contacto 100% interactiva
-      mainTl.to({}, { duration: 1.5 });
+      const contactEnd = contactStart + 2.7;
+      mainTl.to({}, { duration: 0.25 }, contactEnd);
+      mainTl.addLabel('contact_tope', contactEnd + 0.2);
     }
 
-    // Clic en el enlace del Hero o en el botón "Proyectos destacados" para scrollear directamente al primer proyecto
+    // ============================================
+    // CONTROLADOR DE "TOPE" POR PROYECTO
+    // Garantiza que cada proyecto tenga un tope firme:
+    // - Un scroll largo (rueda, trackpad o swipe táctil fuerte) se frena en el tope del proyecto actual.
+    // - Para avanzar al siguiente proyecto se requiere volver a scrollear.
+    // - Si el usuario suelta el scroll a mitad de camino, termina de asentarse suavemente en el tope.
+    // ============================================
+    const stopLabels = ['hero_tope'];
+    for (let k = 0; k < numProjects; k++) {
+      stopLabels.push(`proj_${k}_tope`);
+    }
+    if (contactLayer) {
+      stopLabels.push('contact_tope');
+    }
+
+    function setScrollInstant(y) {
+      window.scrollTo({ top: y, left: 0, behavior: 'instant' });
+    }
+
+    function getStopScrollPositions() {
+      const st = mainTl.scrollTrigger;
+      const totalDur = mainTl.duration() || 1;
+      const startY = st ? st.start : 0;
+      const endY = st ? st.end : (window.innerHeight * 9.5);
+      const span = Math.max(1, endY - startY);
+
+      return stopLabels.map(label => {
+        const t = (mainTl.labels && mainTl.labels[label] !== undefined)
+          ? mainTl.labels[label]
+          : totalDur;
+        const progress = Math.min(1, Math.max(0, t / totalDur));
+        return Math.round(startY + progress * span);
+      });
+    }
+
+    function findNearestStopIdx(y, stops) {
+      let bestIdx = 0;
+      let bestDist = Infinity;
+      for (let i = 0; i < stops.length; i++) {
+        const d = Math.abs(y - stops[i]);
+        if (d < bestDist) {
+          bestDist = d;
+          bestIdx = i;
+        }
+      }
+      return bestIdx;
+    }
+
+    let currentStopIdx = 0;
+    let gestureOriginIdx = 0;
+    let topeLocked = false;
+    let lockedScrollY = 0;
+    let topeLockedAt = 0;
+    let isTouching = false;
+    let isProgrammaticNav = false;
+    let glideRafId = null;
+    let settleTimer = null;
+    let touchReleaseTimer = null;
+    let lastWheelTime = 0;
+    let lastWheelAbsDelta = 0;
+
+    function cancelGlide() {
+      if (glideRafId) {
+        cancelAnimationFrame(glideRafId);
+        glideRafId = null;
+      }
+    }
+
+    function engageTopeAt(idx, stops) {
+      cancelGlide();
+      if (settleTimer) clearTimeout(settleTimer);
+      const clampedIdx = Math.max(0, Math.min(stops.length - 1, idx));
+      currentStopIdx = clampedIdx;
+      gestureOriginIdx = clampedIdx;
+      lockedScrollY = stops[clampedIdx];
+      topeLocked = true;
+      topeLockedAt = performance.now();
+      setScrollInstant(lockedScrollY);
+    }
+
+    function glideToStop(targetIdx, durationMs = 240) {
+      cancelGlide();
+      if (settleTimer) clearTimeout(settleTimer);
+      const stops = getStopScrollPositions();
+      const clampedIdx = Math.max(0, Math.min(stops.length - 1, targetIdx));
+      const targetY = stops[clampedIdx];
+      const startY = window.scrollY;
+      const dist = targetY - startY;
+
+      currentStopIdx = clampedIdx;
+      gestureOriginIdx = clampedIdx;
+      lockedScrollY = targetY;
+
+      if (Math.abs(dist) <= 2) {
+        setScrollInstant(targetY);
+        topeLocked = true;
+        topeLockedAt = performance.now();
+        return;
+      }
+
+      const startTime = performance.now();
+      function step(now) {
+        const p = Math.min(1, (now - startTime) / durationMs);
+        const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+        const nextY = Math.round(startY + dist * eased);
+        setScrollInstant(nextY);
+
+        if (p < 1) {
+          glideRafId = requestAnimationFrame(step);
+        } else {
+          glideRafId = null;
+          setScrollInstant(targetY);
+          topeLocked = true;
+          topeLockedAt = performance.now();
+        }
+      }
+      glideRafId = requestAnimationFrame(step);
+    }
+
+    function scheduleSettleCheck() {
+      if (settleTimer) clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        if (isTouching || isProgrammaticNav || glideRafId || topeLocked) return;
+        const activeTag = document.activeElement ? document.activeElement.tagName : '';
+        if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+
+        const stops = getStopScrollPositions();
+        const curY = window.scrollY;
+        const originY = stops[gestureOriginIdx];
+        const diff = curY - originY;
+
+        if (Math.abs(diff) <= 3) {
+          return;
+        }
+
+        if (diff > 0 && gestureOriginIdx < stops.length - 1) {
+          const nextIdx = gestureOriginIdx + 1;
+          const segDist = Math.max(1, stops[nextIdx] - originY);
+          if (diff >= segDist * 0.11) {
+            glideToStop(nextIdx, 240);
+          } else {
+            glideToStop(gestureOriginIdx, 180);
+          }
+        } else if (diff < 0 && gestureOriginIdx > 0) {
+          const prevIdx = gestureOriginIdx - 1;
+          const segDist = Math.max(1, originY - stops[prevIdx]);
+          if (Math.abs(diff) >= segDist * 0.11) {
+            glideToStop(prevIdx, 240);
+          } else {
+            glideToStop(gestureOriginIdx, 180);
+          }
+        }
+      }, 130);
+    }
+
+    // 1. Listener de Rueda / Trackpad (Desktop)
+    window.addEventListener('wheel', (e) => {
+      if (isProgrammaticNav) return;
+      if (menuOverlay && menuOverlay.classList.contains('is-open')) return;
+      if (lightbox && lightbox.classList.contains('is-open')) return;
+
+      const now = performance.now();
+      const wheelGap = now - lastWheelTime;
+      const absDelta = Math.abs(e.deltaY);
+      const prevAbsDelta = lastWheelAbsDelta;
+      lastWheelTime = now;
+      lastWheelAbsDelta = absDelta;
+
+      const stops = getStopScrollPositions();
+
+      // Si estamos en el TOPE de un proyecto, frenar la inercia o el giro largo
+      if (topeLocked) {
+        const elapsed = now - topeLockedAt;
+        const canUnlock =
+          (elapsed > 210 && wheelGap > 135) ||
+          (elapsed > 440 && absDelta > prevAbsDelta * 1.3 && absDelta >= 12) ||
+          (elapsed > 640 && wheelGap > 55);
+
+        if (canUnlock) {
+          topeLocked = false;
+          gestureOriginIdx = currentStopIdx;
+        } else {
+          e.preventDefault();
+          setScrollInstant(lockedScrollY);
+          return;
+        }
+      } else if (wheelGap > 240 && !glideRafId) {
+        gestureOriginIdx = findNearestStopIdx(window.scrollY, stops);
+        currentStopIdx = gestureOriginIdx;
+      }
+
+      if (glideRafId) {
+        e.preventDefault();
+        return;
+      }
+
+      const maxAllowedIdx = Math.min(stops.length - 1, gestureOriginIdx + 1);
+      const minAllowedIdx = Math.max(0, gestureOriginIdx - 1);
+      const maxAllowedY = stops[maxAllowedIdx];
+      const minAllowedY = stops[minAllowedIdx];
+      const projectedY = window.scrollY + e.deltaY;
+
+      // Si este evento de rueda alcanzaría o cruzaría el TOPE del siguiente proyecto -> FRENAR EN EL TOPE
+      if (e.deltaY > 0 && projectedY >= maxAllowedY) {
+        e.preventDefault();
+        engageTopeAt(maxAllowedIdx, stops);
+        return;
+      }
+      if (e.deltaY < 0 && projectedY <= minAllowedY) {
+        e.preventDefault();
+        engageTopeAt(minAllowedIdx, stops);
+        return;
+      }
+
+      scheduleSettleCheck();
+    }, { passive: false });
+
+    // 2. Listeners Táctiles (Mobile / iPhone X / Android / iPad)
+    window.addEventListener('touchstart', (e) => {
+      if (isProgrammaticNav) return;
+      if (menuOverlay && menuOverlay.classList.contains('is-open')) return;
+      if (lightbox && lightbox.classList.contains('is-open')) return;
+
+      isTouching = true;
+      if (settleTimer) clearTimeout(settleTimer);
+      if (touchReleaseTimer) clearTimeout(touchReleaseTimer);
+
+      const stops = getStopScrollPositions();
+      const now = performance.now();
+
+      // Al apoyar el dedo nuevamente tras haber llegado a un tope, habilitar el avance al siguiente proyecto
+      if (topeLocked && (now - topeLockedAt > 110)) {
+        topeLocked = false;
+        gestureOriginIdx = currentStopIdx;
+      } else if (!topeLocked && !glideRafId) {
+        gestureOriginIdx = findNearestStopIdx(window.scrollY, stops);
+        currentStopIdx = gestureOriginIdx;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (isProgrammaticNav) return;
+      if (menuOverlay && menuOverlay.classList.contains('is-open')) return;
+      if (lightbox && lightbox.classList.contains('is-open')) return;
+
+      if (topeLocked) {
+        if (e.cancelable) e.preventDefault();
+        setScrollInstant(lockedScrollY);
+      }
+    }, { passive: false });
+
+    const onTouchEnd = () => {
+      isTouching = false;
+      if (isProgrammaticNav) return;
+      if (!topeLocked) {
+        scheduleSettleCheck();
+      }
+      if (touchReleaseTimer) clearTimeout(touchReleaseTimer);
+      touchReleaseTimer = setTimeout(() => {
+        if (!isTouching && topeLocked && (performance.now() - topeLockedAt > 240)) {
+          topeLocked = false;
+          gestureOriginIdx = currentStopIdx;
+        }
+      }, 260);
+    };
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    // 3. Listener de Scroll General (atrapa la inercia táctil en iOS / Android exactamente en el TOPE)
+    window.addEventListener('scroll', () => {
+      if (isProgrammaticNav || glideRafId) return;
+      const stops = getStopScrollPositions();
+      const curY = window.scrollY;
+
+      if (topeLocked) {
+        if (Math.abs(curY - lockedScrollY) > 1) {
+          setScrollInstant(lockedScrollY);
+        }
+        return;
+      }
+
+      const maxAllowedIdx = Math.min(stops.length - 1, gestureOriginIdx + 1);
+      const minAllowedIdx = Math.max(0, gestureOriginIdx - 1);
+      const maxAllowedY = stops[maxAllowedIdx];
+      const minAllowedY = stops[minAllowedIdx];
+
+      if (gestureOriginIdx < stops.length - 1 && curY >= maxAllowedY - 2) {
+        engageTopeAt(maxAllowedIdx, stops);
+        return;
+      }
+      if (gestureOriginIdx > 0 && curY <= minAllowedY + 2) {
+        engageTopeAt(minAllowedIdx, stops);
+        return;
+      }
+
+      if (!isTouching) {
+        scheduleSettleCheck();
+      }
+    }, { passive: true });
+
+    // 4. Navegación por teclado (flechas / RePág / AvPág con tope en cada proyecto)
+    window.addEventListener('keydown', (e) => {
+      const activeTag = document.activeElement ? document.activeElement.tagName : '';
+      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') return;
+      if (menuOverlay && menuOverlay.classList.contains('is-open')) return;
+      if (lightbox && lightbox.classList.contains('is-open')) return;
+
+      const stops = getStopScrollPositions();
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        e.preventDefault();
+        const nextIdx = Math.min(stops.length - 1, currentStopIdx + 1);
+        glideToStop(nextIdx, 300);
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        const prevIdx = Math.max(0, currentStopIdx - 1);
+        glideToStop(prevIdx, 300);
+      }
+    });
+
+    // Helper para navegación programática desde botones del Hero o Header
+    function navigateToStopIndex(targetIdx) {
+      const stops = getStopScrollPositions();
+      const clampedIdx = Math.max(0, Math.min(stops.length - 1, targetIdx));
+      cancelGlide();
+      isProgrammaticNav = true;
+      topeLocked = false;
+      currentStopIdx = clampedIdx;
+      gestureOriginIdx = clampedIdx;
+      lockedScrollY = stops[clampedIdx];
+
+      window.scrollTo({
+        top: stops[clampedIdx],
+        behavior: 'smooth'
+      });
+
+      setTimeout(() => {
+        isProgrammaticNav = false;
+        topeLocked = true;
+        topeLockedAt = performance.now();
+      }, 850);
+    }
+
+    // Clic en el enlace del Hero o en el botón "Proyectos destacados" -> va al Tope del Proyecto 1 (índice 1)
     const heroScrollTriggers = scrollyGallery.querySelectorAll('.hero__link, #hero-scroll-projects');
     heroScrollTriggers.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        window.scrollTo({
-          top: window.innerHeight * 1.8,
-          behavior: 'smooth'
-        });
+        navigateToStopIndex(1);
       });
     });
 
-    // Navegación suave hacia la sección de contacto en la página de inicio
+    // Navegación suave hacia la sección de contacto en la página de inicio -> va al Tope de Contacto (último índice)
     document.querySelectorAll('a[href="#contact"]').forEach(anchor => {
       anchor.addEventListener('click', (e) => {
         e.preventDefault();
         closeMenu();
-        const maxScroll = ScrollTrigger.maxScroll(window);
-        window.scrollTo({
-          top: maxScroll,
-          behavior: 'smooth'
-        });
+        const stops = getStopScrollPositions();
+        navigateToStopIndex(stops.length - 1);
       });
     });
   }
