@@ -15,8 +15,14 @@ set /p STATUS=<"%temp%\git_status.txt"
 del "%temp%\git_status.txt" 2>nul
 
 if "%STATUS%"=="" (
-    color 0E
-    echo [i] No hay cambios nuevos para subir. La web ya esta al dia.
+    echo [i] Verificando sincronizacion con GitHub...
+    git pull --rebase origin main
+    git push origin main
+    if !ERRORLEVEL! EQU 0 (
+        color 0A
+        echo.
+        echo [i] La web ya esta sincronizada y al dia en GitHub.
+    )
     echo.
     goto FIN
 )
@@ -41,7 +47,8 @@ git add .
 echo [2/3] Guardando version...
 git commit -m "%MSG%"
 
-echo [3/3] Subiendo cambios a GitHub...
+echo [3/3] Sincronizando y subiendo cambios a GitHub...
+git pull --rebase origin main
 git push origin main
 
 if %ERRORLEVEL% EQU 0 (
