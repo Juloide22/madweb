@@ -225,12 +225,14 @@
       this.currentLightboxIndex = 0;
 
       // Estado de Cámara
+      const isMobileInit = typeof window !== 'undefined' && (window.innerWidth <= 768 || (window.matchMedia && window.matchMedia('(max-width: 768px), (pointer: coarse)').matches));
+      const initialScale = isMobileInit ? 0.90 : 1;
       this.targetX = 0;
       this.targetY = 0;
-      this.targetScale = 1;
+      this.targetScale = initialScale;
       this.currentX = 0;
       this.currentY = 0;
-      this.currentScale = 1;
+      this.currentScale = initialScale;
       this.lerpFactor = 0.14;
 
       // Arrastre
@@ -456,17 +458,18 @@
       const contentW = bounds.maxX - bounds.minX;
       const contentH = bounds.maxY - bounds.minY;
 
-      const isMobile = window.innerWidth <= 768;
-      const paddingX = isMobile ? 30 : 70;
-      const paddingY = isMobile ? 120 : 130;
+      const isMobile = window.innerWidth <= 768 ||
+        (window.matchMedia && window.matchMedia('(max-width: 768px), (pointer: coarse)').matches);
+      const paddingX = isMobile ? 24 : 70;
+      const paddingY = isMobile ? 100 : 130;
 
       const availW = window.innerWidth - paddingX;
       const availH = window.innerHeight - paddingY;
 
-      // Escala óptima exacta para que quepa en pantalla
+      // Escala óptima: en mobile se abre directamente con ~90% (0.90) para que las imágenes se aprecien grandes e impactantes
       const scaleX = availW / contentW;
       const scaleY = availH / contentH;
-      const fitScale = Math.min(scaleX, scaleY);
+      const fitScale = isMobile ? 0.90 : Math.min(scaleX, scaleY);
 
       this.targetScale = fitScale;
       this.targetX = (window.innerWidth - contentW * fitScale) / 2 - bounds.minX * fitScale;
