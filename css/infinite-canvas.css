@@ -73,9 +73,16 @@ html, body {
   overflow: hidden;
   cursor: grab;
   background-color: var(--canvas-bg);
-  background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1px);
-  background-size: 32px 32px;
-  background-position: 0 0;
+}
+
+.silk-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .canvas-viewport.is-dragging {
@@ -91,6 +98,7 @@ html, body {
   transform-origin: 0 0;
   will-change: transform;
   pointer-events: auto;
+  z-index: 1;
 }
 
 /* Etiquetas flotantes de sección (Aparecen en modo categorías o al enfocar) */

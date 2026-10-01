@@ -6,7 +6,7 @@
   <meta name="description" content="Galería Espacial — MAD VIZ. Lienzo interactivo ajustado a la pantalla con 3 modos de organización: Por Proyecto, Aleatorio e Interiores / Exteriores.">
   <title>Galería Espacial — MAD VIZ (Experimental)</title>
   <link rel="icon" type="image/png" href="images/logo-bg.png">
-  <link rel="stylesheet" href="css/infinite-canvas.css?v=20260930_v5">
+  <link rel="stylesheet" href="css/infinite-canvas.css?v=20261001_v2">
 </head>
 <body class="page-infinite-gallery">
 
@@ -36,6 +36,7 @@
 
   <!-- Viewport del Lienzo Espacial Ajustado a la Pantalla -->
   <div id="canvas-viewport" class="canvas-viewport" role="region" aria-label="Lienzo espacial">
+    <canvas id="silk-canvas" class="silk-canvas" aria-hidden="true"></canvas>
     <div id="canvas-world" class="canvas-world"></div>
   </div>
 
@@ -139,6 +140,6 @@
   </div>
 
   <!-- Motor del Lienzo Espacial -->
-  <script src="js/infinite-canvas.js?v=20261001_v1"></script>
+  <script src="js/infinite-canvas.js?v=20261001_v2"></script>
 </body>
 </html>

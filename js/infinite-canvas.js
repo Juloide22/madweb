@@ -198,6 +198,233 @@
   };
 
   // ============================================================
+  // SILK BACKGROUND SHADER (WebGL Nativo — React Bits Port)
+  // Parámetros: color="#363e80", speed=5, scale=1, noiseIntensity=1.5, rotation=0
+  // ============================================================
+  class SilkBackground {
+    constructor(canvas, options = {}) {
+      this.canvas = canvas;
+      if (!this.canvas) return;
+      this.gl = this.canvas.getContext('webgl', { antialias: false, powerPreference: 'low-power', alpha: false });
+      if (!this.gl) {
+        console.warn('WebGL no disponible para Silk Background');
+        return;
+      }
+
+      this.speed = options.speed ?? 5;
+      this.scale = options.scale ?? 1;
+      this.noiseIntensity = options.noiseIntensity ?? 1.5;
+      this.rotation = options.rotation ?? 0;
+      this.lightMode = options.lightMode ? 1.0 : 0.0;
+      this.color = this.hexToRGB(options.color || '#363e80');
+      this.isRunning = true;
+
+      this.init();
+    }
+
+    hexToRGB(hex) {
+      const clean = hex.replace('#', '');
+      return [
+        parseInt(clean.slice(0, 2), 16) / 255,
+        parseInt(clean.slice(2, 4), 16) / 255,
+        parseInt(clean.slice(4, 6), 16) / 255
+      ];
+    }
+
+    init() {
+      const gl = this.gl;
+
+      const vsSource = `
+        attribute vec2 aPosition;
+        varying vec2 vUv;
+        void main() {
+          vUv = (aPosition + 1.0) * 0.5;
+          gl_Position = vec4(aPosition, 0.0, 1.0);
+        }
+      `;
+
+      const fsSource = `
+        precision highp float;
+        varying vec2 vUv;
+
+        uniform float uTime;
+        uniform vec3  uColor;
+        uniform float uSpeed;
+        uniform float uScale;
+        uniform float uRotation;
+        uniform float uNoiseIntensity;
+        uniform float uLightMode;
+        uniform vec2  uResolution;
+
+        const float e = 2.71828182845904523536;
+
+        float noise(vec2 texCoord) {
+          float G = e;
+          vec2  r = (G * sin(G * texCoord));
+          return fract(r.x * r.y * (1.0 + texCoord.x));
+        }
+
+        vec2 rotateUvs(vec2 uv, float angle) {
+          float c = cos(angle);
+          float s = sin(angle);
+          mat2  rot = mat2(c, -s, s, c);
+          return rot * uv;
+        }
+
+        void main() {
+          float rnd = noise(gl_FragCoord.xy);
+          
+          vec2 aspectUv = vUv;
+          if (uResolution.x > uResolution.y) {
+            aspectUv.x = (aspectUv.x - 0.5) * (uResolution.x / uResolution.y) + 0.5;
+          } else {
+            aspectUv.y = (aspectUv.y - 0.5) * (uResolution.y / uResolution.x) + 0.5;
+          }
+
+          vec2  uv      = rotateUvs(aspectUv * uScale, uRotation);
+          vec2  tex     = uv * uScale;
+          float tOffset = uSpeed * uTime;
+
+          tex.y += 0.03 * sin(8.0 * tex.x - tOffset);
+
+          float pattern = 0.6 +
+                          0.4 * sin(5.0 * (tex.x + tex.y +
+                                           cos(3.0 * tex.x + 5.0 * tex.y) +
+                                           0.02 * tOffset) +
+                                   sin(20.0 * (tex.x + tex.y - 0.1 * tOffset)));
+
+          float grain = rnd / 15.0 * uNoiseIntensity;
+          vec3 result = uColor * pattern - vec3(grain);
+
+          if (uLightMode > 0.5) {
+            float fold = smoothstep(0.28, 0.9, pattern);
+            float specular = smoothstep(0.72, 0.98, pattern);
+            vec3 shadowColor = uColor * 0.72;
+            vec3 bodyColor = min(uColor * 1.18, vec3(1.0));
+            vec3 lightBase = mix(shadowColor, bodyColor, fold);
+            lightBase = mix(lightBase, vec3(1.0), specular * 0.92);
+            float fineNoise = noise(gl_FragCoord.xy * 0.63 + vec2(17.0, 41.0));
+            float grainSignal = (rnd + fineNoise - 1.0);
+            float grainStrength = clamp(uNoiseIntensity * 0.038, 0.0, 0.16);
+            result = lightBase + grainSignal * grainStrength;
+          }
+
+          gl_FragColor = vec4(clamp(result, 0.0, 1.0), 1.0);
+        }
+      `;
+
+      function compileShader(type, source) {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, source);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+          console.error('Shader error:', gl.getShaderInfoLog(s));
+          gl.deleteShader(s);
+          return null;
+        }
+        return s;
+      }
+
+      const vs = compileShader(gl.VERTEX_SHADER, vsSource);
+      const fs = compileShader(gl.FRAGMENT_SHADER, fsSource);
+      if (!vs || !fs) return;
+
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        console.error('Program link error:', gl.getProgramInfoLog(prog));
+        return;
+      }
+
+      this.program = prog;
+
+      const vertices = new Float32Array([
+        -1, -1,
+         1, -1,
+        -1,  1,
+        -1,  1,
+         1, -1,
+         1,  1
+      ]);
+
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+      const aPos = gl.getAttribLocation(prog, 'aPosition');
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+      this.uTimeLoc = gl.getUniformLocation(prog, 'uTime');
+      this.uColorLoc = gl.getUniformLocation(prog, 'uColor');
+      this.uSpeedLoc = gl.getUniformLocation(prog, 'uSpeed');
+      this.uScaleLoc = gl.getUniformLocation(prog, 'uScale');
+      this.uRotationLoc = gl.getUniformLocation(prog, 'uRotation');
+      this.uNoiseIntensityLoc = gl.getUniformLocation(prog, 'uNoiseIntensity');
+      this.uLightModeLoc = gl.getUniformLocation(prog, 'uLightMode');
+      this.uResolutionLoc = gl.getUniformLocation(prog, 'uResolution');
+
+      this.resize();
+      window.addEventListener('resize', () => this.resize(), { passive: true });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          this.isRunning = false;
+        } else {
+          this.isRunning = true;
+          this.lastTime = performance.now();
+          requestAnimationFrame(this.render);
+        }
+      });
+
+      this.startTime = performance.now();
+      this.lastTime = this.startTime;
+      this.totalTime = 0;
+
+      this.render = this.render.bind(this);
+      requestAnimationFrame(this.render);
+    }
+
+    resize() {
+      if (!this.canvas || !this.gl) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const w = Math.floor(window.innerWidth * dpr);
+      const h = Math.floor(window.innerHeight * dpr);
+      if (this.canvas.width !== w || this.canvas.height !== h) {
+        this.canvas.width = w;
+        this.canvas.height = h;
+        this.gl.viewport(0, 0, w, h);
+      }
+    }
+
+    render(now) {
+      if (!this.isRunning || !this.gl || !this.program) return;
+
+      const dt = Math.min(0.1, (now - this.lastTime) / 1000);
+      this.lastTime = now;
+      this.totalTime += 0.1 * dt;
+
+      const gl = this.gl;
+      gl.useProgram(this.program);
+      gl.uniform1f(this.uTimeLoc, this.totalTime);
+      gl.uniform3f(this.uColorLoc, this.color[0], this.color[1], this.color[2]);
+      gl.uniform1f(this.uSpeedLoc, this.speed);
+      gl.uniform1f(this.uScaleLoc, this.scale);
+      gl.uniform1f(this.uRotationLoc, this.rotation);
+      gl.uniform1f(this.uNoiseIntensityLoc, this.noiseIntensity);
+      gl.uniform1f(this.uLightModeLoc, this.lightMode);
+      gl.uniform2f(this.uResolutionLoc, this.canvas.width, this.canvas.height);
+
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      requestAnimationFrame(this.render);
+    }
+  }
+
+  // ============================================================
   // MOTOR DEL LIENZO ESPACIAL AJUSTADO A LA PANTALLA
   // ============================================================
   class ScreenFittedCanvas {
@@ -206,6 +433,18 @@
       this.world = document.getElementById('canvas-world');
       this.zoomLabel = document.getElementById('hud-zoom');
       this.statusText = document.getElementById('hud-status-text');
+
+      // Fondo Animado Silk Shader (React Bits)
+      this.silkCanvas = document.getElementById('silk-canvas');
+      if (this.silkCanvas) {
+        this.silkBg = new SilkBackground(this.silkCanvas, {
+          speed: 5,
+          scale: 1,
+          color: '#363e80',
+          noiseIntensity: 1.5,
+          rotation: 0
+        });
+      }
 
       // Lightbox
       this.lightbox = document.getElementById('spatial-lightbox');
