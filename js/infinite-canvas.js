@@ -277,7 +277,7 @@
         const img = document.createElement('img');
         img.className = 'spatial-item__img';
         img.src = `images/proyectos/${data.folder}/${data.file}`;
-        img.alt = `${data.projTitle} — ${data.title}`;
+        img.alt = data.projTitle;
         img.loading = 'eager';
 
         const shine = document.createElement('div');
@@ -982,14 +982,14 @@
         this.lightboxImg.style.opacity = '0';
         setTimeout(() => {
           this.lightboxImg.src = `images/proyectos/${data.folder}/${data.file}`;
-          this.lightboxImg.alt = `${data.projTitle} — ${data.title}`;
+          this.lightboxImg.alt = data.projTitle;
           this.lightboxImg.onload = () => { this.lightboxImg.style.opacity = '1'; };
           if (this.lightboxImg.complete) this.lightboxImg.style.opacity = '1';
         }, 120);
       }
 
       if (this.lightboxTitle) {
-        this.lightboxTitle.textContent = `${data.projTitle} · ${data.title}`;
+        this.lightboxTitle.textContent = data.projTitle;
       }
 
       if (this.lightboxCounter) {
@@ -1243,8 +1243,8 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => new ScreenFittedCanvas());
+    document.addEventListener('DOMContentLoaded', () => { window.canvasInstance = new ScreenFittedCanvas(); });
   } else {
-    new ScreenFittedCanvas();
+    window.canvasInstance = new ScreenFittedCanvas();
   }
 })();
