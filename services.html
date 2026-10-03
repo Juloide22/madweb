@@ -7,6 +7,7 @@
   <title>Services — MADVIZ</title>
   <link rel="icon" type="image/png" href="images/logo-bg.png">
   <link rel="stylesheet" href="css/styles.css?v=20261001_v3">
+  <link rel="stylesheet" href="css/flowing-menu.css?v=20261003_v1">
   <style>
     .video-bg--desktop { display: block; }
     .video-bg--mobile { display: none; }
@@ -87,29 +88,9 @@
     </nav>
   </header>
 
-  <main class="about-wrap services-wrap">
-
-    <p class="about-eyebrow fade-in" data-es="Capacidades" data-en="Capabilities">Capacidades</p>
-
-    <h2 class="fade-in" data-es="Servicios" data-en="Services">Servicios</h2>
-
-    <div class="about-services fade-in" style="margin-top: 1.5rem; border-top: none; padding-top: 0;">
-      <ul>
-        <li data-es="Render Exterior" data-en="Exterior Render">Render Exterior</li>
-        <li data-es="Render Interior" data-en="Interior Render">Render Interior</li>
-        <li data-es="Visualización Hiperrealista" data-en="Hyper-realistic Visualization">Visualización Hiperrealista</li>
-        <li data-es="Modelado 3D" data-en="3D Modeling">Modelado 3D</li>
-        <li data-es="Archviz con IA" data-en="Archviz with AI">Archviz con IA</li>
-        <li data-es="Animación Arquitectónica" data-en="Architectural Animation">Animación Arquitectónica</li>
-      </ul>
-    </div>
-
-    <div class="fade-in" style="margin-top: 3.5rem;">
-      <a href="contact.html" class="contact-email" data-es="Iniciar un proyecto" data-en="Start a project">Iniciar un proyecto</a>
-    </div>
-
-    <p class="about-location fade-in">Mar del Plata, Argentina</p>
-
+  <!-- Flowing Menu de Servicios (React Bits) -->
+  <main class="menu-wrap" id="flowing-menu" role="region" aria-label="Servicios MADVIZ">
+    <nav class="menu" id="menu-container"></nav>
   </main>
 
   <footer class="site-footer">
@@ -121,5 +102,7 @@
   <script src="js/gsap.min.js"></script>
   <script src="js/ScrollTrigger.min.js"></script>
   <script src="js/main.js?v=20261001_v3"></script>
+  <!-- Motor Flowing Menu -->
+  <script src="js/flowing-menu.js?v=20261003_v1"></script>
 </body>
 </html>
