@@ -288,17 +288,83 @@ body.page-services {
   box-shadow: 0 0 10px var(--svc-cyan);
 }
 
-/* Pane 01: Renders */
-.pane-render img {
+/* Pane 01: Renders Slideshow */
+.renders-slideshow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.render-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), visibility 1s ease;
+}
+
+.render-slide.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.render-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 9s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(1);
+  transition: transform 7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.media-pane.is-active.pane-render img {
+.render-slide.is-active img {
   transform: scale(1.05);
+}
+
+.render-type-tag {
+  position: absolute;
+  bottom: 1.3rem;
+  left: 1.3rem;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 0.38rem 0.9rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+  pointer-events: none;
+}
+
+.slideshow-pagination {
+  position: absolute;
+  bottom: 1.3rem;
+  right: 1.3rem;
+  z-index: 25;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.slide-dot {
+  width: 20px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  transition: background-color 0.4s ease, width 0.4s ease;
+  cursor: pointer;
+}
+
+.slide-dot.is-active {
+  background: #ffffff;
+  width: 32px;
 }
 
 /* Pane 02: Video Animaciones */
@@ -337,11 +403,24 @@ body.page-services {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Pane 03: Tours 360 */
+/* Pane 03: Tours 360 & Kuula Embed */
 .pane-tour {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+.tour-embed-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.tour-embed-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
 }
 
 .pane-tour canvas {

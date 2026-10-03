@@ -20,6 +20,7 @@
 
       this.initAccordion();
       this.initVideoControls();
+      this.initRendersSlideshow();
       this.initLanguageSync();
     }
 
@@ -68,7 +69,14 @@
         pane.classList.toggle('is-active', isMatch);
       });
 
-      // 3. Manejo de Video en Pane 2
+      // 3. Manejo de Slideshow en Pane 1 (Renders)
+      if (serviceKey === 'renders') {
+        if (this.startSlideshow) this.startSlideshow();
+      } else {
+        if (this.stopSlideshow) this.stopSlideshow();
+      }
+
+      // 4. Manejo de Video en Pane 2
       if (this.video) {
         if (serviceKey === 'animaciones') {
           this.video.currentTime = 0;
@@ -81,10 +89,66 @@
         }
       }
 
-      // 4. Inicializar / Despertar Visor 360 en Pane 3
+      // 5. Inicializar / Despertar Visor 360 en Pane 3
       if (serviceKey === 'tours360') {
         this.init360Viewer();
       }
+    }
+
+    initRendersSlideshow() {
+      this.slides = document.querySelectorAll('.render-slide');
+      this.dots = document.querySelectorAll('.slide-dot');
+      if (!this.slides.length) return;
+
+      this.currentSlide = 0;
+      this.slideshowInterval = null;
+
+      const goToSlide = (idx) => {
+        this.slides.forEach((s, i) => s.classList.toggle('is-active', i === idx));
+        this.dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+        this.currentSlide = idx;
+      };
+
+      const nextSlide = () => {
+        const next = (this.currentSlide + 1) % this.slides.length;
+        goToSlide(next);
+      };
+
+      this.startSlideshow = () => {
+        if (this.slideshowInterval) clearInterval(this.slideshowInterval);
+        this.slideshowInterval = setInterval(nextSlide, 3000);
+      };
+
+      this.stopSlideshow = () => {
+        if (this.slideshowInterval) {
+          clearInterval(this.slideshowInterval);
+          this.slideshowInterval = null;
+        }
+      };
+
+      this.dots.forEach((dot, idx) => {
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          goToSlide(idx);
+          this.startSlideshow();
+        });
+      });
+
+      // Iniciar automáticamente
+      this.startSlideshow();
+    }
+
+    setKuulaTour(embedUrlOrHtml) {
+      const container = document.getElementById('tour-embed-container');
+      if (!container) return;
+
+      let src = embedUrlOrHtml;
+      const match = embedUrlOrHtml.match(/src=["']([^"']+)["']/);
+      if (match) src = match[1];
+
+      container.innerHTML = `<iframe width="100%" height="100%" frameborder="0" allow="xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen scrolling="no" src="${src}"></iframe>`;
+      const hint = document.querySelector('.tour-drag-hint');
+      if (hint) hint.style.display = 'none';
     }
 
     initVideoControls() {
@@ -344,8 +408,10 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       window.servicesShowcaseInstance = new ServicesShowcase();
+      window.setKuulaTour = (url) => window.servicesShowcaseInstance?.setKuulaTour(url);
     });
   } else {
     window.servicesShowcaseInstance = new ServicesShowcase();
+    window.setKuulaTour = (url) => window.servicesShowcaseInstance?.setKuulaTour(url);
   }
 })();

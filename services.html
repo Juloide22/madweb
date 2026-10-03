@@ -209,13 +209,53 @@
       <div class="services-col-right" aria-live="polite">
         <div class="showcase-window">
 
-          <!-- Pane 01: Renders -->
+          <!-- Pane 01: Renders Slideshow (3 Exteriores / 3 Interiores) -->
           <div class="media-pane pane-render is-active" data-pane="renders">
             <div class="media-badge">
               <span class="media-badge-dot"></span>
               <span data-es="FOTORREALISMO & ATMÓSFERA" data-en="PHOTOREALISM & ATMOSPHERE">FOTORREALISMO & ATMÓSFERA</span>
             </div>
-            <img src="images/proyectos/01-casa-flexa/render-01.jpg" alt="Render Arquitectónico MADVIZ">
+            <div class="renders-slideshow" id="renders-slideshow">
+              <!-- 01: Exterior Casa Flexa -->
+              <div class="render-slide is-active" data-index="0">
+                <img src="images/proyectos/01-casa-flexa/render-01.jpg" alt="Casa Flexa — Render Exterior">
+                <span class="render-type-tag" data-es="Exterior • Casa Flexa" data-en="Exterior • Casa Flexa">Exterior • Casa Flexa</span>
+              </div>
+              <!-- 02: Interior Edificio Aura I -->
+              <div class="render-slide" data-index="1">
+                <img src="images/proyectos/02-edificio-aura-i/render-08.png" alt="Edificio Aura I — Render Interior">
+                <span class="render-type-tag" data-es="Interior • Edificio Aura I" data-en="Interior • Edificio Aura I">Interior • Edificio Aura I</span>
+              </div>
+              <!-- 03: Exterior Edificio Verona -->
+              <div class="render-slide" data-index="2">
+                <img src="images/proyectos/03-edificio-verona/render-09.jpeg" alt="Edificio Verona — Render Exterior">
+                <span class="render-type-tag" data-es="Exterior • Edificio Verona" data-en="Exterior • Edificio Verona">Exterior • Edificio Verona</span>
+              </div>
+              <!-- 04: Interior Edificio Verona -->
+              <div class="render-slide" data-index="3">
+                <img src="images/proyectos/03-edificio-verona/render-10.jpeg" alt="Edificio Verona — Render Interior">
+                <span class="render-type-tag" data-es="Interior • Edificio Verona" data-en="Interior • Edificio Verona">Interior • Edificio Verona</span>
+              </div>
+              <!-- 05: Exterior Viviendas Chiuso -->
+              <div class="render-slide" data-index="4">
+                <img src="images/proyectos/04-viviendas-chiuso/render-13.jpeg" alt="Viviendas Chiuso — Render Exterior">
+                <span class="render-type-tag" data-es="Exterior • Viviendas Chiuso" data-en="Exterior • Viviendas Chiuso">Exterior • Viviendas Chiuso</span>
+              </div>
+              <!-- 06: Interior Casa Flexa -->
+              <div class="render-slide" data-index="5">
+                <img src="images/proyectos/01-casa-flexa/render-03.jpeg" alt="Casa Flexa — Render Interior">
+                <span class="render-type-tag" data-es="Interior • Casa Flexa" data-en="Interior • Casa Flexa">Interior • Casa Flexa</span>
+              </div>
+            </div>
+            <!-- Indicadores de Slideshow (dots) -->
+            <div class="slideshow-pagination" id="renders-pagination" aria-label="Navegación de renders">
+              <span class="slide-dot is-active" data-index="0" title="Slide 1"></span>
+              <span class="slide-dot" data-index="1" title="Slide 2"></span>
+              <span class="slide-dot" data-index="2" title="Slide 3"></span>
+              <span class="slide-dot" data-index="3" title="Slide 4"></span>
+              <span class="slide-dot" data-index="4" title="Slide 5"></span>
+              <span class="slide-dot" data-index="5" title="Slide 6"></span>
+            </div>
           </div>
 
           <!-- Pane 02: Video Animaciones -->
@@ -232,13 +272,15 @@
             </button>
           </div>
 
-          <!-- Pane 03: Tour 360 Interactivo -->
+          <!-- Pane 03: Tour 360 Interactivo (Soporte Kuula Embed / WebGL Fallback) -->
           <div class="media-pane pane-tour" data-pane="tours360">
             <div class="media-badge">
               <span class="media-badge-dot"></span>
               <span data-es="TOUR VIRTUAL 360° INTERACTIVO" data-en="INTERACTIVE 360° TOUR">TOUR VIRTUAL 360° INTERACTIVO</span>
             </div>
-            <canvas id="showcase-360-canvas" aria-label="Visor 360 interactivo"></canvas>
+            <div class="tour-embed-container" id="tour-embed-container">
+              <canvas id="showcase-360-canvas" aria-label="Visor 360 interactivo"></canvas>
+            </div>
             <div class="tour-drag-hint" data-es="⟳ ARRASTRA PARA EXPLORAR" data-en="⟳ DRAG TO EXPLORE">
               ⟳ ARRASTRA PARA EXPLORAR
             </div>
