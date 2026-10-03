@@ -63,16 +63,44 @@ html, body {
 }
 
 /* ============================================================
-   CANVAS VIEWPORT & WORLD (Ajustado al tamaño de pantalla)
+   REACT BITS — 3D DOME GALLERY (SPHERICAL VIEWPORT & ITEMS)
    ============================================================ */
-.canvas-viewport {
-  position: absolute;
-  inset: 0;
+.sphere-root {
+  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  cursor: grab;
   background-color: var(--canvas-bg);
+  --radius: 520px;
+  --viewer-pad: 72px;
+  --circ: calc(var(--radius) * 3.14159);
+  --rot-y: calc((360deg / var(--segments-x)) / 2);
+  --rot-x: calc((360deg / var(--segments-y)) / 2);
+  --item-width: calc(var(--circ) / var(--segments-x));
+  --item-height: calc(var(--circ) / var(--segments-y));
+}
+
+.sphere-root * {
+  box-sizing: border-box;
+}
+
+.sphere,
+.item,
+.item__image {
+  transform-style: preserve-3d;
+}
+
+main.sphere-main {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  background: transparent;
+  z-index: 1;
 }
 
 .silk-canvas {
@@ -85,250 +113,249 @@ html, body {
   z-index: 0;
 }
 
-.canvas-viewport.is-dragging {
-  cursor: grabbing;
-}
-
-.canvas-world {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  transform-origin: 0 0;
-  will-change: transform;
-  pointer-events: auto;
-  z-index: 1;
-}
-
-/* Etiquetas flotantes de sección (Aparecen en modo categorías o al enfocar) */
-.section-marker {
-  position: absolute;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-  white-space: nowrap;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.section-marker::before {
-  content: '';
-  display: inline-block;
-  width: 14px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Título de proyecto — Oculto en vista general, emerge al seleccionar */
-.project-header-marker {
-  position: absolute;
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(10px);
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  white-space: nowrap;
-  z-index: 120;
-}
-
-.project-header-marker.is-visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.project-header-marker__num {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.project-header-marker__title {
-  font-size: clamp(1.2rem, 2vw, 1.6rem);
-  font-weight: 300;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #ffffff;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85);
-}
-
-/* ============================================================
-   SPATIAL ITEM (Sin texto inferior · Animación 3D · Transición fluida)
-   ============================================================ */
-.spatial-item {
-  position: absolute;
-  cursor: pointer;
-  transform-style: preserve-3d;
-  will-change: transform, left, top, width, height, box-shadow, filter, opacity;
-  /* Transición fluida al cambiar de modo de ordenamiento y asentamiento suave */
-  transition:
-    left 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-    top 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-    width 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-    height 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1),
-    box-shadow 0.25s ease,
-    filter 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.spatial-item__card {
-  position: relative;
+.stage {
   width: 100%;
   height: 100%;
-  background: #111111;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.07);
-  overflow: hidden;
-  border-radius: 2px;
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  display: grid;
+  place-items: center;
+  perspective: calc(var(--radius) * 2);
+  perspective-origin: 50% 50%;
+  contain: layout paint size;
 }
 
-.spatial-item__img {
+.sphere {
+  transform: translateZ(calc(var(--radius) * -1));
+  will-change: transform;
+}
+
+.overlay,
+.overlay--blur {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.overlay {
+  background-image: radial-gradient(rgba(7, 7, 7, 0) 65%, var(--overlay-blur-color, #070707) 100%);
+}
+
+.overlay--blur {
+  -webkit-mask-image: radial-gradient(rgba(7, 7, 7, 0) 70%, var(--overlay-blur-color, #070707) 90%);
+  mask-image: radial-gradient(rgba(7, 7, 7, 0) 70%, var(--overlay-blur-color, #070707) 90%);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.item {
+  width: calc(var(--item-width) * var(--item-size-x));
+  height: calc(var(--item-height) * var(--item-size-y));
+  position: absolute;
+  top: -999px;
+  bottom: -999px;
+  left: -999px;
+  right: -999px;
+  margin: auto;
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 350ms ease;
+  transform: rotateY(calc(var(--rot-y) * (var(--offset-x) + ((var(--item-size-x) - 1) / 2)) + var(--rot-y-delta, 0deg)))
+    rotateX(calc(var(--rot-x) * (var(--offset-y) - ((var(--item-size-y) - 1) / 2)) + var(--rot-x-delta, 0deg)))
+    translateZ(var(--radius));
+}
+
+.item.is-faded {
+  opacity: 0.18;
+}
+
+.item__image {
+  position: absolute;
+  display: block;
+  inset: 7px;
+  border-radius: var(--tile-radius, 16px);
+  background: #111111;
+  overflow: hidden;
+  backface-visibility: hidden;
+  transition: transform 300ms, box-shadow 300ms;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  pointer-events: auto;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+.item__image:hover {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.9), 0 0 0 1.5px rgba(255, 255, 255, 0.35);
+  transform: translateZ(8px) scale(1.03);
+}
+
+.item__image:focus {
+  outline: none;
+}
+
+.item__image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
   pointer-events: none;
-  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.45s ease;
-  filter: brightness(0.96) contrast(1.02);
+  backface-visibility: hidden;
+  filter: var(--image-filter, none);
+  transition: filter 0.3s ease, transform 0.3s ease;
 }
 
-/* Brillo especular 3D tipo cresta de ola */
-.spatial-item__shine {
+.item__image:hover img {
+  transform: scale(1.05);
+}
+
+.viewer {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.28) 0%, transparent 65%);
-  opacity: 0;
+  z-index: 20;
   pointer-events: none;
-  transition: opacity 0.25s ease;
-  mix-blend-mode: overlay;
-}
-
-/* Hover 3D Atractivo estilo onda / ola */
-.spatial-item:hover {
-  z-index: 95 !important;
-}
-
-.spatial-item:hover .spatial-item__card {
-  box-shadow: 0 32px 75px rgba(0, 0, 0, 0.94), 0 0 0 1.5px rgba(255, 255, 255, 0.45);
-}
-
-.spatial-item:hover .spatial-item__img {
-  filter: brightness(1.08) contrast(1.06);
-}
-
-.spatial-item:hover .spatial-item__shine {
-  opacity: 1;
-}
-
-/* Estado Enfocado (Click 1) — Completamente normal, centrada y sin rotación residual */
-.spatial-item.is-focused,
-.spatial-item.is-focused:hover {
-  z-index: 100 !important;
-  transform: translateZ(28px) !important;
-}
-
-.spatial-item.is-focused .spatial-item__card,
-.spatial-item.is-focused:hover .spatial-item__card {
-  box-shadow: 0 36px 85px rgba(0, 0, 0, 0.96), 0 0 0 2px rgba(255, 255, 255, 0.85);
-  transform: none !important;
-}
-
-.spatial-item.is-focused .spatial-item__img,
-.spatial-item.is-focused:hover .spatial-item__img {
-  transform: none !important;
-  filter: brightness(1.08) contrast(1.08);
-}
-
-/* Ítems ocultos en modos filtrados (Exteriores / Interiores) */
-.spatial-item.is-hidden {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transform: scale(0.35) !important;
-  transition: opacity 0.45s ease, transform 0.45s ease !important;
-}
-
-/* Al seleccionar una imagen: las demás se ponen en gris y con transparencia muy leve */
-.canvas-world.has-focused-item .spatial-item:not(.is-focused) {
-  filter: grayscale(100%) brightness(0.72);
-  opacity: 0.82;
-}
-
-.canvas-world.has-focused-item .spatial-item.is-focused {
-  filter: grayscale(0%) brightness(1.08);
-  opacity: 1;
-}
-
-/* TÍTULO DEL PROYECTO SOBRE LA IMAGEN (Superior Izquierda · Sin recuadro) */
-.spatial-item__project-tag {
-  position: absolute;
-  top: 14px;
-  left: 15px;
-  color: #ffffff;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  text-shadow:
-    0 1px 3px rgba(0, 0, 0, 1),
-    0 2px 8px rgba(0, 0, 0, 0.95),
-    0 4px 16px rgba(0, 0, 0, 0.9),
-    0 0 24px rgba(0, 0, 0, 0.85);
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-  z-index: 25;
-  white-space: nowrap;
-  user-select: none;
-}
-
-.spatial-item.is-focused .spatial-item__project-tag {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* LOGO DE FLECHITAS SIN RECUADRO NI TEXTO (Click 1 -> Indicador para Click 2) */
-.spatial-item__expand-icon {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  width: 20px;
-  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.9));
-  opacity: 0;
-  transform: scale(0.65);
-  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-  z-index: 20;
+  padding: var(--viewer-pad);
 }
 
-.spatial-item__expand-icon svg {
+.viewer .frame {
+  width: min(720px, 86vw);
+  height: min(680px, 72vh);
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: var(--enlarge-radius, 20px);
+  display: flex;
+}
+
+@media (max-width: 600px) {
+  .viewer .frame {
+    width: min(420px, 92vw);
+    height: min(460px, 66vh);
+  }
+}
+
+.viewer .scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.72);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 450ms ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.sphere-root[data-enlarging='true'] .viewer .scrim {
+  opacity: 1;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.viewer .enlarge {
+  position: absolute;
+  z-index: 30;
+  border-radius: var(--enlarge-radius, 20px);
+  overflow: hidden;
+  transition:
+    transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 450ms ease,
+    left 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    top 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    width 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    height 450ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top left;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.viewer .enlarge img {
   width: 100%;
   height: 100%;
-  display: block;
+  object-fit: cover;
+  filter: var(--image-filter, none);
 }
 
-.spatial-item.is-focused .spatial-item__expand-icon {
-  opacity: 1;
-  transform: scale(1);
+.sphere-root .enlarge-closing img {
+  filter: var(--image-filter, none);
+}
+
+.edge-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 140px;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--overlay-blur-color, #070707));
+}
+
+.edge-fade--top {
+  top: 0;
+  transform: rotate(180deg);
+}
+
+.edge-fade--bottom {
+  bottom: 0;
+}
+
+.enlarge-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px 22px 18px 22px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.45) 60%, transparent 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #ffffff;
+  pointer-events: none;
+  z-index: 2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+.enlarge-caption__brand {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.enlarge-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.enlarge-close-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.08);
+}
+
+body.dg-scroll-lock {
+  overflow: hidden !important;
 }
 
 /* ============================================================
@@ -787,8 +814,16 @@ html, body {
   padding: 4px 6px;
   border-radius: 999px;
   pointer-events: auto;
+  z-index: 1000;
 }
 
+.hud-zoom-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hud-zoom-ctrl__btn,
 .hud__btn {
   background: transparent;
   border: none;
@@ -803,13 +838,16 @@ html, body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.18s ease;
+  padding: 0;
 }
 
+.hud-zoom-ctrl__btn:hover,
 .hud__btn:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
 }
 
+.hud-zoom-ctrl__label,
 .hud__zoom-label {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -819,9 +857,14 @@ html, body {
   color: rgba(255, 255, 255, 0.55);
 }
 
+.hud-zoom-ctrl__recenter,
 .hud__btn-recenter {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
   width: auto;
   padding: 0 12px;
+  height: 28px;
   border-radius: 999px;
   font-size: 10px;
   letter-spacing: 0.12em;
@@ -829,125 +872,20 @@ html, body {
   font-family: var(--font-mono);
   border-left: 1px solid rgba(255, 255, 255, 0.14);
   margin-left: 4px;
-}
-
-/* ============================================================
-   LIGHTBOX / MODAL PANTALLA COMPLETA (CLICK 2)
-   ============================================================ */
-.spatial-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  background: rgba(4, 4, 4, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 3rem 2rem 2rem;
-  box-sizing: border-box;
-}
-
-.spatial-lightbox.is-open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.spatial-lightbox__close {
-  position: absolute;
-  top: 24px;
-  right: 28px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  padding: 8px 18px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.spatial-lightbox__close:hover {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.spatial-lightbox__nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 10;
+  transition: all 0.18s ease;
 }
 
-.spatial-lightbox__nav:hover {
+.hud-zoom-ctrl__recenter:hover,
+.hud__btn-recenter:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.35);
 }
 
-.spatial-lightbox__nav--prev { left: 24px; }
-.spatial-lightbox__nav--next { right: 24px; }
 
-.spatial-lightbox__stage {
-  max-width: 90vw;
-  max-height: 82vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.spatial-lightbox__img {
-  max-width: 100%;
-  max-height: 76vh;
-  object-fit: contain;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
-  border-radius: 2px;
-  transition: opacity 0.25s ease;
-}
-
-.spatial-lightbox__info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-top: 1rem;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.spatial-lightbox__title {
-  color: #ffffff;
-  text-transform: uppercase;
-  font-weight: 500;
-}
-
-.spatial-lightbox__counter {
-  color: rgba(255, 255, 255, 0.4);
-}
 
 /* ============================================================
    RESPONSIVE DESIGN (PC & MOBILE)

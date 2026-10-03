@@ -1,199 +1,84 @@
 /**
- * MAD VIZ — Screen-Fitted Spatial Canvas Engine
- * 3 Organization Modes: Por Proyecto, Aleatorio, Interiores / Exteriores
- * Screen-Fitted (PC & Mobile) · No text under images · Clean expand icon · Titles on zoom
- * 100% isolated from the rest of the website
+ * MAD VIZ — 3D Dome Gallery (React Bits Port to Vanilla JS)
+ * Spherical 3D dome visualization with momentum inertia, fluid tile zoom,
+ * WebGL Silk shader background, HUD mode matrix and multilingual support.
+ *
+ * User configuration:
+ *   fit: 0.7, minRadius: 450, segments: 30, dragDampening: 0.8, grayscale: false
  */
 
 (function () {
   'use strict';
 
   // ============================================================
-  // CATÁLOGO DE IMÁGENES Y PROYECTOS (20 Renders Reales)
+  // CATÁLOGO DE IMÁGENES Y PROYECTOS (20 Renders Reales MADVIZ)
   // ============================================================
   const IMAGES_DATA = [
     // 01. CASA FLEXA (0..3)
-    { id: 'img-0', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', tag: 'Arquitectura Residencial', folder: '01-casa-flexa', file: 'render-01.jpg', title: 'Perspectiva Hero', isInterior: false },
-    { id: 'img-1', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', tag: 'Arquitectura Residencial', folder: '01-casa-flexa', file: 'render-02.jpeg', title: 'Fachada y Acceso', isInterior: false },
-    { id: 'img-2', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', tag: 'Arquitectura Residencial', folder: '01-casa-flexa', file: 'render-03.jpeg', title: 'Detalle Vegetación', isInterior: false },
-    { id: 'img-3', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', tag: 'Arquitectura Residencial', folder: '01-casa-flexa', file: 'render-04.jpeg', title: 'Expansión Piscina', isInterior: false },
+    { id: 'img-0', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', folder: '01-casa-flexa', file: 'render-01.jpg', isInterior: false },
+    { id: 'img-1', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', folder: '01-casa-flexa', file: 'render-02.jpeg', isInterior: false },
+    { id: 'img-2', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', folder: '01-casa-flexa', file: 'render-03.jpeg', isInterior: false },
+    { id: 'img-3', projId: 'casa-flexa', projNum: '01', projTitle: 'Casa Flexa', folder: '01-casa-flexa', file: 'render-04.jpeg', isInterior: false },
 
     // 02. EDIFICIO AURA I (4..7)
-    { id: 'img-4', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', tag: 'Vivienda Colectiva', folder: '02-edificio-aura-i', file: 'render-05.png', title: 'Contra-picado', isInterior: false },
-    { id: 'img-5', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', tag: 'Vivienda Colectiva', folder: '02-edificio-aura-i', file: 'render-06.png', title: 'Remate y Cielo', isInterior: false },
-    { id: 'img-6', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', tag: 'Vivienda Colectiva', folder: '02-edificio-aura-i', file: 'render-07.png', title: 'Textura Hormigón', isInterior: false },
-    { id: 'img-7', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', tag: 'Vivienda Colectiva', folder: '02-edificio-aura-i', file: 'render-08.png', title: 'Living y Cocina', isInterior: true },
+    { id: 'img-4', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', folder: '02-edificio-aura-i', file: 'render-05.png', isInterior: false },
+    { id: 'img-5', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', folder: '02-edificio-aura-i', file: 'render-06.png', isInterior: false },
+    { id: 'img-6', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', folder: '02-edificio-aura-i', file: 'render-07.png', isInterior: false },
+    { id: 'img-7', projId: 'edificio-aura-i', projNum: '02', projTitle: 'Edificio Aura I', folder: '02-edificio-aura-i', file: 'render-08.png', isInterior: true },
 
     // 03. EDIFICIO VERONA (8..11)
-    { id: 'img-8', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', tag: 'Desarrollo Urbano', folder: '03-edificio-verona', file: 'render-09.jpeg', title: 'Exterior Atardecer', isInterior: false },
-    { id: 'img-9', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', tag: 'Desarrollo Urbano', folder: '03-edificio-verona', file: 'render-10.jpeg', title: 'Contexto y Esquina', isInterior: false },
-    { id: 'img-10', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', tag: 'Desarrollo Urbano', folder: '03-edificio-verona', file: 'render-11.jpg', title: 'Comedor y Jardín', isInterior: true },
-    { id: 'img-11', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', tag: 'Desarrollo Urbano', folder: '03-edificio-verona', file: 'render-12.jpeg', title: 'Dormitorio Principal', isInterior: true },
+    { id: 'img-8', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', folder: '03-edificio-verona', file: 'render-09.jpeg', isInterior: false },
+    { id: 'img-9', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', folder: '03-edificio-verona', file: 'render-10.jpeg', isInterior: false },
+    { id: 'img-10', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', folder: '03-edificio-verona', file: 'render-11.jpg', isInterior: true },
+    { id: 'img-11', projId: 'edificio-verona', projNum: '03', projTitle: 'Edificio Verona', folder: '03-edificio-verona', file: 'render-12.jpeg', isInterior: true },
 
     // 04. VIVIENDAS CHIUSO (12..15)
-    { id: 'img-12', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', tag: 'Complejo Residencial', folder: '04-viviendas-chiuso', file: 'render-13.jpeg', title: 'Acceso y Cochera', isInterior: false },
-    { id: 'img-13', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', tag: 'Complejo Residencial', folder: '04-viviendas-chiuso', file: 'render-14.jpeg', title: 'Cocina y Barra', isInterior: true },
-    { id: 'img-14', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', tag: 'Complejo Residencial', folder: '04-viviendas-chiuso', file: 'render-15.jpeg', title: 'Living y Comedor', isInterior: true },
-    { id: 'img-15', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', tag: 'Complejo Residencial', folder: '04-viviendas-chiuso', file: 'render-16.jpeg', title: 'Dormitorio Suite', isInterior: true },
+    { id: 'img-12', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', folder: '04-viviendas-chiuso', file: 'render-13.jpeg', isInterior: false },
+    { id: 'img-13', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', folder: '04-viviendas-chiuso', file: 'render-14.jpeg', isInterior: true },
+    { id: 'img-14', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', folder: '04-viviendas-chiuso', file: 'render-15.jpeg', isInterior: true },
+    { id: 'img-15', projId: 'viviendas-chiuso', projNum: '04', projTitle: 'Viviendas Chiuso', folder: '04-viviendas-chiuso', file: 'render-16.jpeg', isInterior: true },
 
     // 05. EDIFICIO ANKARA II (16..19)
-    { id: 'img-16', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', tag: 'Arquitectura en Altura', folder: '05-edificio-ankara%20ii', file: 'render-17.jpg', title: 'Volumen Principal', isInterior: false },
-    { id: 'img-17', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', tag: 'Arquitectura en Altura', folder: '05-edificio-ankara%20ii', file: 'render-18.jpg', title: 'Living Vista Mar', isInterior: true },
-    { id: 'img-18', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', tag: 'Arquitectura en Altura', folder: '05-edificio-ankara%20ii', file: 'render-19.jpg', title: 'Comedor Vista Mar', isInterior: true },
-    { id: 'img-19', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', tag: 'Arquitectura en Altura', folder: '05-edificio-ankara%20ii', file: 'render-20.jpg', title: 'Comedor y Madera', isInterior: true }
+    { id: 'img-16', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', folder: '05-edificio-ankara%20ii', file: 'render-17.jpg', isInterior: false },
+    { id: 'img-17', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', folder: '05-edificio-ankara%20ii', file: 'render-18.jpg', isInterior: true },
+    { id: 'img-18', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', folder: '05-edificio-ankara%20ii', file: 'render-19.jpg', isInterior: true },
+    { id: 'img-19', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', folder: '05-edificio-ankara%20ii', file: 'render-20.jpg', isInterior: true }
   ];
 
-  // ============================================================
-  // COORDENADAS PARA CADA UNO DE LOS 3 MODOS
-  // ============================================================
-  const LAYOUTS = {
-    // MODO 1: GALERIA (Distribución continua y orgánica de los 20 renders - DEFAULT)
-    gallery: {
-      bounds: { minX: 0, maxX: 1140, minY: 0, maxY: 700 },
-      markers: [],
-      coords: [
-        { x: 25,  y: 20,  w: 220, h: 160, z: 2 },
-        { x: 65,  y: 170, w: 175, h: 230, z: 5 },
-        { x: 15,  y: 380, w: 195, h: 160, z: 3 },
-        { x: 145, y: 500, w: 235, h: 160, z: 2 },
-        { x: 865, y: 235, w: 185, h: 225, z: 4 },
-        { x: 380, y: 20,  w: 175, h: 215, z: 3 },
-        { x: 470, y: 300, w: 185, h: 205, z: 3 },
-        { x: 390, y: 205, w: 185, h: 160, z: 4 },
-        { x: 210, y: 10,  w: 195, h: 150, z: 4 },
-        { x: 690, y: 155, w: 205, h: 160, z: 2 },
-        { x: 910, y: 20,  w: 140, h: 230, z: 3 },
-        { x: 620, y: 300, w: 215, h: 150, z: 4 },
-        { x: 705, y: 15,  w: 225, h: 165, z: 4 },
-        { x: 540, y: 140, w: 185, h: 180, z: 5 },
-        { x: 315, y: 345, w: 185, h: 195, z: 5 },
-        { x: 510, y: 480, w: 230, h: 160, z: 3 },
-        { x: 520, y: 0,   w: 210, h: 160, z: 2 },
-        { x: 210, y: 135, w: 215, h: 160, z: 3 },
-        { x: 180, y: 275, w: 175, h: 215, z: 4 },
-        { x: 810, y: 430, w: 205, h: 200, z: 5 }
-      ]
-    },
+  // Helper para construir items normalizados
+  const buildNormalizedImagePool = (dataList) => {
+    return dataList.map(d => ({
+      src: `images/proyectos/${d.folder}/${d.file}`,
+      alt: d.projTitle,
+      data: d
+    }));
+  };
 
-    // MODO 2: PROYECTOS (Agrupados en clusters compactos por proyecto)
-    projects: {
-      bounds: { minX: 0, maxX: 1160, minY: 0, maxY: 710 },
-      markers: [
-        { id: 'm-casa-flexa', text: '01 · Casa Flexa', tag: 'Arquitectura Residencial', x: 20, y: 0, projId: 'casa-flexa' },
-        { id: 'm-edificio-aura', text: '02 · Edificio Aura I', tag: 'Vivienda Colectiva', x: 410, y: 0, projId: 'edificio-aura-i' },
-        { id: 'm-edificio-verona', text: '03 · Edificio Verona', tag: 'Desarrollo Urbano', x: 790, y: 10, projId: 'edificio-verona' },
-        { id: 'm-viviendas-chiuso', text: '04 · Viviendas Chiuso', tag: 'Complejo Residencial', x: 130, y: 350, projId: 'viviendas-chiuso' },
-        { id: 'm-edificio-ankara', text: '05 · Edificio Ankara II', tag: 'Arquitectura en Altura', x: 610, y: 350, projId: 'edificio-ankara-ii' }
-      ],
-      coords: [
-        // Casa Flexa (0..3)
-        { x: 0,   y: 25,  w: 210, h: 155, z: 2 },
-        { x: 160, y: 0,   w: 150, h: 210, z: 4 },
-        { x: 260, y: 100, w: 140, h: 170, z: 3 },
-        { x: 65,  y: 155, w: 230, h: 145, z: 5 },
-        // Edificio Aura I (4..7)
-        { x: 550, y: 10,  w: 165, h: 210, z: 3 },
-        { x: 400, y: 15,  w: 175, h: 160, z: 2 },
-        { x: 490, y: 115, w: 160, h: 175, z: 5 },
-        { x: 620, y: 125, w: 160, h: 160, z: 4 },
-        // Edificio Verona (8..11)
-        { x: 790,  y: 15,  w: 205, h: 160, z: 2 },
-        { x: 950,  y: 30,  w: 160, h: 175, z: 4 },
-        { x: 1060, y: 15,  w: 120, h: 210, z: 3 },
-        { x: 860,  y: 150, w: 215, h: 150, z: 5 },
-        // Viviendas Chiuso (12..15)
-        { x: 290, y: 375, w: 205, h: 150, z: 3 },
-        { x: 130, y: 375, w: 175, h: 165, z: 2 },
-        { x: 220, y: 475, w: 150, h: 175, z: 5 },
-        { x: 335, y: 500, w: 180, h: 145, z: 4 },
-        // Edificio Ankara II (16..19)
-        { x: 605, y: 375, w: 165, h: 210, z: 3 },
-        { x: 745, y: 375, w: 175, h: 145, z: 2 },
-        { x: 835, y: 465, w: 145, h: 185, z: 4 },
-        { x: 665, y: 515, w: 215, h: 145, z: 5 }
-      ]
-    },
+  // Pools por categoría
+  const IMAGE_POOLS = {
+    gallery: buildNormalizedImagePool(IMAGES_DATA),
+    projects: buildNormalizedImagePool(IMAGES_DATA), // ordenado por proyectos
+    exteriors: buildNormalizedImagePool(IMAGES_DATA.filter(d => !d.isInterior)),
+    interiors: buildNormalizedImagePool(IMAGES_DATA.filter(d => d.isInterior))
+  };
 
-    // MODO 3: EXTERIORES (11 Renders de arquitectura exterior, fachadas y terrazas)
-    exteriors: {
-      bounds: { minX: 0, maxX: 1160, minY: 0, maxY: 720 },
-      markers: [
-        { id: 'cat-ext', text: 'Exteriores // Fachadas, Terrazas & Entorno (11 Renders)', tag: '11 Renders', x: 20, y: 0, isCategory: true, modeId: 'exteriors' }
-      ],
-      coords: [
-        // 0..3 Casa Flexa (4 exteriores)
-        { x: 20,  y: 40,  w: 230, h: 165, z: 2 },
-        { x: 200, y: 25,  w: 180, h: 235, z: 4 },
-        { x: 335, y: 130, w: 165, h: 185, z: 3 },
-        { x: 80,  y: 185, w: 250, h: 160, z: 5 },
-        // 4..6 Aura I (3 exteriores)
-        { x: 670, y: 25,  w: 185, h: 235, z: 3 },
-        { x: 500, y: 30,  w: 200, h: 180, z: 2 },
-        { x: 600, y: 135, w: 180, h: 195, z: 5 },
-        // 7 Aura I (Interior -> Oculto)
-        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
-        // 8..9 Verona (2 exteriores)
-        { x: 910, y: 35,  w: 235, h: 175, z: 2 },
-        { x: 810, y: 180, w: 220, h: 185, z: 4 },
-        // 10..11 Verona (Interiores -> Ocultos)
-        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
-        // 12 Chiuso (1 exterior)
-        { x: 190, y: 365, w: 250, h: 215, z: 4 },
-        // 13..15 Chiuso (Interiores -> Ocultos)
-        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
-        // 16 Ankara II (1 exterior)
-        { x: 530, y: 350, w: 225, h: 250, z: 4 },
-        // 17..19 Ankara II (Interiores -> Ocultos)
-        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 360, w: 0, h: 0, z: 0, hidden: true }
-      ]
+  // Textos bilingües de la interfaz
+  const TRANSLATIONS = {
+    es: {
+      status: 'Arrastrar para explorar · Clic en una imagen para ampliar',
+      recenter: 'VISTA GENERAL',
+      gallery: 'GALERIA',
+      projects: 'PROYECTOS',
+      exteriors: 'EXTERIORES',
+      interiors: 'INTERIORES'
     },
-
-    // MODO 4: INTERIORES (9 Renders destacados en cuadrícula 3x3)
-    interiors: {
-      bounds: { minX: 0, maxX: 1140, minY: 0, maxY: 690 },
-      markers: [
-        { id: 'cat-int', text: 'Interiores // Living, Cocina & Dormitorios (9 Renders)', tag: '9 Renders', x: 20, y: 0, isCategory: true, modeId: 'interiors' }
-      ],
-      coords: [
-        // 0..6 (Exteriores -> Ocultos)
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        // 7 Aura I (Living y Cocina)
-        { x: 40,  y: 40,  w: 325, h: 195, z: 2 },
-        // 8..9 Verona (Exteriores -> Ocultos)
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        // 10 Verona (Comedor y Jardín)
-        { x: 410, y: 40,  w: 325, h: 195, z: 3 },
-        // 11 Verona (Dormitorio Principal)
-        { x: 775, y: 40,  w: 325, h: 195, z: 2 },
-        // 12 Chiuso (Exterior -> Oculto)
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        // 13 Chiuso (Cocina y Barra)
-        { x: 40,  y: 255, w: 325, h: 195, z: 3 },
-        // 14 Chiuso (Living y Comedor)
-        { x: 410, y: 255, w: 325, h: 195, z: 4 },
-        // 15 Chiuso (Dormitorio Suite)
-        { x: 775, y: 255, w: 325, h: 195, z: 3 },
-        // 16 Ankara II (Exterior -> Oculto)
-        { x: 580, y: 340, w: 0, h: 0, z: 0, hidden: true },
-        // 17 Ankara II (Living Vista Mar)
-        { x: 40,  y: 470, w: 325, h: 195, z: 2 },
-        // 18 Ankara II (Comedor Vista Mar)
-        { x: 410, y: 470, w: 325, h: 195, z: 3 },
-        // 19 Ankara II (Comedor y Madera)
-        { x: 775, y: 470, w: 325, h: 195, z: 2 }
-      ]
+    en: {
+      status: 'Drag to explore · Click any render to expand',
+      recenter: 'OVERVIEW',
+      gallery: 'GALLERY',
+      projects: 'PROJECTS',
+      exteriors: 'EXTERIORS',
+      interiors: 'INTERIORS'
     }
   };
 
@@ -425,1065 +310,820 @@
   }
 
   // ============================================================
-  // MOTOR DEL LIENZO ESPACIAL AJUSTADO A LA PANTALLA
+  // CLASE PRINCIPAL: VANILLA DOME GALLERY
   // ============================================================
-  class ScreenFittedCanvas {
-    constructor() {
-      this.viewport = document.getElementById('canvas-viewport');
-      this.world = document.getElementById('canvas-world');
-      this.zoomLabel = document.getElementById('hud-zoom');
-      this.statusText = document.getElementById('hud-status-text');
+  class VanillaDomeGallery {
+    constructor(options = {}) {
+      this.root = document.getElementById('dome-root');
+      this.main = document.getElementById('sphere-main');
+      this.sphere = document.getElementById('sphere');
+      this.viewer = document.getElementById('viewer');
+      this.scrim = document.getElementById('scrim');
+      this.frame = document.getElementById('frame');
 
-      // Fondo Animado Silk Shader (React Bits)
-      this.silkCanvas = document.getElementById('silk-canvas');
-      if (this.silkCanvas) {
-        this.silkBg = new SilkBackground(this.silkCanvas, {
-          speed: 5,
-          scale: 1,
-          color: '#363e80',
-          noiseIntensity: 1.5,
-          rotation: 0
-        });
-      }
+      // Opciones configuradas
+      this.fit = options.fit ?? 0.7;
+      this.initialFit = this.fit;
+      this.minRadius = options.minRadius ?? 450;
+      this.maxRadius = options.maxRadius ?? Infinity;
+      this.segments = options.segments ?? 30;
+      this.dragDampening = options.dragDampening ?? 0.8;
+      this.grayscale = options.grayscale ?? false;
+      this.maxVerticalRotationDeg = options.maxVerticalRotationDeg ?? 5;
+      this.dragSensitivity = options.dragSensitivity ?? 20;
+      this.enlargeTransitionMs = options.enlargeTransitionMs ?? 320;
+      this.overlayBlurColor = options.overlayBlurColor ?? '#070707';
+      this.imageBorderRadius = options.imageBorderRadius ?? '16px';
+      this.openedImageBorderRadius = options.openedImageBorderRadius ?? '20px';
 
-      // Lightbox
-      this.lightbox = document.getElementById('spatial-lightbox');
-      this.lightboxImg = document.getElementById('spatial-lightbox-img');
-      this.lightboxTitle = document.getElementById('spatial-lightbox-title');
-      this.lightboxCounter = document.getElementById('spatial-lightbox-counter');
-      this.lightboxClose = document.getElementById('spatial-lightbox-close');
-      this.lightboxPrev = document.getElementById('spatial-lightbox-prev');
-      this.lightboxNext = document.getElementById('spatial-lightbox-next');
-
-      this.currentMode = 'gallery'; // 'gallery' (Galería libre) por defecto al abrir la web
-      this.isShuffling = false;
-      this.itemElements = [];
-      this.markerElements = [];
-      this.focusedItem = null;
-      this.activeProjectMarker = null;
-      this.currentLightboxIndex = 0;
-
-      // Estado de Cámara
-      const isMobileInit = typeof window !== 'undefined' && (window.innerWidth <= 768 || (window.matchMedia && window.matchMedia('(max-width: 768px), (pointer: coarse)').matches));
-      const initialScale = isMobileInit ? 0.90 : 1;
-      this.targetX = 0;
-      this.targetY = 0;
-      this.targetScale = initialScale;
-      this.currentX = 0;
-      this.currentY = 0;
-      this.currentScale = initialScale;
-      this.lerpFactor = 0.14;
-
-      // Arrastre
+      // Estado interno
+      this.currentMode = 'gallery';
+      this.currentPool = [...IMAGE_POOLS.gallery];
+      this.rotation = { x: 0, y: 0 };
+      this.startRot = { x: 0, y: 0 };
+      this.startPos = null;
       this.isDragging = false;
-      this.dragStartX = 0;
-      this.dragStartY = 0;
-      this.cameraStartX = 0;
-      this.cameraStartY = 0;
-      this.lastPointerX = 0;
-      this.lastPointerY = 0;
-      this.velocityX = 0;
-      this.velocityY = 0;
-      this.friction = 0.90;
+      this.hasMoved = false;
+      this.inertiaRAF = null;
+      this.isOpening = false;
+      this.openStartedAt = 0;
+      this.lastDragEndAt = 0;
+      this.focusedEl = null;
+      this.originalTilePos = null;
+      this.recentPoints = [];
+      this.recenterRAF = null;
 
-      this.initWorld();
-      this.initEvents();
-      this.initCustomCursor();
-      this.fitToScreen(true);
-      this.startLoop();
+      // Idioma activo
+      this.currentLang = localStorage.getItem('mad_lang') || 'es';
+
+      // Helpers matemáticos
+      this.clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+      this.normalizeAngle = d => ((d % 360) + 360) % 360;
+      this.wrapAngleSigned = deg => {
+        const a = (((deg + 180) % 360) + 360) % 360;
+        return a - 180;
+      };
+
+      this.init();
     }
 
-    // Inicializar elementos en el canvas
-    initWorld() {
-      if (!this.world) return;
-      this.world.innerHTML = '';
-      this.itemElements = [];
-      this.markerElements = [];
+    // Rotación angular de cada slot en la esfera 3D
+    computeItemBaseRotation(offsetX, offsetY, sizeX, sizeY, segments) {
+      const unit = 360 / segments / 2;
+      const rotateY = unit * (offsetX + (sizeX - 1) / 2);
+      const rotateX = unit * (offsetY - (sizeY - 1) / 2);
+      return { rotateX, rotateY };
+    }
 
-      // 1. Crear marcadores de sección / proyecto
-      this.createMarkers();
+    // Generador de los 150 slots de la cúpula geodésica / esférica
+    buildItems(pool, seg) {
+      const xCols = Array.from({ length: seg }, (_, i) => -37 + i * 2);
+      const evenYs = [-4, -2, 0, 2, 4];
+      const oddYs = [-3, -1, 1, 3, 5];
 
-      // 2. Crear los 20 ítems de imagen (sin descripciones bajo las imágenes)
-      IMAGES_DATA.forEach((data, index) => {
-        const item = document.createElement('div');
-        item.className = 'spatial-item';
-        item.dataset.index = index;
-        item.dataset.projId = data.projId;
+      const coords = xCols.flatMap((x, c) => {
+        const ys = c % 2 === 0 ? evenYs : oddYs;
+        return ys.map(y => ({ x, y, sizeX: 2, sizeY: 2 }));
+      });
 
-        const card = document.createElement('div');
-        card.className = 'spatial-item__card';
+      const totalSlots = coords.length;
+      if (!pool || pool.length === 0) {
+        return coords.map(c => ({ ...c, src: '', alt: '', data: {} }));
+      }
+
+      const usedImages = Array.from({ length: totalSlots }, (_, i) => pool[i % pool.length]);
+
+      // Evitar imágenes idénticas inmediatamente adyacentes
+      for (let i = 1; i < usedImages.length; i++) {
+        if (usedImages[i].src === usedImages[i - 1].src) {
+          for (let j = i + 1; j < usedImages.length; j++) {
+            if (usedImages[j].src !== usedImages[i].src) {
+              const tmp = usedImages[i];
+              usedImages[i] = usedImages[j];
+              usedImages[j] = tmp;
+              break;
+            }
+          }
+        }
+      }
+
+      return coords.map((c, i) => ({
+        ...c,
+        src: usedImages[i].src,
+        alt: usedImages[i].alt,
+        data: usedImages[i].data
+      }));
+    }
+
+    init() {
+      // Configurar variables CSS en el root
+      this.root.style.setProperty('--segments-x', this.segments);
+      this.root.style.setProperty('--segments-y', this.segments);
+      this.root.style.setProperty('--overlay-blur-color', this.overlayBlurColor);
+      this.root.style.setProperty('--tile-radius', this.imageBorderRadius);
+      this.root.style.setProperty('--enlarge-radius', this.openedImageBorderRadius);
+      this.root.style.setProperty('--image-filter', this.grayscale ? 'grayscale(1)' : 'none');
+
+      this.updateLayout();
+      window.addEventListener('resize', () => this.updateLayout(), { passive: true });
+
+      // Render inicial de slots
+      this.items = this.buildItems(this.currentPool, this.segments);
+      this.renderSphereItems();
+
+      // Eventos de arrastre, gestos y UI
+      this.initEvents();
+      this.initUIControls();
+      this.initLanguage();
+
+      // Aplicar posición inicial
+      this.applyTransform(this.rotation.x, this.rotation.y);
+      this.updateZoomLabel();
+    }
+
+    renderSphereItems() {
+      this.sphere.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+
+      this.items.forEach((it) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'item';
+        itemEl.dataset.src = it.src;
+        itemEl.dataset.offsetX = it.x;
+        itemEl.dataset.offsetY = it.y;
+        itemEl.dataset.sizeX = it.sizeX;
+        itemEl.dataset.sizeY = it.sizeY;
+        itemEl.dataset.projTitle = it.data?.projTitle || '';
+
+        itemEl.style.setProperty('--offset-x', it.x);
+        itemEl.style.setProperty('--offset-y', it.y);
+        itemEl.style.setProperty('--item-size-x', it.sizeX);
+        itemEl.style.setProperty('--item-size-y', it.sizeY);
+
+        const imgDiv = document.createElement('div');
+        imgDiv.className = 'item__image';
+        imgDiv.setAttribute('role', 'button');
+        imgDiv.setAttribute('tabindex', '0');
+        imgDiv.setAttribute('aria-label', it.alt || 'Render arquitectónico');
 
         const img = document.createElement('img');
-        img.className = 'spatial-item__img';
-        img.src = `images/proyectos/${data.folder}/${data.file}`;
-        img.alt = data.projTitle;
-        img.loading = 'eager';
+        img.src = it.src;
+        img.alt = it.alt;
+        img.draggable = false;
+        img.loading = 'lazy';
 
-        const shine = document.createElement('div');
-        shine.className = 'spatial-item__shine';
+        imgDiv.appendChild(img);
+        itemEl.appendChild(imgDiv);
 
-        // LOGO DE FLECHITAS LIMPIO (Sin recuadro ni texto)
-        const expandIcon = document.createElement('div');
-        expandIcon.className = 'spatial-item__expand-icon';
-        expandIcon.title = 'Ampliar a pantalla completa';
-        expandIcon.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <polyline points="9 21 3 21 3 15"></polyline>
-            <line x1="21" y1="3" x2="14" y2="10"></line>
-            <line x1="3" y1="21" x2="10" y2="14"></line>
-          </svg>
-        `;
-
-        // TÍTULO DEL PROYECTO SOBRE LA IMAGEN (Superior Izquierda)
-        const projectTag = document.createElement('div');
-        projectTag.className = 'spatial-item__project-tag';
-        projectTag.textContent = `${data.projNum} · ${data.projTitle.toUpperCase()}`;
-
-        card.appendChild(img);
-        card.appendChild(shine);
-        card.appendChild(projectTag);
-        card.appendChild(expandIcon);
-        item.appendChild(card);
-
-        // --- ANIMACIÓN DE HOVER ESTILO ONDA / OLA CON MOVIMIENTO SMOOTH ---
-        item.addEventListener('mousemove', (e) => {
-          if (this.focusedItem) return; // Si hay una imagen seleccionada, ninguna se inclina
-          const rect = item.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-
-          const tiltX = (x - centerX) / centerX;
-          const tiltY = (y - centerY) / centerY;
-          const dist = Math.hypot(tiltX, tiltY);
-
-          // Dinámica de ola: inclinación más pronunciada, torsión de cresta y elevación
-          const rotX = (-tiltY * 16).toFixed(2);
-          const rotY = (tiltX * 16).toFixed(2);
-          const rotZ = ((tiltX * -tiltY) * 5.2).toFixed(2);
-          const waveLift = (36 + Math.max(0, 1 - dist) * 14).toFixed(1);
-
-          item.style.transform = `perspective(850px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg) translateZ(${waveLift}px) scale3d(1.075, 1.075, 1.075)`;
-          img.style.transform = `scale(1.09) translate3d(${(-tiltX * 9).toFixed(1)}px, ${(-tiltY * 9).toFixed(1)}px, 0)`;
-          card.style.boxShadow = `${(-tiltX * 22).toFixed(1)}px ${(-tiltY * 22 + 30).toFixed(1)}px 70px rgba(0, 0, 0, 0.94), 0 0 0 1.5px rgba(255, 255, 255, 0.48)`;
-          shine.style.background = `radial-gradient(ellipse at ${x}px ${y}px, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.08) 40%, transparent 72%)`;
-          shine.style.opacity = '1';
+        imgDiv.addEventListener('click', () => {
+          if (this.isDragging || this.hasMoved) return;
+          if (performance.now() - this.lastDragEndAt < 100) return;
+          if (this.isOpening) return;
+          this.openItem(imgDiv);
         });
 
-        item.addEventListener('mouseleave', () => {
-          if (this.focusedItem) return;
-          item.style.transform = '';
-          img.style.transform = '';
-          card.style.boxShadow = '';
-          shine.style.opacity = '0';
-        });
-
-        // --- INTERACCIÓN DE CLIC ---
-        item.addEventListener('click', (e) => {
-          e.stopPropagation();
-
-          // Si ya estaba enfocado este ítem exacto -> CLICK 2: Abrir a pantalla completa
-          if (this.focusedItem === item) {
-            this.openLightbox(index);
-            return;
-          }
-
-          // CLICK 1: Enfocar imagen y acercar al proyecto revelando su nombre
-          this.focusImageAndProject(index, item, data);
-        });
-
-        this.world.appendChild(item);
-        this.itemElements.push(item);
+        fragment.appendChild(itemEl);
       });
 
-      this.applyLayout(this.currentMode);
+      this.sphere.appendChild(fragment);
     }
 
-    createMarkers() {
-      // Marcadores de proyectos (Modo 'projects')
-      LAYOUTS.projects.markers.forEach(m => {
-        const el = document.createElement('div');
-        el.className = 'project-header-marker';
-        el.id = m.id;
-        el.innerHTML = `
-          <span class="project-header-marker__num">${m.text.split('·')[0].trim()}</span>
-          <h2 class="project-header-marker__title">${m.text.split('·')[1].trim()}</h2>
-        `;
-        el.style.left = `${m.x}px`;
-        el.style.top = `${m.y}px`;
-        this.world.appendChild(el);
-        this.markerElements.push({ el, type: 'project', projId: m.projId });
-      });
+    updateLayout() {
+      const w = Math.max(1, window.innerWidth);
+      const h = Math.max(1, window.innerHeight);
+      const minDim = Math.min(w, h);
+      const maxDim = Math.max(w, h);
+      const aspect = w / h;
+      const basis = aspect >= 1.3 ? w : minDim;
 
-      // Marcadores de categorías (Modos 'exteriors' e 'interiors')
-      const catMarkers = [
-        { id: 'cat-ext', text: 'Exteriores // Fachadas, Terrazas & Entorno (11 Renders)', tag: '11 Renders', x: 20, y: 0, isCategory: true, modeId: 'exteriors' },
-        { id: 'cat-int', text: 'Interiores // Living, Cocina & Dormitorios (9 Renders)', tag: '9 Renders', x: 20, y: 0, isCategory: true, modeId: 'interiors' }
-      ];
-      catMarkers.forEach(m => {
-        const el = document.createElement('div');
-        el.className = 'section-marker';
-        el.id = m.id;
-        el.textContent = m.text;
-        el.style.left = `${m.x}px`;
-        el.style.top = `${m.y}px`;
-        el.style.opacity = '0';
-        this.world.appendChild(el);
-        this.markerElements.push({ el, type: 'category', modeId: m.modeId });
-      });
+      let radius = basis * this.fit;
+      const heightGuard = h * 1.35;
+      radius = Math.min(radius, heightGuard);
+      radius = this.clamp(radius, this.minRadius, this.maxRadius);
+      this.radius = Math.round(radius);
+
+      const viewerPad = Math.max(8, Math.round(minDim * 0.22));
+      this.root.style.setProperty('--radius', `${this.radius}px`);
+      this.root.style.setProperty('--viewer-pad', `${viewerPad}px`);
+
+      this.applyTransform(this.rotation.x, this.rotation.y);
     }
 
-    // Aplicar coordenadas del modo seleccionado
-    applyLayout(modeName) {
-      this.currentMode = modeName;
-
-      // Si es un modo libre/moodboard (galería, exteriores o interiores), generar distribución orgánica fresca y mezclada
-      if (modeName !== 'projects') {
-        this.generateOrganicScatter(modeName);
+    applyTransform(xDeg, yDeg) {
+      if (this.sphere) {
+        this.sphere.style.transform = `translateZ(calc(var(--radius) * -1)) rotateX(${xDeg}deg) rotateY(${yDeg}deg)`;
       }
+    }
 
-      const layout = LAYOUTS[modeName];
-      if (!layout) return;
-
-      // Desactivar selecciones anteriores
-      if (this.focusedItem) {
-        this.focusedItem.classList.remove('is-focused');
-        this.focusedItem = null;
+    stopInertia() {
+      if (this.inertiaRAF) {
+        cancelAnimationFrame(this.inertiaRAF);
+        this.inertiaRAF = null;
       }
-      this.world.classList.remove('has-focused-item');
-      this.hideAllProjectTitles();
+    }
 
-      // Posicionar los 20 ítems con transición fluida
-      layout.coords.forEach((c, idx) => {
-        const item = this.itemElements[idx];
-        if (item) {
-          if (c.hidden) {
-            item.classList.add('is-hidden');
-          } else {
-            item.classList.remove('is-hidden');
-            item.style.left = `${c.x}px`;
-            item.style.top = `${c.y}px`;
-            item.style.width = `${c.w}px`;
-            item.style.height = `${c.h}px`;
-            item.style.zIndex = c.z || 1;
-          }
+    startInertia(vx, vy) {
+      const MAX_V = 1.6;
+      let vX = this.clamp(vx, -MAX_V, MAX_V) * 80;
+      let vY = this.clamp(vy, -MAX_V, MAX_V) * 80;
+      let frames = 0;
+      const d = this.clamp(this.dragDampening ?? 0.8, 0, 1);
+      const frictionMul = 0.94 + 0.055 * d;
+      const stopThreshold = 0.015 - 0.01 * d;
+      const maxFrames = Math.round(90 + 270 * d);
+
+      const step = () => {
+        vX *= frictionMul;
+        vY *= frictionMul;
+        if (Math.abs(vX) < stopThreshold && Math.abs(vY) < stopThreshold) {
+          this.inertiaRAF = null;
+          return;
         }
-      });
-
-      // Actualizar visibilidad y posición de marcadores de categorías (exteriors / interiors)
-      this.markerElements.forEach(m => {
-        if (m.type === 'category') {
-          const isActive = m.modeId === modeName;
-          m.el.style.opacity = isActive ? '1' : '0';
-          if (isActive && layout.bounds) {
-            m.el.style.left = `${Math.max(20, layout.bounds.minX)}px`;
-            m.el.style.top = `${layout.bounds.minY}px`;
-          }
+        if (++frames > maxFrames) {
+          this.inertiaRAF = null;
+          return;
         }
-      });
+        const nextX = this.clamp(this.rotation.x - vY / 200, -this.maxVerticalRotationDeg, this.maxVerticalRotationDeg);
+        const nextY = this.wrapAngleSigned(this.rotation.y + vX / 200);
+        this.rotation = { x: nextX, y: nextY };
+        this.applyTransform(nextX, nextY);
+        this.inertiaRAF = requestAnimationFrame(step);
+      };
 
-      // Ajustar cámara para que todo quepa exactamente en la pantalla
-      setTimeout(() => this.fitToScreen(false), 80);
-    }
-
-    // Ajustar el canvas al tamaño exacto de la pantalla (PC o Móvil)
-    fitToScreen(instant = false) {
-      const layout = LAYOUTS[this.currentMode];
-      if (!layout) return;
-
-      const bounds = layout.bounds;
-      const contentW = bounds.maxX - bounds.minX;
-      const contentH = bounds.maxY - bounds.minY;
-
-      const isMobile = window.innerWidth <= 768 ||
-        (window.matchMedia && window.matchMedia('(max-width: 768px), (pointer: coarse)').matches);
-      const paddingX = isMobile ? 24 : 70;
-      const paddingY = isMobile ? 100 : 130;
-
-      const availW = window.innerWidth - paddingX;
-      const availH = window.innerHeight - paddingY;
-
-      // Escala óptima: en mobile se abre directamente con ~90% (0.90) para que las imágenes se aprecien grandes e impactantes
-      const scaleX = availW / contentW;
-      const scaleY = availH / contentH;
-      const fitScale = isMobile ? 0.90 : Math.min(scaleX, scaleY);
-
-      this.targetScale = fitScale;
-      this.targetX = (window.innerWidth - contentW * fitScale) / 2 - bounds.minX * fitScale;
-      this.targetY = (window.innerHeight - contentH * fitScale) / 2 - bounds.minY * fitScale + (isMobile ? 20 : 10);
-      this.velocityX = 0;
-      this.velocityY = 0;
-
-      if (instant) {
-        this.currentScale = this.targetScale;
-        this.currentX = this.targetX;
-        this.currentY = this.targetY;
-      }
-
-      if (this.focusedItem) {
-        this.focusedItem.classList.remove('is-focused');
-        this.focusedItem = null;
-      }
-      this.world.classList.remove('has-focused-item');
-      this.hideAllProjectTitles();
-      if (this.statusText) {
-        this.statusText.textContent = 'Arrastrar para explorar · Clic en una imagen para acercar';
-      }
-    }
-
-    // Limitar el desplazamiento de la cámara para que el canvas no se mueva demasiado hacia los costados
-    clampCamera() {
-      // Si hay una imagen enfocada, NO restringir la cámara: debe centrar libremente la imagen en pantalla
-      if (this.focusedItem) return;
-
-      const layout = LAYOUTS[this.currentMode];
-      if (!layout) return;
-      const bounds = layout.bounds;
-      const contentW = (bounds.maxX - bounds.minX) * this.targetScale;
-      const contentH = (bounds.maxY - bounds.minY) * this.targetScale;
-
-      // Holgura elástica mínima para evitar que el canvas vuele hacia los lados
-      const slackX = 35;
-      const slackY = 45;
-
-      let minX, maxX;
-      if (contentW <= window.innerWidth) {
-        // En vista general, el contenido cabe en pantalla: centrado con margen mínimo
-        const centerX = (window.innerWidth - contentW) / 2 - bounds.minX * this.targetScale;
-        minX = centerX - slackX;
-        maxX = centerX + slackX;
-      } else {
-        // Con zoom: permitir paneo delimitado por los extremos del lienzo
-        minX = window.innerWidth - bounds.maxX * this.targetScale - slackX;
-        maxX = -bounds.minX * this.targetScale + slackX;
-      }
-
-      let minY, maxY;
-      if (contentH <= window.innerHeight) {
-        const centerY = (window.innerHeight - contentH) / 2 - bounds.minY * this.targetScale;
-        minY = centerY - slackY;
-        maxY = centerY + slackY;
-      } else {
-        minY = window.innerHeight - bounds.maxY * this.targetScale - slackY;
-        maxY = -bounds.minY * this.targetScale + slackY;
-      }
-
-      this.targetX = Math.max(minX, Math.min(maxX, this.targetX));
-      this.targetY = Math.max(minY, Math.min(maxY, this.targetY));
-    }
-
-    // CLICK 1: Centrar la imagen seleccionada en pantalla y dejarla plana/normal sin inclinaciones
-    focusImageAndProject(index, item, data) {
-      if (this.focusedItem) {
-        this.focusedItem.classList.remove('is-focused');
-        this.focusedItem.style.removeProperty('transform');
-      }
-      this.focusedItem = item;
-      item.classList.add('is-focused');
-      this.world.classList.add('has-focused-item');
-
-      // Limpiar inmediatamente cualquier transformación de inclinación de la animación de hover
-      item.style.removeProperty('transform');
-      const img = item.querySelector('.spatial-item__img');
-      const card = item.querySelector('.spatial-item__card');
-      const shine = item.querySelector('.spatial-item__shine');
-      if (img) img.style.removeProperty('transform');
-      if (card) card.style.removeProperty('box-shadow');
-      if (shine) shine.style.opacity = '0';
-
-      // Ocultar marcadores flotantes antiguos (el nombre ahora aparece siempre en la parte superior izquierda de la tarjeta)
-      this.hideAllProjectTitles();
-
-      // Obtener posición del ítem en el mundo
-      const layout = LAYOUTS[this.currentMode];
-      const coord = layout && layout.coords[index] ? layout.coords[index] : { x: 0, y: 0, w: 200, h: 160 };
-      const itemLeft = parseFloat(item.style.left) || coord.x;
-      const itemTop = parseFloat(item.style.top) || coord.y;
-      const itemW = parseFloat(item.style.width) || coord.w;
-      const itemH = parseFloat(item.style.height) || coord.h;
-      const itemCenterX = itemLeft + itemW / 2;
-      const itemCenterY = itemTop + itemH / 2;
-
-      // Escala óptima para centrar y destacar la imagen en el centro exacto de la pantalla
-      const isMobile = window.innerWidth <= 768;
-      const zoomScale = isMobile 
-        ? Math.min(1.6, (window.innerWidth * 0.85) / itemW)
-        : Math.min(1.85, Math.max(1.3, (window.innerWidth * 0.40) / itemW));
-
-      this.targetScale = zoomScale;
-      this.targetX = window.innerWidth / 2 - itemCenterX * zoomScale;
-      this.targetY = window.innerHeight / 2 - itemCenterY * zoomScale;
-      this.velocityX = 0;
-      this.velocityY = 0;
-
-      if (this.statusText) {
-        this.statusText.textContent = `${data.projTitle} · Clic en la flecha o imagen para pantalla completa`;
-      }
-    }
-
-    hideAllProjectTitles() {
-      this.markerElements.forEach(m => {
-        if (m.type === 'project') {
-          m.el.classList.remove('is-visible');
-        }
-      });
-      this.activeProjectMarker = null;
-    }
-
-    zoomAt(clientX, clientY, factor) {
-      const newScale = Math.min(2.4, Math.max(0.2, this.targetScale * factor));
-      if (newScale === this.targetScale) return;
-
-      const worldX = (clientX - this.targetX) / this.targetScale;
-      const worldY = (clientY - this.targetY) / this.targetScale;
-
-      this.targetScale = newScale;
-      this.targetX = clientX - worldX * newScale;
-      this.targetY = clientY - worldY * newScale;
-      this.clampCamera();
-    }
-
-    zoomCenter(factor) {
-      this.zoomAt(window.innerWidth / 2, window.innerHeight / 2, factor);
+      this.stopInertia();
+      this.inertiaRAF = requestAnimationFrame(step);
     }
 
     initEvents() {
-      // 1. Selector de Modos en el HUD
-      const modeBtns = document.querySelectorAll('.hud__mode-btn');
-      modeBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          modeBtns.forEach(b => b.classList.remove('is-active'));
-          btn.classList.add('is-active');
-          this.applyLayout(btn.dataset.mode);
-        });
-      });
-
-      // 1b. Botón Shuffle / Aleatorizar tablero
-      const shuffleBtn = document.getElementById('btn-shuffle');
-      if (shuffleBtn) {
-        shuffleBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.shuffleGallery();
-        });
-      }
-
-      // 2. Zoom con Rueda
-      window.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const factor = e.deltaY < 0 ? 1.14 : 0.88;
-        this.zoomAt(e.clientX, e.clientY, factor);
-      }, { passive: false });
-
-      // 3. Arrastre del Canvas (Pan)
-      window.addEventListener('mousedown', (e) => {
-        if (e.target.closest('.hud') || e.target.closest('.spatial-lightbox')) return;
+      // Arrastre con puntero (Pointer Events)
+      const onPointerDown = (e) => {
+        if (this.focusedEl) return;
+        this.stopInertia();
+        if (this.recenterRAF) cancelAnimationFrame(this.recenterRAF);
 
         this.isDragging = true;
-        this.viewport.classList.add('is-dragging');
-        this.dragStartX = e.clientX;
-        this.dragStartY = e.clientY;
-        this.cameraStartX = this.targetX;
-        this.cameraStartY = this.targetY;
-        this.lastPointerX = e.clientX;
-        this.lastPointerY = e.clientY;
-        this.velocityX = 0;
-        this.velocityY = 0;
-      });
+        this.hasMoved = false;
+        this.startRot = { ...this.rotation };
+        this.startPos = { x: e.clientX, y: e.clientY };
+        this.recentPoints = [{ t: performance.now(), x: e.clientX, y: e.clientY }];
 
-      window.addEventListener('mousemove', (e) => {
-        if (!this.isDragging) return;
+        // Cursor drag effect
+        const cursor = document.getElementById('cursor-dot');
+        if (cursor) cursor.classList.add('is-dragging');
+      };
 
-        const dx = e.clientX - this.dragStartX;
-        const dy = e.clientY - this.dragStartY;
+      const onPointerMove = (e) => {
+        if (this.focusedEl || !this.isDragging || !this.startPos) return;
+        const dxTotal = e.clientX - this.startPos.x;
+        const dyTotal = e.clientY - this.startPos.y;
 
-        this.targetX = this.cameraStartX + dx;
-        this.targetY = this.cameraStartY + dy;
-        this.clampCamera();
+        if (!this.hasMoved) {
+          const dist2 = dxTotal * dxTotal + dyTotal * dyTotal;
+          if (dist2 > 16) this.hasMoved = true;
+        }
 
-        this.velocityX = e.clientX - this.lastPointerX;
-        this.velocityY = e.clientY - this.lastPointerY;
-        this.lastPointerX = e.clientX;
-        this.lastPointerY = e.clientY;
-      });
+        const nextX = this.clamp(
+          this.startRot.x - dyTotal / this.dragSensitivity,
+          -this.maxVerticalRotationDeg,
+          this.maxVerticalRotationDeg
+        );
+        const nextY = this.wrapAngleSigned(this.startRot.y + dxTotal / this.dragSensitivity);
 
-      window.addEventListener('mouseup', () => {
+        if (this.rotation.x !== nextX || this.rotation.y !== nextY) {
+          this.rotation = { x: nextX, y: nextY };
+          this.applyTransform(nextX, nextY);
+        }
+
+        const now = performance.now();
+        this.recentPoints.push({ t: now, x: e.clientX, y: e.clientY });
+        if (this.recentPoints.length > 5) this.recentPoints.shift();
+      };
+
+      const onPointerUp = () => {
         if (!this.isDragging) return;
         this.isDragging = false;
-        this.viewport.classList.remove('is-dragging');
-      });
 
-      // 4. Clic en fondo vacío -> deseleccionar y volver a vista general
-      this.viewport.addEventListener('click', (e) => {
-        if (!e.target.closest('.spatial-item')) {
-          if (this.focusedItem) {
-            this.focusedItem.classList.remove('is-focused');
-            this.focusedItem.style.removeProperty('transform');
-            this.focusedItem = null;
-            this.world.classList.remove('has-focused-item');
-            this.hideAllProjectTitles();
-            if (this.statusText) {
-              this.statusText.textContent = 'Arrastrar para explorar · Clic en una imagen para acercar';
-            }
-            this.fitToScreen(false);
-          }
+        const cursor = document.getElementById('cursor-dot');
+        if (cursor) cursor.classList.remove('is-dragging');
+
+        let vx = 0, vy = 0;
+        if (this.recentPoints.length >= 2) {
+          const last = this.recentPoints[this.recentPoints.length - 1];
+          const first = this.recentPoints[0];
+          const dt = Math.max(1, last.t - first.t);
+          vx = ((last.x - first.x) / dt) * 16;
+          vy = ((last.y - first.y) / dt) * 16;
         }
-      });
 
-      // 5. Touch Support
-      let touchDistance = 0;
-      window.addEventListener('touchstart', (e) => {
-        if (e.target.closest('.hud') || e.target.closest('.spatial-lightbox')) return;
-        if (e.touches.length === 1) {
-          this.isDragging = true;
-          this.dragStartX = e.touches[0].clientX;
-          this.dragStartY = e.touches[0].clientY;
-          this.cameraStartX = this.targetX;
-          this.cameraStartY = this.targetY;
-          this.lastPointerX = e.touches[0].clientX;
-          this.lastPointerY = e.touches[0].clientY;
-          this.velocityX = 0;
-          this.velocityY = 0;
-        } else if (e.touches.length === 2) {
-          this.isDragging = false;
-          touchDistance = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-          );
+        if (Math.abs(vx) > 0.05 || Math.abs(vy) > 0.05) {
+          this.startInertia(vx / 20, vy / 20);
         }
-      }, { passive: true });
 
-      window.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 1 && this.isDragging) {
-          const dx = e.touches[0].clientX - this.dragStartX;
-          const dy = e.touches[0].clientY - this.dragStartY;
-          this.targetX = this.cameraStartX + dx;
-          this.targetY = this.cameraStartY + dy;
-          this.clampCamera();
-          this.velocityX = e.touches[0].clientX - this.lastPointerX;
-          this.velocityY = e.touches[0].clientY - this.lastPointerY;
-          this.lastPointerX = e.touches[0].clientX;
-          this.lastPointerY = e.touches[0].clientY;
-        } else if (e.touches.length === 2) {
-          const curDist = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-          );
-          if (touchDistance > 0) {
-            const factor = curDist / touchDistance;
-            const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-            const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-            this.zoomAt(midX, midY, factor);
-          }
-          touchDistance = curDist;
-        }
-      }, { passive: true });
+        if (this.hasMoved) this.lastDragEndAt = performance.now();
+        this.hasMoved = false;
+      };
 
-      window.addEventListener('touchend', () => {
-        this.isDragging = false;
-        touchDistance = 0;
-      });
+      this.main.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('pointerup', onPointerUp, { passive: true });
+      window.addEventListener('pointercancel', onPointerUp, { passive: true });
 
-      // 6. Botones HUD
-      const btnZoomIn = document.getElementById('btn-zoom-in');
-      const btnZoomOut = document.getElementById('btn-zoom-out');
-      const btnRecenter = document.getElementById('btn-recenter');
-
-      if (btnZoomIn) btnZoomIn.addEventListener('click', () => this.zoomCenter(1.25));
-      if (btnZoomOut) btnZoomOut.addEventListener('click', () => this.zoomCenter(0.8));
-      if (btnRecenter) btnRecenter.addEventListener('click', () => this.fitToScreen(false));
-
-      // 7. Resize -> recalcular ajuste a pantalla
-      window.addEventListener('resize', () => {
-        this.fitToScreen(false);
-      });
-
-      // 8. Atajos de teclado
+      // Cierre con scrim o escape
+      this.scrim.addEventListener('click', () => this.closeItem());
       window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          const menuOverlay = document.getElementById('menu-overlay');
-          if (menuOverlay && menuOverlay.classList.contains('is-open')) {
-            menuOverlay.classList.remove('is-open');
-            return;
-          }
-          if (this.lightbox && this.lightbox.classList.contains('is-open')) {
-            this.closeLightbox();
-            return;
-          }
-        }
-        if (this.lightbox && this.lightbox.classList.contains('is-open')) {
-          if (e.key === 'ArrowRight') this.nextLightbox();
-          if (e.key === 'ArrowLeft') this.prevLightbox();
-          return;
-        }
-        if (e.key === '+' || e.key === '=') this.zoomCenter(1.2);
-        if (e.key === '-' || e.key === '_') this.zoomCenter(0.83);
-        if (e.key === '0') this.fitToScreen(false);
+        if (e.key === 'Escape') this.closeItem();
+      });
+    }
+
+    // Ampliación 3D fluida al centro con FLIP animation
+    openItem(el) {
+      if (this.isOpening) return;
+      this.isOpening = true;
+      this.openStartedAt = performance.now();
+
+      const parent = el.parentElement;
+      this.focusedEl = el;
+      el.setAttribute('data-focused', 'true');
+
+      const offsetX = parseFloat(parent.dataset.offsetX) || 0;
+      const offsetY = parseFloat(parent.dataset.offsetY) || 0;
+      const sizeX = parseFloat(parent.dataset.sizeX) || 2;
+      const sizeY = parseFloat(parent.dataset.sizeY) || 2;
+
+      // Calcular orientación exacta para que el tile mire perpendicular a la cámara
+      const parentRot = this.computeItemBaseRotation(offsetX, offsetY, sizeX, sizeY, this.segments);
+      const parentY = this.normalizeAngle(parentRot.rotateY);
+      const globalY = this.normalizeAngle(this.rotation.y);
+
+      let rotY = -(parentY + globalY) % 360;
+      if (rotY < -180) rotY += 360;
+      const rotX = -parentRot.rotateX - this.rotation.x;
+
+      parent.style.setProperty('--rot-y-delta', `${rotY}deg`);
+      parent.style.setProperty('--rot-x-delta', `${rotX}deg`);
+
+      // Div de referencia invisible para calcular geometría exacta en pantalla
+      const refDiv = document.createElement('div');
+      refDiv.className = 'item__image item__image--reference';
+      refDiv.style.opacity = '0';
+      refDiv.style.transform = `rotateX(${-parentRot.rotateX}deg) rotateY(${-parentRot.rotateY}deg)`;
+      parent.appendChild(refDiv);
+
+      void refDiv.offsetHeight;
+
+      const tileR = refDiv.getBoundingClientRect();
+      const mainR = this.main.getBoundingClientRect();
+      const frameR = this.frame.getBoundingClientRect();
+
+      if (!mainR || !frameR || tileR.width <= 0 || tileR.height <= 0) {
+        this.isOpening = false;
+        this.focusedEl = null;
+        parent.removeChild(refDiv);
+        return;
+      }
+
+      this.originalTilePos = { left: tileR.left, top: tileR.top, width: tileR.width, height: tileR.height };
+      el.style.visibility = 'hidden';
+      el.style.zIndex = '0';
+
+      const overlay = document.createElement('div');
+      overlay.className = 'enlarge';
+      overlay.style.position = 'absolute';
+      overlay.style.left = (frameR.left - mainR.left) + 'px';
+      overlay.style.top = (frameR.top - mainR.top) + 'px';
+      overlay.style.width = frameR.width + 'px';
+      overlay.style.height = frameR.height + 'px';
+      overlay.style.opacity = '0';
+      overlay.style.zIndex = '30';
+      overlay.style.willChange = 'transform, opacity, left, top, width, height';
+      overlay.style.transformOrigin = 'top left';
+      overlay.style.transition = `transform ${this.enlargeTransitionMs}ms cubic-bezier(0.16, 1, 0.3, 1), opacity ${this.enlargeTransitionMs}ms ease`;
+
+      const rawSrc = parent.dataset.src || el.querySelector('img')?.src || '';
+      const img = document.createElement('img');
+      img.src = rawSrc;
+      img.alt = parent.dataset.projTitle || 'MADVIZ';
+      overlay.appendChild(img);
+
+      // Botón de cierre visible
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'enlarge-close-btn';
+      closeBtn.setAttribute('aria-label', 'Cerrar');
+      closeBtn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeItem();
+      });
+      overlay.appendChild(closeBtn);
+
+      // REGLA ESTRICTA: Solo nombre de proyecto, sin descripciones de espacio
+      const projTitle = parent.dataset.projTitle || '';
+      if (projTitle) {
+        const cap = document.createElement('div');
+        cap.className = 'enlarge-caption';
+        cap.innerHTML = `<span>${projTitle}</span><span class="enlarge-caption__brand">MADVIZ</span>`;
+        overlay.appendChild(cap);
+      }
+
+      this.viewer.appendChild(overlay);
+
+      const tx0 = tileR.left - frameR.left;
+      const ty0 = tileR.top - frameR.top;
+      const sx0 = tileR.width / frameR.width;
+      const sy0 = tileR.height / frameR.height;
+      const validSx0 = isFinite(sx0) && sx0 > 0 ? sx0 : 1;
+      const validSy0 = isFinite(sy0) && sy0 > 0 ? sy0 : 1;
+
+      overlay.style.transform = `translate(${tx0}px, ${ty0}px) scale(${validSx0}, ${validSy0})`;
+
+      requestAnimationFrame(() => {
+        if (!overlay.parentElement) return;
+        overlay.style.opacity = '1';
+        overlay.style.transform = 'translate(0px, 0px) scale(1, 1)';
+        this.root.setAttribute('data-enlarging', 'true');
+        document.body.classList.add('dg-scroll-lock');
+      });
+    }
+
+    closeItem() {
+      if (performance.now() - this.openStartedAt < 200) return;
+      const el = this.focusedEl;
+      if (!el) return;
+
+      const parent = el.parentElement;
+      const overlay = this.viewer.querySelector('.enlarge');
+      if (!overlay) return;
+
+      const refDiv = parent.querySelector('.item__image--reference');
+      const originalPos = this.originalTilePos;
+
+      if (!originalPos) {
+        overlay.remove();
+        if (refDiv) refDiv.remove();
+        parent.style.setProperty('--rot-y-delta', '0deg');
+        parent.style.setProperty('--rot-x-delta', '0deg');
+        el.style.visibility = '';
+        el.style.zIndex = '0';
+        this.focusedEl = null;
+        this.root.removeAttribute('data-enlarging');
+        document.body.classList.remove('dg-scroll-lock');
+        this.isOpening = false;
+        return;
+      }
+
+      const currentRect = overlay.getBoundingClientRect();
+      const rootRect = this.root.getBoundingClientRect();
+      const originalPosRel = {
+        left: originalPos.left - rootRect.left,
+        top: originalPos.top - rootRect.top,
+        width: originalPos.width,
+        height: originalPos.height
+      };
+      const overlayRel = {
+        left: currentRect.left - rootRect.left,
+        top: currentRect.top - rootRect.top,
+        width: currentRect.width,
+        height: currentRect.height
+      };
+
+      const animatingOverlay = document.createElement('div');
+      animatingOverlay.className = 'enlarge-closing';
+      animatingOverlay.style.cssText = `position:absolute;left:${overlayRel.left}px;top:${overlayRel.top}px;width:${overlayRel.width}px;height:${overlayRel.height}px;z-index:9999;border-radius:var(--enlarge-radius, 20px);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:all ${this.enlargeTransitionMs}ms cubic-bezier(0.16, 1, 0.3, 1);pointer-events:none;margin:0;transform:none;`;
+
+      const originalImg = overlay.querySelector('img');
+      if (originalImg) {
+        const img = originalImg.cloneNode();
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+        animatingOverlay.appendChild(img);
+      }
+
+      overlay.remove();
+      this.root.appendChild(animatingOverlay);
+      void animatingOverlay.getBoundingClientRect();
+
+      requestAnimationFrame(() => {
+        animatingOverlay.style.left = originalPosRel.left + 'px';
+        animatingOverlay.style.top = originalPosRel.top + 'px';
+        animatingOverlay.style.width = originalPosRel.width + 'px';
+        animatingOverlay.style.height = originalPosRel.height + 'px';
+        animatingOverlay.style.opacity = '0';
       });
 
-      // 9. Lightbox Events
-      if (this.lightboxClose) this.lightboxClose.addEventListener('click', () => this.closeLightbox());
-      if (this.lightboxPrev) this.lightboxPrev.addEventListener('click', (e) => { e.stopPropagation(); this.prevLightbox(); });
-      if (this.lightboxNext) this.lightboxNext.addEventListener('click', (e) => { e.stopPropagation(); this.nextLightbox(); });
-      if (this.lightbox) {
-        this.lightbox.addEventListener('click', (e) => {
-          if (e.target === this.lightbox) this.closeLightbox();
+      const cleanup = () => {
+        animatingOverlay.remove();
+        this.originalTilePos = null;
+        if (refDiv) refDiv.remove();
+        parent.style.transition = 'none';
+        el.style.transition = 'none';
+        parent.style.setProperty('--rot-y-delta', '0deg');
+        parent.style.setProperty('--rot-x-delta', '0deg');
+
+        requestAnimationFrame(() => {
+          el.style.visibility = '';
+          el.style.opacity = '0';
+          el.style.zIndex = '0';
+          this.focusedEl = null;
+          this.root.removeAttribute('data-enlarging');
+          document.body.classList.remove('dg-scroll-lock');
+
+          requestAnimationFrame(() => {
+            parent.style.transition = '';
+            el.style.transition = 'opacity 300ms ease-out';
+            requestAnimationFrame(() => {
+              el.style.opacity = '1';
+              setTimeout(() => {
+                el.style.transition = '';
+                el.style.opacity = '';
+                this.isOpening = false;
+              }, 300);
+            });
+          });
         });
-      }
-
-      // 10. Menu Overlay Mobile / Global
-      const menuOverlay = document.getElementById('menu-overlay');
-      const menuToggle = document.getElementById('menu-toggle');
-      const menuClose = document.querySelector('.menu-overlay__close');
-
-      const openMenu = () => {
-        if (!menuOverlay) return;
-        menuOverlay.classList.add('is-open');
       };
 
-      const closeMenu = () => {
-        if (!menuOverlay) return;
-        menuOverlay.classList.remove('is-open');
-      };
+      animatingOverlay.addEventListener('transitionend', cleanup, { once: true });
+    }
 
-      if (menuToggle) menuToggle.addEventListener('click', (e) => { e.stopPropagation(); openMenu(); });
-      if (menuClose) menuClose.addEventListener('click', (e) => { e.stopPropagation(); closeMenu(); });
-      if (menuOverlay) {
-        menuOverlay.addEventListener('click', (e) => {
-          if (e.target === menuOverlay) closeMenu();
-        });
-      }
+    // Selector de modo (GALERIA · PROYECTOS · EXTERIORES · INTERIORES)
+    setMode(modeName) {
+      if (this.currentMode === modeName) return;
+      this.currentMode = modeName;
 
-      // 11. Selector de Idioma (ES / EN)
-      const langBtns = document.querySelectorAll('.lang-btn');
-      let currentLang = localStorage.getItem('madviz-lang') || 'es';
-
-      const applyLanguage = (lang) => {
-        currentLang = lang;
-        localStorage.setItem('madviz-lang', lang);
-        document.documentElement.lang = lang === 'en' ? 'en' : 'es';
-        langBtns.forEach(btn => btn.classList.toggle('is-active', btn.dataset.lang === lang));
-        document.querySelectorAll('[data-es], [data-en]').forEach(el => {
-          const text = el.dataset[lang];
-          if (text !== undefined) el.textContent = text;
-        });
-      };
-
-      langBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          applyLanguage(btn.dataset.lang);
-        });
+      // Actualizar clase activa en botones
+      const modeBtns = document.querySelectorAll('.hud__mode-btn');
+      modeBtns.forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.mode === modeName);
       });
 
-      if (currentLang !== 'es') {
-        applyLanguage(currentLang);
-      }
+      const targetPool = IMAGE_POOLS[modeName] || IMAGE_POOLS.gallery;
+      this.currentPool = [...targetPool];
+
+      // Transición de refresco en la cúpula
+      const allItems = this.sphere.querySelectorAll('.item');
+      allItems.forEach(item => item.classList.add('is-faded'));
+
+      setTimeout(() => {
+        this.items = this.buildItems(this.currentPool, this.segments);
+        this.renderSphereItems();
+      }, 180);
     }
 
-    // PUNTERO CUSTOM: Punto blanco minimalista con estela fluida (Idéntico a toda la web)
-    initCustomCursor() {
-      const cursorDot = document.getElementById('cursor-dot');
-      if (!cursorDot || !window.matchMedia('(pointer: fine)').matches) return;
-
-      const TRAIL_COUNT = 6;
-      const trailDots = [];
-      const trailConfig = [
-        { scale: 0.78, baseOpacity: 0.58, speed: 0.48 },
-        { scale: 0.64, baseOpacity: 0.44, speed: 0.40 },
-        { scale: 0.52, baseOpacity: 0.32, speed: 0.32 },
-        { scale: 0.40, baseOpacity: 0.22, speed: 0.25 },
-        { scale: 0.30, baseOpacity: 0.13, speed: 0.19 },
-        { scale: 0.20, baseOpacity: 0.06, speed: 0.14 }
-      ];
-
-      for (let i = 0; i < TRAIL_COUNT; i++) {
-        const dot = document.createElement('div');
-        dot.className = 'cursor-trail-dot';
-        document.body.appendChild(dot);
-        trailDots.push({
-          el: dot,
-          x: window.innerWidth / 2,
-          y: window.innerHeight / 2,
-          scale: trailConfig[i].scale,
-          baseOpacity: trailConfig[i].baseOpacity,
-          speed: trailConfig[i].speed
-        });
-      }
-
-      let mouseX = window.innerWidth / 2;
-      let mouseY = window.innerHeight / 2;
-      let prevMouseX = mouseX;
-      let prevMouseY = mouseY;
-      let cursorX = mouseX;
-      let cursorY = mouseY;
-      let isCursorVisible = false;
-      let isHovering = false;
-      let motionSpeed = 0;
-
-      window.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        if (!isCursorVisible) {
-          isCursorVisible = true;
-          cursorDot.classList.add('is-active');
-        }
-      }, { passive: true });
-
-      document.addEventListener('mouseleave', () => {
-        cursorDot.classList.add('is-hidden');
-        trailDots.forEach(t => { t.el.style.opacity = '0'; });
-      });
-
-      document.addEventListener('mouseenter', () => {
-        cursorDot.classList.remove('is-hidden');
-      });
-
-      const animateCursor = () => {
-        const dx = mouseX - prevMouseX;
-        const dy = mouseY - prevMouseY;
-        const dist = Math.hypot(dx, dy);
-        prevMouseX = mouseX;
-        prevMouseY = mouseY;
-
-        motionSpeed += (dist - motionSpeed) * 0.18;
-        const motionAlpha = Math.min(1, Math.max(0, (motionSpeed - 0.2) / 6));
-
-        cursorX += (mouseX - cursorX) * 0.72;
-        cursorY += (mouseY - cursorY) * 0.72;
-
-        cursorDot.style.left = `${cursorX.toFixed(2)}px`;
-        cursorDot.style.top = `${cursorY.toFixed(2)}px`;
-
-        let leadX = cursorX;
-        let leadY = cursorY;
-
-        for (let i = 0; i < TRAIL_COUNT; i++) {
-          const t = trailDots[i];
-          t.x += (leadX - t.x) * t.speed;
-          t.y += (leadY - t.y) * t.speed;
-          leadX = t.x;
-          leadY = t.y;
-
-          const effectiveOpacity = (isCursorVisible && !isHovering) ? (t.baseOpacity * motionAlpha) : 0;
-          t.el.style.left = `${t.x.toFixed(2)}px`;
-          t.el.style.top = `${t.y.toFixed(2)}px`;
-          t.el.style.transform = `translate(-50%, -50%) scale(${t.scale})`;
-          t.el.style.opacity = effectiveOpacity.toFixed(3);
-        }
-
-        requestAnimationFrame(animateCursor);
-      };
-      animateCursor();
-
-      const interactiveSelector = 'a, button, .spatial-item, .hud__brand, .hud__mode-btn, .hud__shuffle-btn, .hud-zoom-ctrl__btn, .hud-zoom-ctrl__recenter, input, textarea, select, [role="button"]';
-      document.addEventListener('mouseover', (e) => {
-        if (e.target.closest(interactiveSelector)) {
-          isHovering = true;
-          cursorDot.classList.add('is-hovering');
-        }
-      });
-      document.addEventListener('mouseout', (e) => {
-        if (e.target.closest(interactiveSelector)) {
-          isHovering = false;
-          cursorDot.classList.remove('is-hovering');
-        }
-      });
-
-      window.addEventListener('mousedown', () => {
-        cursorDot.classList.add('is-dragging');
-      });
-      window.addEventListener('mouseup', () => {
-        cursorDot.classList.remove('is-dragging');
-      });
-    }
-
-    // Lightbox Modal (Click 2)
-    openLightbox(globalIndex) {
-      if (!this.lightbox || !IMAGES_DATA[globalIndex]) return;
-      this.currentLightboxIndex = globalIndex;
-      this.updateLightboxContent();
-      this.lightbox.classList.add('is-open');
-    }
-
-    closeLightbox() {
-      if (!this.lightbox) return;
-      this.lightbox.classList.remove('is-open');
-    }
-
-    updateLightboxContent() {
-      const data = IMAGES_DATA[this.currentLightboxIndex];
-      if (!data) return;
-
-      if (this.lightboxImg) {
-        this.lightboxImg.style.opacity = '0';
-        setTimeout(() => {
-          this.lightboxImg.src = `images/proyectos/${data.folder}/${data.file}`;
-          this.lightboxImg.alt = data.projTitle;
-          this.lightboxImg.onload = () => { this.lightboxImg.style.opacity = '1'; };
-          if (this.lightboxImg.complete) this.lightboxImg.style.opacity = '1';
-        }, 120);
-      }
-
-      if (this.lightboxTitle) {
-        this.lightboxTitle.textContent = data.projTitle;
-      }
-
-      if (this.lightboxCounter) {
-        const pad = (n) => String(n).padStart(2, '0');
-        this.lightboxCounter.textContent = `${pad(this.currentLightboxIndex + 1)} / ${pad(IMAGES_DATA.length)}`;
-      }
-
-      const nextIdx = (this.currentLightboxIndex + 1) % IMAGES_DATA.length;
-      const prevIdx = (this.currentLightboxIndex - 1 + IMAGES_DATA.length) % IMAGES_DATA.length;
-      new Image().src = `images/proyectos/${IMAGES_DATA[nextIdx].folder}/${IMAGES_DATA[nextIdx].file}`;
-      new Image().src = `images/proyectos/${IMAGES_DATA[prevIdx].folder}/${IMAGES_DATA[prevIdx].file}`;
-    }
-
-    nextLightbox() {
-      this.currentLightboxIndex = (this.currentLightboxIndex + 1) % IMAGES_DATA.length;
-      this.updateLightboxContent();
-    }
-
-    prevLightbox() {
-      this.currentLightboxIndex = (this.currentLightboxIndex - 1 + IMAGES_DATA.length) % IMAGES_DATA.length;
-      this.updateLightboxContent();
-    }
-
-    // Generador de disposición espacial orgánica / moodboard (sin cuadrícula rígida)
-    generateOrganicScatter(modeName = 'gallery') {
-      const MODE_INDICES = {
-        gallery: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
-        exteriors: [0, 1, 2, 3, 4, 5, 6, 8, 9, 12, 16], // 11 renders exteriores
-        interiors: [7, 10, 11, 13, 14, 15, 17, 18, 19]  // 9 renders interiores
-      };
-
-      const activeIndices = MODE_INDICES[modeName] || MODE_INDICES.gallery;
-      const count = activeIndices.length;
-
-      let streamPatterns, areaW, areaH;
-      if (count === 20) {
-        // Galería completa (20 renders): 5 columnas/flujos irregulares con silueta asimétrica
-        streamPatterns = [
-          [3, 5, 4, 5, 3],
-          [4, 4, 4, 4, 4],
-          [3, 4, 6, 4, 3],
-          [4, 5, 3, 5, 3]
-        ];
-        areaW = 1140;
-        areaH = 680;
-      } else if (count === 11) {
-        // Exteriores (11 renders): 4 flujos compactos muy juntos y mezclados en el centro
-        streamPatterns = [
-          [2, 4, 3, 2],
-          [3, 3, 3, 2],
-          [2, 3, 4, 2]
-        ];
-        areaW = 960;
-        areaH = 620;
-      } else {
-        // Interiores (9 renders): 3 flujos compactos muy juntos y mezclados en el centro
-        streamPatterns = [
-          [3, 3, 3],
-          [2, 4, 3],
-          [3, 4, 2]
-        ];
-        areaW = 880;
-        areaH = 580;
-      }
-
-      const streamCounts = streamPatterns[Math.floor(Math.random() * streamPatterns.length)];
-      const numStreams = streamCounts.length;
-
-      // Mezclar aleatoriamente el orden de las imágenes activas (Fisher-Yates)
-      const shuffled = [...activeIndices];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-
-      const colSpacing = (areaW - 220) / Math.max(1, numStreams - 1);
-      const coords = new Array(20).fill(null);
-
-      // Inactivas: marcadas como hidden
-      for (let i = 0; i < 20; i++) {
-        coords[i] = { x: Math.round(areaW / 2), y: Math.round(areaH / 2), w: 0, h: 0, z: 0, hidden: true };
-      }
-
-      let itemIdx = 0;
-      let minX = 9999, maxX = -9999, minY = 9999, maxY = -9999;
-
-      for (let s = 0; s < numStreams; s++) {
-        const n = streamCounts[s];
-        const baseX = s * colSpacing + (Math.random() - 0.5) * 35 + 20;
-        const startY = n <= 3 ? (45 + Math.random() * 45) : (15 + Math.random() * 20);
-        const availH = areaH - startY - 20;
-        const stepY = availH / Math.max(1, n);
-
-        for (let k = 0; k < n; k++) {
-          if (itemIdx >= shuffled.length) break;
-          const targetIdx = shuffled[itemIdx++];
-
-          // Variedad de tamaños y proporciones para romper cualquier recuadro
-          const typeRnd = Math.random();
-          let w, h;
-          if (typeRnd < 0.45) {
-            // Horizontal / apaisado
-            w = Math.round(215 + Math.random() * 45);
-            h = Math.round(150 + Math.random() * 30);
-          } else if (typeRnd < 0.85) {
-            // Vertical / retrato
-            w = Math.round(165 + Math.random() * 35);
-            h = Math.round(215 + Math.random() * 45);
-          } else {
-            // Cuadrado / medio
-            w = Math.round(190 + Math.random() * 30);
-            h = Math.round(185 + Math.random() * 30);
-          }
-
-          // Desplazamiento orgánico con solapamiento
-          const x = Math.max(10, Math.round(baseX + (Math.random() - 0.5) * 35));
-          const y = Math.max(15, Math.round(startY + k * stepY + (Math.random() - 0.5) * 30));
-          const z = Math.floor(Math.random() * 7) + 1;
-
-          coords[targetIdx] = { x, y, w, h, z, hidden: false };
-          minX = Math.min(minX, x);
-          maxX = Math.max(maxX, x + w);
-          minY = Math.min(minY, y);
-          maxY = Math.max(maxY, y + h);
-        }
-      }
-
-      const titleOffsetY = (modeName === 'exteriors' || modeName === 'interiors') ? 35 : 0;
-      const effectiveMinY = minY - titleOffsetY;
-
-      const layoutData = {
-        coords,
-        bounds: { minX, maxX, minY: effectiveMinY, maxY }
-      };
-
-      if (LAYOUTS[modeName]) {
-        LAYOUTS[modeName].coords = coords;
-        LAYOUTS[modeName].bounds = { minX, maxX, minY: effectiveMinY, maxY };
-      }
-
-      return layoutData;
-    }
-
-    // MEZCLAR TABLERO: Transición suave de deslizamiento y mezcla (sin explosión hacia afuera)
-    shuffleGallery() {
-      if (this.isShuffling) return;
-      this.isShuffling = true;
-
-      // Desactivar selecciones previas
-      if (this.focusedItem) {
-        this.focusedItem.classList.remove('is-focused');
-        this.focusedItem.style.removeProperty('transform');
-        this.focusedItem = null;
-      }
-      this.world.classList.remove('has-focused-item');
-      this.hideAllProjectTitles();
-
-      // Determinar modo a mezclar: si estaba en 'projects', pasa a 'gallery'
-      if (this.currentMode === 'projects') {
-        this.currentMode = 'gallery';
-        const modeBtns = document.querySelectorAll('.hud__mode-btn');
-        modeBtns.forEach(b => b.classList.toggle('is-active', b.dataset.mode === 'gallery'));
-      }
-
-      // Animación de giro para el botón de shuffle en el HUD
+    // Aleatorizador con rotación dinámica e impulso
+    shuffle() {
       const shuffleBtn = document.getElementById('btn-shuffle');
       if (shuffleBtn) {
         shuffleBtn.classList.add('is-spinning');
         setTimeout(() => shuffleBtn.classList.remove('is-spinning'), 650);
       }
 
-      // Generar nuevo desorden orgánico completamente distinto
-      const layoutData = this.generateOrganicScatter(this.currentMode);
-      const newCoords = layoutData.coords;
+      // Mezclar array del pool actual con Fisher-Yates
+      const pool = [...this.currentPool];
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      this.currentPool = pool;
 
-      // Actualizar posición de encabezados de categoría si corresponde
-      this.markerElements.forEach(m => {
-        if (m.type === 'category') {
-          const isActive = m.modeId === this.currentMode;
-          m.el.style.opacity = isActive ? '1' : '0';
-          if (isActive && layoutData.bounds) {
-            m.el.style.left = `${Math.max(20, layoutData.bounds.minX)}px`;
-            m.el.style.top = `${layoutData.bounds.minY}px`;
-          }
-        }
-      });
+      // Reconstruir slots
+      this.items = this.buildItems(this.currentPool, this.segments);
+      this.renderSphereItems();
 
-      // Desplazamiento suave directo hacia las nuevas posiciones (solo mezcla, sin disparo hacia afuera)
-      newCoords.forEach((c, idx) => {
-        const item = this.itemElements[idx];
-        if (item) {
-          if (c.hidden) {
-            item.classList.add('is-hidden');
-          } else {
-            item.classList.remove('is-hidden');
-            item.style.transition = 'left 0.75s cubic-bezier(0.16, 1, 0.3, 1), top 0.75s cubic-bezier(0.16, 1, 0.3, 1), width 0.75s cubic-bezier(0.16, 1, 0.3, 1), height 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-            item.style.left = `${c.x}px`;
-            item.style.top = `${c.y}px`;
-            item.style.width = `${c.w}px`;
-            item.style.height = `${c.h}px`;
-            item.style.zIndex = c.z;
-            item.style.removeProperty('transform');
-          }
-        }
-      });
-
-      // Limpiar transiciones temporales y reajustar cámara a pantalla
-      setTimeout(() => {
-        this.itemElements.forEach(item => {
-          item.style.transition = '';
-          item.style.removeProperty('transform');
-          const img = item.querySelector('.spatial-item__img');
-          const card = item.querySelector('.spatial-item__card');
-          const shine = item.querySelector('.spatial-item__shine');
-          if (img) img.style.removeProperty('transform');
-          if (card) card.style.removeProperty('box-shadow');
-          if (shine) shine.style.opacity = '0';
-        });
-        this.isShuffling = false;
-        this.fitToScreen(false);
-      }, 760);
+      // Disparar impulso de giro
+      const spinDirection = Math.random() > 0.5 ? 1 : -1;
+      this.startInertia(spinDirection * 1.1, (Math.random() - 0.5) * 0.2);
     }
 
-    // Render loop con amortiguación continua
-    startLoop() {
-      const tick = () => {
-        if (!this.isDragging && (Math.abs(this.velocityX) > 0.05 || Math.abs(this.velocityY) > 0.05)) {
-          this.targetX += this.velocityX;
-          this.targetY += this.velocityY;
-          this.velocityX *= this.friction;
-          this.velocityY *= this.friction;
+    // Controles de zoom
+    zoomIn() {
+      this.fit = Math.min(1.25, Math.round((this.fit + 0.08) * 100) / 100);
+      this.updateLayout();
+      this.updateZoomLabel();
+    }
+
+    zoomOut() {
+      this.fit = Math.max(0.42, Math.round((this.fit - 0.08) * 100) / 100);
+      this.updateLayout();
+      this.updateZoomLabel();
+    }
+
+    recenter() {
+      this.stopInertia();
+      if (this.recenterRAF) cancelAnimationFrame(this.recenterRAF);
+
+      const startX = this.rotation.x;
+      const startY = this.rotation.y;
+      const startFit = this.fit;
+      const targetFit = this.initialFit;
+      const startTime = performance.now();
+      const duration = 650;
+
+      const easeOutCubic = t => (--t) * t * t + 1;
+
+      const animate = (now) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        const ease = easeOutCubic(progress);
+
+        this.rotation.x = startX * (1 - ease);
+        this.rotation.y = startY * (1 - ease);
+        this.fit = startFit + (targetFit - startFit) * ease;
+
+        this.updateLayout();
+        this.applyTransform(this.rotation.x, this.rotation.y);
+        this.updateZoomLabel();
+
+        if (progress < 1) {
+          this.recenterRAF = requestAnimationFrame(animate);
+        } else {
+          this.recenterRAF = null;
         }
-
-        this.clampCamera();
-
-        this.currentX += (this.targetX - this.currentX) * this.lerpFactor;
-        this.currentY += (this.targetY - this.currentY) * this.lerpFactor;
-        this.currentScale += (this.targetScale - this.currentScale) * this.lerpFactor;
-
-        this.world.style.transform = `translate3d(${this.currentX.toFixed(2)}px, ${this.currentY.toFixed(2)}px, 0) scale(${this.currentScale.toFixed(4)})`;
-
-        if (this.zoomLabel) {
-          this.zoomLabel.textContent = `${Math.round(this.currentScale * 100)}%`;
-        }
-
-        requestAnimationFrame(tick);
       };
 
-      requestAnimationFrame(tick);
+      this.recenterRAF = requestAnimationFrame(animate);
+    }
+
+    updateZoomLabel() {
+      const label = document.getElementById('hud-zoom');
+      if (label) {
+        const pct = Math.round((this.fit / this.initialFit) * 100);
+        label.textContent = `${pct}%`;
+      }
+    }
+
+    // Inicializar controles de UI (HUD, Botones, Menú)
+    initUIControls() {
+      // Modos
+      const modeBtns = document.querySelectorAll('.hud__mode-btn');
+      modeBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const mode = btn.dataset.mode;
+          if (mode) this.setMode(mode);
+        });
+      });
+
+      // Botón Shuffle
+      const shuffleBtn = document.getElementById('btn-shuffle');
+      if (shuffleBtn) {
+        shuffleBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.shuffle();
+        });
+      }
+
+      // Zoom
+      const zoomInBtn = document.getElementById('btn-zoom-in');
+      const zoomOutBtn = document.getElementById('btn-zoom-out');
+      const recenterBtn = document.getElementById('btn-recenter');
+
+      if (zoomInBtn) zoomInBtn.addEventListener('click', () => this.zoomIn());
+      if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => this.zoomOut());
+      if (recenterBtn) recenterBtn.addEventListener('click', () => this.recenter());
+
+      // Menú overlay mobile
+      const menuToggle = document.getElementById('menu-toggle');
+      const menuOverlay = document.getElementById('menu-overlay');
+      const menuClose = menuOverlay?.querySelector('.menu-overlay__close');
+
+      if (menuToggle && menuOverlay) {
+        menuToggle.addEventListener('click', () => {
+          menuOverlay.classList.add('is-open');
+        });
+      }
+      if (menuClose && menuOverlay) {
+        menuClose.addEventListener('click', () => {
+          menuOverlay.classList.remove('is-open');
+        });
+      }
+
+      // Puntero personalizado (Monopo style)
+      this.initCustomCursor();
+    }
+
+    // Idioma
+    initLanguage() {
+      const langBtns = document.querySelectorAll('.lang-btn');
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const lang = btn.dataset.lang;
+          if (lang) this.setLanguage(lang);
+        });
+      });
+
+      this.setLanguage(this.currentLang);
+    }
+
+    setLanguage(lang) {
+      this.currentLang = lang;
+      localStorage.setItem('mad_lang', lang);
+
+      // Actualizar botones de idioma
+      const langBtns = document.querySelectorAll('.lang-btn');
+      langBtns.forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.lang === lang);
+      });
+
+      const t = TRANSLATIONS[lang] || TRANSLATIONS.es;
+
+      // Status text
+      const statusText = document.getElementById('hud-status-text');
+      if (statusText) statusText.textContent = t.status;
+
+      // Recenter button
+      const recenterBtn = document.getElementById('btn-recenter');
+      if (recenterBtn) recenterBtn.textContent = t.recenter;
+
+      // Botones de modo
+      const modeBtns = document.querySelectorAll('.hud__mode-btn');
+      modeBtns.forEach(btn => {
+        const mode = btn.dataset.mode;
+        if (mode && t[mode]) btn.textContent = t[mode];
+      });
+
+      // Menú overlay y navegación
+      const translatableNav = document.querySelectorAll('[data-es][data-en]');
+      translatableNav.forEach(el => {
+        const text = el.getAttribute(`data-${lang}`);
+        if (text) el.textContent = text;
+      });
+    }
+
+    // Puntero personalizado Dot
+    initCustomCursor() {
+      const cursor = document.getElementById('cursor-dot');
+      if (!cursor || window.matchMedia('(pointer: coarse)').matches) return;
+
+      let mouseX = -100, mouseY = -100;
+      let currX = -100, currY = -100;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!cursor.classList.contains('is-active')) {
+          cursor.classList.add('is-active');
+          currX = mouseX;
+          currY = mouseY;
+        }
+      }, { passive: true });
+
+      window.addEventListener('mouseout', () => {
+        cursor.classList.remove('is-active');
+      });
+
+      const loop = () => {
+        currX += (mouseX - currX) * 0.45;
+        currY += (mouseY - currY) * 0.45;
+        cursor.style.left = `${currX}px`;
+        cursor.style.top = `${currY}px`;
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+
+      // Hover sobre elementos clickeables
+      const updateHoverState = (e) => {
+        const target = e.target;
+        if (!target) return;
+        const isClickable = target.closest('a, button, .item__image, [role="button"]');
+        cursor.classList.toggle('is-hovering', !!isClickable);
+      };
+
+      window.addEventListener('mouseover', updateHoverState, { passive: true });
     }
   }
 
+  // ============================================================
+  // INICIALIZACIÓN
+  // ============================================================
+  function startGalleryApp() {
+    // 1. Iniciar Silk Background Shader
+    const silkCanvas = document.getElementById('silk-canvas');
+    if (silkCanvas) {
+      window.silkBg = new SilkBackground(silkCanvas, {
+        speed: 5,
+        scale: 1,
+        color: '#363e80',
+        noiseIntensity: 1.5,
+        rotation: 0
+      });
+    }
+
+    // 2. Iniciar DomeGallery con props exactas de usuario
+    window.galleryInstance = new VanillaDomeGallery({
+      fit: 0.7,
+      minRadius: 450,
+      segments: 30,
+      dragDampening: 0.8,
+      grayscale: false,
+      maxVerticalRotationDeg: 5,
+      dragSensitivity: 20,
+      enlargeTransitionMs: 320
+    });
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { window.canvasInstance = new ScreenFittedCanvas(); });
+    document.addEventListener('DOMContentLoaded', startGalleryApp);
   } else {
-    window.canvasInstance = new ScreenFittedCanvas();
+    startGalleryApp();
   }
 })();

@@ -6,7 +6,7 @@
   <meta name="description" content="Galería — MAD 3D Studio. Visualización arquitectónica, renders 3D e IA.">
   <title>Gallery — MADVIZ</title>
   <link rel="icon" type="image/png" href="images/logo-bg.png">
-  <link rel="stylesheet" href="css/infinite-canvas.css?v=20261001_v2">
+  <link rel="stylesheet" href="css/infinite-canvas.css?v=20261003_v1">
 </head>
 <body class="page-archive page-infinite-gallery">
 
@@ -34,10 +34,24 @@
     </div>
   </div>
 
-  <!-- Viewport del Lienzo Espacial Ajustado a la Pantalla -->
-  <div id="canvas-viewport" class="canvas-viewport" role="region" aria-label="Lienzo espacial">
+  <!-- 3D Dome Gallery (React Bits DomeGallery Vanilla) -->
+  <div id="dome-root" class="sphere-root" role="region" aria-label="Galería 3D Dome">
     <canvas id="silk-canvas" class="silk-canvas" aria-hidden="true"></canvas>
-    <div id="canvas-world" class="canvas-world"></div>
+    <main id="sphere-main" class="sphere-main">
+      <div class="stage">
+        <div id="sphere" class="sphere"></div>
+      </div>
+
+      <div class="overlay"></div>
+      <div class="overlay overlay--blur"></div>
+      <div class="edge-fade edge-fade--top"></div>
+      <div class="edge-fade edge-fade--bottom"></div>
+
+      <div class="viewer" id="viewer">
+        <div id="scrim" class="scrim"></div>
+        <div id="frame" class="frame"></div>
+      </div>
+    </main>
   </div>
 
   <!-- Heads-Up Display (HUD) con Navegación General y Selector de Modos -->
@@ -128,29 +142,7 @@
     </div>
   </aside>
 
-  <!-- Lightbox / Modal a Pantalla Completa (Click 2) -->
-  <div id="spatial-lightbox" class="spatial-lightbox" role="dialog" aria-modal="true" aria-hidden="true">
-    <button id="spatial-lightbox-close" class="spatial-lightbox__close">Cerrar</button>
-    <button id="spatial-lightbox-prev" class="spatial-lightbox__nav spatial-lightbox__nav--prev" aria-label="Anterior">
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
-    <div class="spatial-lightbox__stage">
-      <img id="spatial-lightbox-img" class="spatial-lightbox__img" src="" alt="Render arquitectónico">
-      <div class="spatial-lightbox__info">
-        <span id="spatial-lightbox-title" class="spatial-lightbox__title"></span>
-        <span id="spatial-lightbox-counter" class="spatial-lightbox__counter"></span>
-      </div>
-    </div>
-    <button id="spatial-lightbox-next" class="spatial-lightbox__nav spatial-lightbox__nav--next" aria-label="Siguiente">
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
-  </div>
-
-  <!-- Motor del Lienzo Espacial -->
-  <script src="js/infinite-canvas.js?v=20261001_v2"></script>
+  <!-- Motor del Lienzo 3D DomeGallery -->
+  <script src="js/infinite-canvas.js?v=20261003_v1"></script>
 </body>
 </html>
