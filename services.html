@@ -7,7 +7,7 @@
   <title>Services — MADVIZ</title>
   <link rel="icon" type="image/png" href="images/logo-bg.png">
   <link rel="stylesheet" href="css/styles.css?v=20261001_v3">
-  <link rel="stylesheet" href="css/flowing-menu.css?v=20261003_v1">
+  <link rel="stylesheet" href="css/services-showcase.css?v=20261003_v2">
   <style>
     .video-bg--desktop { display: block; }
     .video-bg--mobile { display: none; }
@@ -88,9 +88,175 @@
     </nav>
   </header>
 
-  <!-- Flowing Menu de Servicios (React Bits) -->
-  <main class="menu-wrap" id="flowing-menu" role="region" aria-label="Servicios MADVIZ">
-    <nav class="menu" id="menu-container"></nav>
+  <!-- Sección Interactiva de Servicios MADVIZ -->
+  <main class="services-showcase-wrap" id="services-main" role="region" aria-label="Servicios MADVIZ">
+    <div class="services-grid-layout">
+
+      <!-- Columna Izquierda: Servicios con acordeón alineados a la izquierda -->
+      <div class="services-col-left">
+        <div class="services-eyebrow" data-es="Servicios MADVIZ" data-en="MADVIZ Services">Servicios MADVIZ</div>
+
+        <div class="services-list-container" role="tablist">
+
+          <!-- 01: Renders -->
+          <div class="service-accordion-item is-active" data-service="renders">
+            <button class="service-header-btn" role="tab" aria-expanded="true">
+              <div class="service-title-group">
+                <span class="service-idx">01</span>
+                <h2 class="service-name" data-es="Renders" data-en="Renders">Renders</h2>
+              </div>
+              <span class="service-expand-indicator" aria-hidden="true">+</span>
+            </button>
+            <div class="service-drawer">
+              <div class="service-drawer-inner">
+                <p class="service-description-text"
+                   data-es="Imágenes fotorrealistas que permiten visualizar cada proyecto con precisión y detalle, transmitiendo su diseño, materialidad y atmósfera a través de una estética cuidada."
+                   data-en="Photorealistic images that allow each project to be visualized with precision and detail, conveying its design, materiality, and atmosphere through a curated aesthetic.">
+                  Imágenes fotorrealistas que permiten visualizar cada proyecto con precisión y detalle, transmitiendo su diseño, materialidad y atmósfera a través de una estética cuidada.
+                </p>
+                <a href="contact.html?service=renders" class="service-action-link" data-es="Iniciar proyecto →" data-en="Start project →">Iniciar proyecto →</a>
+
+                <!-- Vista previa en Mobile -->
+                <div class="mobile-service-preview">
+                  <img src="images/proyectos/01-casa-flexa/render-01.jpg" alt="Renders Arquitectónicos" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 02: Video animaciones -->
+          <div class="service-accordion-item" data-service="animaciones">
+            <button class="service-header-btn" role="tab" aria-expanded="false">
+              <div class="service-title-group">
+                <span class="service-idx">02</span>
+                <h2 class="service-name" data-es="Video animaciones" data-en="Video Animations">Video animaciones</h2>
+              </div>
+              <span class="service-expand-indicator" aria-hidden="true">+</span>
+            </button>
+            <div class="service-drawer">
+              <div class="service-drawer-inner">
+                <p class="service-description-text"
+                   data-es="Piezas audiovisuales que muestran el proyecto en movimiento, destacando sus espacios, detalles y cualidades arquitectónicas."
+                   data-en="Audiovisual pieces that showcase the project in motion, highlighting its spaces, details, and architectural qualities.">
+                  Piezas audiovisuales que muestran el proyecto en movimiento, destacando sus espacios, detalles y cualidades arquitectónicas.
+                </p>
+                <a href="contact.html?service=animaciones" class="service-action-link" data-es="Iniciar proyecto →" data-en="Start project →">Iniciar proyecto →</a>
+
+                <!-- Vista previa en Mobile -->
+                <div class="mobile-service-preview">
+                  <video src="images/video/Verona%20para%20sitio%20web.mp4" autoplay muted loop playsinline></video>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 03: Tours 360º -->
+          <div class="service-accordion-item" data-service="tours360">
+            <button class="service-header-btn" role="tab" aria-expanded="false">
+              <div class="service-title-group">
+                <span class="service-idx">03</span>
+                <h2 class="service-name" data-es="Tours 360º" data-en="360º Virtual Tours">Tours 360º</h2>
+              </div>
+              <span class="service-expand-indicator" aria-hidden="true">+</span>
+            </button>
+            <div class="service-drawer">
+              <div class="service-drawer-inner">
+                <p class="service-description-text"
+                   data-es="Experiencias interactivas que permiten recorrer y explorar cada espacio desde cualquier perspectiva."
+                   data-en="Interactive experiences that allow you to tour and explore each space from any perspective.">
+                  Experiencias interactivas que permiten recorrer y explorar cada espacio desde cualquier perspectiva.
+                </p>
+                <a href="contact.html?service=tours360" class="service-action-link" data-es="Iniciar proyecto →" data-en="Start project →">Iniciar proyecto →</a>
+
+                <!-- Vista previa en Mobile -->
+                <div class="mobile-service-preview">
+                  <img src="images/services/tour-360-panorama.jpg" alt="Tour Virtual 360" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 04: Brochures -->
+          <div class="service-accordion-item" data-service="brochures">
+            <button class="service-header-btn" role="tab" aria-expanded="false">
+              <div class="service-title-group">
+                <span class="service-idx">04</span>
+                <h2 class="service-name" data-es="Brochures" data-en="Brochures">Brochures</h2>
+              </div>
+              <span class="service-expand-indicator" aria-hidden="true">+</span>
+            </button>
+            <div class="service-drawer">
+              <div class="service-drawer-inner">
+                <p class="service-description-text"
+                   data-es="Presentación visual que combina imágenes e información para comunicar el proyecto de manera clara y atractiva."
+                   data-en="Visual presentation combining images and information to communicate the project in a clear and compelling way.">
+                  Presentación visual que combina imágenes e información para comunicar el proyecto de manera clara y atractiva.
+                </p>
+                <a href="contact.html?service=brochures" class="service-action-link" data-es="Iniciar proyecto →" data-en="Start project →">Iniciar proyecto →</a>
+
+                <!-- Vista previa en Mobile -->
+                <div class="mobile-service-preview">
+                  <img src="images/services/brochure-madviz.jpg" alt="Dossier & Brochure Editorial" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Vitrina Multimedia Pinned / Showcase -->
+      <div class="services-col-right" aria-live="polite">
+        <div class="showcase-window">
+
+          <!-- Pane 01: Renders -->
+          <div class="media-pane pane-render is-active" data-pane="renders">
+            <div class="media-badge">
+              <span class="media-badge-dot"></span>
+              <span data-es="FOTORREALISMO & ATMÓSFERA" data-en="PHOTOREALISM & ATMOSPHERE">FOTORREALISMO & ATMÓSFERA</span>
+            </div>
+            <img src="images/proyectos/01-casa-flexa/render-01.jpg" alt="Render Arquitectónico MADVIZ">
+          </div>
+
+          <!-- Pane 02: Video Animaciones -->
+          <div class="media-pane pane-video" data-pane="animaciones">
+            <div class="media-badge">
+              <span class="media-badge-dot"></span>
+              <span data-es="CINEMÁTICA EN MOVIMIENTO" data-en="CINEMATICS IN MOTION">CINEMÁTICA EN MOVIMIENTO</span>
+            </div>
+            <video id="showcase-video" poster="images/proyectos/03-edificio-verona/render-09.jpeg" loop muted playsinline preload="auto">
+              <source src="images/video/Verona%20para%20sitio%20web.mp4" type="video/mp4">
+            </video>
+            <button class="video-audio-toggle" id="video-audio-btn" aria-label="Control de audio" data-es="🔊 ACTIVAR AUDIO" data-en="🔊 UNMUTE AUDIO">
+              🔊 ACTIVAR AUDIO
+            </button>
+          </div>
+
+          <!-- Pane 03: Tour 360 Interactivo -->
+          <div class="media-pane pane-tour" data-pane="tours360">
+            <div class="media-badge">
+              <span class="media-badge-dot"></span>
+              <span data-es="TOUR VIRTUAL 360° INTERACTIVO" data-en="INTERACTIVE 360° TOUR">TOUR VIRTUAL 360° INTERACTIVO</span>
+            </div>
+            <canvas id="showcase-360-canvas" aria-label="Visor 360 interactivo"></canvas>
+            <div class="tour-drag-hint" data-es="⟳ ARRASTRA PARA EXPLORAR" data-en="⟳ DRAG TO EXPLORE">
+              ⟳ ARRASTRA PARA EXPLORAR
+            </div>
+          </div>
+
+          <!-- Pane 04: Brochures -->
+          <div class="media-pane pane-brochure" data-pane="brochures">
+            <div class="media-badge">
+              <span class="media-badge-dot"></span>
+              <span data-es="DOSSIER EDITORIAL & BROCHURE" data-en="EDITORIAL DOSSIER & BROCHURE">DOSSIER EDITORIAL & BROCHURE</span>
+            </div>
+            <img src="images/services/brochure-madviz.jpg" alt="Brochure y Dossier Editorial MADVIZ">
+          </div>
+
+        </div>
+      </div>
+
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -102,7 +268,7 @@
   <script src="js/gsap.min.js"></script>
   <script src="js/ScrollTrigger.min.js"></script>
   <script src="js/main.js?v=20261001_v3"></script>
-  <!-- Motor Flowing Menu -->
-  <script src="js/flowing-menu.js?v=20261003_v1"></script>
+  <!-- Motor de Servicios Interactivos -->
+  <script src="js/services-showcase.js?v=20261003_v2"></script>
 </body>
 </html>

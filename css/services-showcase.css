@@ -1,0 +1,454 @@
+/* ========================================================
+   MADVIZ — SERVICES INTERACTIVE SHOWCASE
+   Lista de servicios a la izquierda con acordeón y
+   vitrina multimedia a la derecha (Renders, Video, 360, Brochure)
+   ======================================================== */
+
+:root {
+  --svc-border: rgba(255, 255, 255, 0.14);
+  --svc-border-active: rgba(255, 255, 255, 0.4);
+  --svc-text-muted: rgba(255, 255, 255, 0.68);
+  --svc-cyan: #00f0ff;
+}
+
+body.page-services {
+  overflow-x: hidden;
+  background-color: #0b0b0d;
+}
+
+/* Contenedor Principal */
+.services-showcase-wrap {
+  position: relative;
+  z-index: 10;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  padding: clamp(6.5rem, 11vh, 9rem) clamp(1.5rem, 5vw, 6rem) clamp(4rem, 8vh, 6rem);
+  box-sizing: border-box;
+}
+
+.services-grid-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(2.5rem, 5vw, 6rem);
+  width: 100%;
+  max-width: 1720px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+/* ========================================================
+   COLUMNA IZQUIERDA: LISTA DE SERVICIOS
+   ======================================================== */
+.services-col-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.services-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 2.2rem;
+  font-family: inherit;
+}
+
+.services-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 26px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.services-list-container {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--svc-border);
+}
+
+/* Ítem Individual de Servicio */
+.service-accordion-item {
+  border-bottom: 1px solid var(--svc-border);
+  transition: border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+  position: relative;
+}
+
+.service-accordion-item.is-active {
+  border-bottom-color: var(--svc-border-active);
+}
+
+/* Gatillo / Botón de Servicio (Alineado a la Izquierda) */
+.service-header-btn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: clamp(1.6rem, 2.4vw, 2.2rem) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+  color: #fff;
+  font-family: inherit;
+  outline: none;
+  transition: transform 0.3s ease, color 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.service-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(1.2rem, 2.5vw, 2.8rem);
+}
+
+.service-idx {
+  font-size: clamp(0.8rem, 1vw, 0.95rem);
+  font-family: monospace, ui-monospace, SFMono-Regular, monospace;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.35);
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.service-accordion-item.is-active .service-idx {
+  color: #fff;
+  transform: translateX(4px);
+}
+
+.service-name {
+  font-size: clamp(1.6rem, 2.7vw, 2.6rem);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  transition: color 0.35s ease, transform 0.35s ease, font-weight 0.2s ease;
+}
+
+.service-accordion-item:hover .service-name,
+.service-accordion-item.is-active .service-name {
+  color: #ffffff;
+  transform: translateX(6px);
+}
+
+.service-accordion-item.is-active .service-name {
+  font-weight: 400;
+}
+
+/* Indicador Circular de Estado */
+.service-expand-indicator {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.15rem;
+  line-height: 1;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.service-accordion-item:hover .service-expand-indicator {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #fff;
+}
+
+.service-accordion-item.is-active .service-expand-indicator {
+  transform: rotate(45deg);
+  background-color: #ffffff;
+  color: #0b0b0d;
+  border-color: #ffffff;
+}
+
+/* Cuerpo Desplegable de Descripción */
+.service-drawer {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+
+.service-accordion-item.is-active .service-drawer {
+  max-height: 600px;
+  opacity: 1;
+}
+
+.service-drawer-inner {
+  padding: 0 0 2.2rem clamp(2.4rem, 4vw, 4.8rem);
+}
+
+.service-description-text {
+  font-size: clamp(0.96rem, 1.12vw, 1.15rem);
+  line-height: 1.78;
+  color: var(--svc-text-muted);
+  margin: 0 0 1.6rem 0;
+  max-width: 600px;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+
+.service-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  padding-bottom: 5px;
+  transition: border-color 0.3s ease, gap 0.3s ease, opacity 0.3s ease;
+}
+
+.service-action-link:hover {
+  border-color: #fff;
+  gap: 0.95rem;
+  opacity: 0.9;
+}
+
+/* ========================================================
+   COLUMNA DERECHA: VITRINA MULTIMEDIA (SHOWCASE)
+   ======================================================== */
+.services-col-right {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.showcase-window {
+  width: 100%;
+  aspect-ratio: 16 / 10.2;
+  max-height: 560px;
+  background: rgba(14, 12, 19, 0.68);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 32px 70px rgba(0, 0, 0, 0.6), 0 0 50px rgba(0, 0, 0, 0.35);
+}
+
+/* Paneles Multimedia */
+.media-pane {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.55s ease, visibility 0.55s ease, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(0.97);
+}
+
+.media-pane.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+/* Badge de Categoría en la Vitrina */
+.media-badge {
+  position: absolute;
+  top: 1.3rem;
+  left: 1.3rem;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 0.42rem 0.95rem;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  pointer-events: none;
+}
+
+.media-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--svc-cyan);
+  box-shadow: 0 0 10px var(--svc-cyan);
+}
+
+/* Pane 01: Renders */
+.pane-render img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.media-pane.is-active.pane-render img {
+  transform: scale(1.05);
+}
+
+/* Pane 02: Video Animaciones */
+.pane-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.video-audio-toggle {
+  position: absolute;
+  bottom: 1.3rem;
+  right: 1.3rem;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  padding: 0.45rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  outline: none;
+}
+
+.video-audio-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Pane 03: Tours 360 */
+.pane-tour {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.pane-tour canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  touch-action: none;
+}
+
+.pane-tour canvas:active {
+  cursor: grabbing;
+}
+
+.tour-drag-hint {
+  position: absolute;
+  bottom: 1.3rem;
+  left: 1.3rem;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 0.38rem 0.9rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  pointer-events: none;
+  animation: pulseHint 2.4s infinite ease-in-out;
+}
+
+@keyframes pulseHint {
+  0%, 100% { opacity: 0.85; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-2px); }
+}
+
+/* Pane 04: Brochures */
+.pane-brochure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.media-pane.is-active.pane-brochure img {
+  transform: scale(1.04);
+}
+
+/* ========================================================
+   REPRODUCCIÓN Y MINIATURAS EN MOBILE
+   ======================================================== */
+.mobile-service-preview {
+  display: none;
+  margin-top: 1.6rem;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  aspect-ratio: 16 / 10;
+  position: relative;
+  background: rgba(14, 12, 19, 0.8);
+}
+
+.mobile-service-preview img,
+.mobile-service-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ========================================================
+   RESPONSIVE DESIGN (MEDIA QUERIES)
+   ======================================================== */
+@media (max-width: 992px) {
+  .services-showcase-wrap {
+    padding-top: calc(var(--header-height, 70px) + 2.5rem);
+    padding-bottom: 4.5rem;
+    align-items: flex-start;
+  }
+
+  .services-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .services-col-right {
+    display: none; /* En mobile, el medio vive dentro de cada acordeón desplegado */
+  }
+
+  .mobile-service-preview {
+    display: block;
+  }
+
+  .service-header-btn {
+    padding: 1.4rem 0;
+  }
+
+  .service-drawer-inner {
+    padding-left: 0;
+  }
+
+  .service-name {
+    font-size: clamp(1.4rem, 5.5vw, 1.9rem);
+  }
+}
