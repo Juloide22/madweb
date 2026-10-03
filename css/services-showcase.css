@@ -489,11 +489,13 @@ body.page-services {
 }
 
 .mobile-service-preview img,
-.mobile-service-preview video {
+.mobile-service-preview video,
+.mobile-service-preview iframe {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  border: none;
 }
 
 /* ========================================================
