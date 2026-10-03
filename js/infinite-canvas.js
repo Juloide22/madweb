@@ -54,10 +54,9 @@
     }));
   };
 
-  // Pools por categoría
+  // Pools por categoría (Galería, Exteriores, Interiores)
   const IMAGE_POOLS = {
     gallery: buildNormalizedImagePool(IMAGES_DATA),
-    projects: buildNormalizedImagePool(IMAGES_DATA), // ordenado por proyectos
     exteriors: buildNormalizedImagePool(IMAGES_DATA.filter(d => !d.isInterior)),
     interiors: buildNormalizedImagePool(IMAGES_DATA.filter(d => d.isInterior))
   };
@@ -68,7 +67,6 @@
       status: 'Arrastrar para explorar · Clic en una imagen para ampliar',
       recenter: 'VISTA GENERAL',
       gallery: 'GALERIA',
-      projects: 'PROYECTOS',
       exteriors: 'EXTERIORES',
       interiors: 'INTERIORES'
     },
@@ -76,7 +74,6 @@
       status: 'Drag to explore · Click any render to expand',
       recenter: 'OVERVIEW',
       gallery: 'GALLERY',
-      projects: 'PROJECTS',
       exteriors: 'EXTERIORS',
       interiors: 'INTERIORS'
     }
