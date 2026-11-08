@@ -42,13 +42,25 @@
     { id: 'img-16', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', folder: '05-edificio-ankara%20ii', file: 'render-17.jpg', isInterior: false },
     { id: 'img-17', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', folder: '05-edificio-ankara%20ii', file: 'render-18.jpg', isInterior: true },
     { id: 'img-18', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', folder: '05-edificio-ankara%20ii', file: 'render-19.jpg', isInterior: true },
-    { id: 'img-19', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', folder: '05-edificio-ankara%20ii', file: 'render-20.jpg', isInterior: true }
+    { id: 'img-19', projId: 'edificio-ankara-ii', projNum: '05', projTitle: 'Edificio Ankara II', folder: '05-edificio-ankara%20ii', file: 'render-20.jpg', isInterior: true },
+
+    // 06. RESIDENCIA MODERNA (20..29)
+    { id: 'img-20', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '01.jpg', src: 'images/galeria/01.jpg', isInterior: false },
+    { id: 'img-21', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '02.jpg', src: 'images/galeria/02.jpg', isInterior: false },
+    { id: 'img-22', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '03.jpg', src: 'images/galeria/03.jpg', isInterior: false },
+    { id: 'img-23', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '04.jpg', src: 'images/galeria/04.jpg', isInterior: false },
+    { id: 'img-24', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '05.jpg', src: 'images/galeria/05.jpg', isInterior: true },
+    { id: 'img-25', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '06.jpg', src: 'images/galeria/06.jpg', isInterior: true },
+    { id: 'img-26', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '07.jpg', src: 'images/galeria/07.jpg', isInterior: true },
+    { id: 'img-27', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '08.jpg', src: 'images/galeria/08.jpg', isInterior: true },
+    { id: 'img-28', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '09.jpg', src: 'images/galeria/09.jpg', isInterior: true },
+    { id: 'img-29', projId: 'residencia-moderna', projNum: '06', projTitle: 'Residencia Moderna', folder: '06-residencia-moderna', file: '10.jpg', src: 'images/galeria/10.jpg', isInterior: true }
   ];
 
   // Helper para construir items normalizados
   const buildNormalizedImagePool = (dataList) => {
     return dataList.map(d => ({
-      src: `images/proyectos/${d.folder}/${d.file}`,
+      src: d.src ? d.src : `images/proyectos/${d.folder}/${d.file}`,
       alt: d.projTitle,
       data: d
     }));

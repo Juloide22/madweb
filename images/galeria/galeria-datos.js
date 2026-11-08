@@ -1,7 +1,17 @@
 ﻿// Generado automaticamente por actualizar_galeria.bat
-// Ultima actualizacion: 2026-09-23 18:26:59
+// Ultima actualizacion: 2026-11-07 22:55:18
 
 window.GALERIA_IMAGENES = [
+  "01.jpg",
+  "02.jpg",
+  "03.jpg",
+  "04.jpg",
+  "05.jpg",
+  "06.jpg",
+  "07.jpg",
+  "08.jpg",
+  "09.jpg",
+  "10.jpg",
   "render-01.jpg",
   "render-02.jpeg",
   "render-03.jpeg",
