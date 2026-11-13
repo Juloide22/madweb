@@ -741,8 +741,9 @@ export class VanillaFlexCarousel {
     this.layout = m;
 
     if (!this.introState.running && !this.introState.done) {
+      const firstReady = this.slots.slice(0, 3).every(slot => slot.loaded || slot.failed);
       const allSettled = this.slots.every(slot => slot.loaded || slot.failed);
-      if (allSettled || now - this.introState.readyAt > 3500) {
+      if (allSettled || firstReady || now - this.introState.readyAt > 600) {
         this.goal = this.snapPoint(m, this.goal);
         this.pos = this.goal;
         this.beginIntro(s, m);

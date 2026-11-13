@@ -181,6 +181,30 @@
   z-index: 1;
 }
 
+.ripple-distortion {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #080612;
+  z-index: 1;
+}
+
+.ripple-distortion::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(10, 8, 22, 0.28) 0%, rgba(8, 6, 18, 0.58) 100%);
+  pointer-events: none;
+}
+
+.ripple-distortion canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .flex-gallery-stage {
   position: relative;
   width: 100%;
