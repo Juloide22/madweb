@@ -269,7 +269,7 @@ function initArchiveFlexGallery() {
     reach: 0.25,
     dispersion: 1,
     liquid: 0.35,
-    followCursor: true,
+    followCursor: false,
     onSelect: (index, item) => {
       openLightbox(index);
     }
