@@ -101,9 +101,14 @@ function initArchiveFlexGallery() {
 
   const getMappedItems = (mode) => {
     const t = TRANSLATIONS[currentLang] || TRANSLATIONS.es;
-    let source = IMAGES_DATA;
-    if (mode === 'exteriors') source = IMAGES_DATA.filter(d => !d.isInterior);
-    else if (mode === 'interiors') source = IMAGES_DATA.filter(d => d.isInterior);
+    const withThumbs = IMAGES_DATA.map((item, i) => ({
+      ...item,
+      fullSrc: item.src,
+      src: `images/thumbs/thumb-${String(i + 1).padStart(2, '0')}.webp`
+    }));
+    let source = withThumbs;
+    if (mode === 'exteriors') source = withThumbs.filter(d => !d.isInterior);
+    else if (mode === 'interiors') source = withThumbs.filter(d => d.isInterior);
 
     return source.map(item => ({
       ...item,
@@ -155,7 +160,7 @@ function initArchiveFlexGallery() {
     if (!currentItems.length) return;
     lbIndex = ((idx % currentItems.length) + currentItems.length) % currentItems.length;
     const item = currentItems[lbIndex];
-    lbImg.src = item.src;
+    lbImg.src = item.fullSrc || item.src;
     lbImg.alt = item.title;
     lbTitle.textContent = `${item.title} — ${item.subtitle}`;
   };

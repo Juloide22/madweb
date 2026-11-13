@@ -53,7 +53,7 @@ const BEND_PRESETS = {
 
 const FIT_ASPECT = { portrait: 0.75, square: 1, landscape: 4 / 3 };
 const TAPS = 12;
-const PIXEL_BUDGET = 4.5e6;
+const PIXEL_BUDGET = 2.6e6;
 const INTRO_DURATION = { rise: 2.1, bloom: 1.6, spin: 2.2, deal: 1.5, fade: 0.35 };
 
 const wrap = (value, size) => ((((value + size / 2) % size) + size) % size) - size / 2;
@@ -406,7 +406,9 @@ export class VanillaFlexCarousel {
     });
 
     this.reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    this.anisotropy = renderer.getExtension('EXT_texture_filter_anisotropic') ? 8 : 0;
+    this.anisotropy = renderer.getExtension('EXT_texture_filter_anisotropic') ? 4 : 0;
+    this.loadGeneration = 0;
+    this.uploadQueue = [];
 
     this.slots = [];
     this.width = 1;
@@ -474,15 +476,57 @@ export class VanillaFlexCarousel {
       ready: 0,
       color: [0.5, 0.5, 0.5],
       image: [1, 1],
+      startLoad: () => {},
       dispose: () => {}
     };
     const image = new Image();
     image.crossOrigin = 'anonymous';
     image.decoding = 'async';
-    image.onload = () => {
-      if (!this.alive || !this.slots.includes(slot)) return;
-      texture.image = image;
-      texture.update();
+    let disposed = false;
+    let started = false;
+
+    slot.startLoad = (onDone) => {
+      if (disposed || started) {
+        onDone?.();
+        return;
+      }
+      started = true;
+      image.onload = () => {
+        if (disposed || !this.alive || !this.slots.includes(slot)) {
+          onDone?.();
+          return;
+        }
+        this.uploadQueue.push({ slot, image });
+        this.dirty = true;
+        this.start();
+        onDone?.();
+      };
+      image.onerror = () => {
+        if (!disposed && this.alive) {
+          slot.failed = true;
+          this.dirty = true;
+          this.start();
+        }
+        onDone?.();
+      };
+      image.src = item.src;
+    };
+
+    slot.dispose = () => {
+      disposed = true;
+      image.onload = null;
+      image.onerror = null;
+      gl.deleteTexture(texture.texture);
+    };
+    return slot;
+  }
+
+  flushOneUpload() {
+    while (this.uploadQueue.length) {
+      const { slot, image } = this.uploadQueue.shift();
+      if (!this.alive || !this.slots.includes(slot)) continue;
+      slot.texture.image = image;
+      slot.texture.update();
       slot.image = [image.naturalWidth || 1, image.naturalHeight || 1];
       slot.aspect = slot.image[0] / slot.image[1];
       try {
@@ -506,27 +550,46 @@ export class VanillaFlexCarousel {
       }
       slot.loaded = true;
       this.dirty = true;
-      this.start();
-    };
-    image.onerror = () => {
-      if (!this.alive) return;
-      slot.failed = true;
-      this.dirty = true;
-      this.start();
-    };
-    image.src = item.src;
-    slot.dispose = () => {
-      image.onload = null;
-      image.onerror = null;
-      gl.deleteTexture(texture.texture);
-    };
-    return slot;
+      break;
+    }
   }
 
   setItems(next) {
+    this.loadGeneration += 1;
+    const gen = this.loadGeneration;
+    this.uploadQueue = [];
     this.slots.forEach(slot => slot.dispose());
     this.items = next;
     this.slots = next.map((it, idx) => this.loadSlot(it, idx));
+
+    // Prioritize center/adjacent slots outward so visible cards load first without saturating main thread
+    const n = this.slots.length;
+    const order = [];
+    if (n > 0) {
+      order.push(0);
+      for (let d = 1; d <= Math.floor(n / 2); d++) {
+        if (d < n) order.push(d);
+        const opp = n - d;
+        if (opp !== d && opp > 0 && opp < n) order.push(opp);
+      }
+    }
+    let cursor = 0;
+    let active = 0;
+    const MAX_CONCURRENT = 4;
+    const pump = () => {
+      if (!this.alive || this.loadGeneration !== gen) return;
+      while (active < MAX_CONCURRENT && cursor < order.length) {
+        const slot = this.slots[order[cursor++]];
+        if (!slot) continue;
+        active += 1;
+        slot.startLoad(() => {
+          active -= 1;
+          pump();
+        });
+      }
+    };
+    pump();
+
     this.activeIndex = -1;
     this.layout = null;
     this.resnap = true;
@@ -723,9 +786,14 @@ export class VanillaFlexCarousel {
       return;
     }
 
+    let animating = false;
+    if (this.uploadQueue.length) {
+      this.flushOneUpload();
+      if (this.uploadQueue.length) animating = true;
+    }
+
     const m = this.metrics(s);
     const n = this.slots.length;
-    let animating = false;
 
     if (this.resnap) {
       this.goal = this.snapPoint(m, this.goal);
