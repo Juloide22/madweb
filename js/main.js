@@ -34,24 +34,28 @@ if (parallaxBg && window.matchMedia('(hover: hover) and (pointer: fine)').matche
   // scale(1.08) da suficiente margen para moverse con fluidez sin bordes negros
   parallaxBg.style.willChange = 'transform';
 
-  document.addEventListener('mousemove', (e) => {
-    // Rango fluido: ~ -24px a +24px horizontal, -16px a +16px vertical
-    targetX = (e.clientX / window.innerWidth  - 0.5) * 48;
-    targetY = (e.clientY / window.innerHeight - 0.5) * 32;
-  }, { passive: true });
-
   function animateParallax() {
-    // Interpolación suave (lerp) — 0.055 para movimiento cinemático flotante
-    currentX += (targetX - currentX) * 0.055;
-    currentY += (targetY - currentY) * 0.055;
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+    currentX += dx * 0.055;
+    currentY += dy * 0.055;
 
     parallaxBg.style.transform =
       `translate3d(${currentX.toFixed(2)}px, ${currentY.toFixed(2)}px, 0) scale(1.08)`;
 
-    rafId = requestAnimationFrame(animateParallax);
+    if (Math.abs(dx) > 0.03 || Math.abs(dy) > 0.03) {
+      rafId = requestAnimationFrame(animateParallax);
+    } else {
+      rafId = null;
+    }
   }
 
-  animateParallax();
+  document.addEventListener('mousemove', (e) => {
+    // Rango fluido: ~ -24px a +24px horizontal, -16px a +16px vertical
+    targetX = (e.clientX / window.innerWidth  - 0.5) * 48;
+    targetY = (e.clientY / window.innerHeight - 0.5) * 32;
+    if (!rafId) rafId = requestAnimationFrame(animateParallax);
+  }, { passive: true });
 }
 
 
@@ -93,9 +97,15 @@ if (cursorDot && window.matchMedia('(pointer: fine)').matches) {
   let prevMouseY = mouseY;
   let cursorX = mouseX;
   let cursorY = mouseY;
+  let hoverScale = 1;
+  let cursorRafId = null;
   let isCursorVisible = false;
   let isHovering = false;
   let motionSpeed = 0;
+
+  function startCursorLoop() {
+    if (!cursorRafId) cursorRafId = requestAnimationFrame(animateCursor);
+  }
 
   window.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
@@ -104,6 +114,7 @@ if (cursorDot && window.matchMedia('(pointer: fine)').matches) {
       isCursorVisible = true;
       cursorDot.classList.add('is-active');
     }
+    startCursorLoop();
   }, { passive: true });
 
   document.addEventListener('mouseleave', () => {
@@ -113,9 +124,11 @@ if (cursorDot && window.matchMedia('(pointer: fine)').matches) {
 
   document.addEventListener('mouseenter', () => {
     cursorDot.classList.remove('is-hidden');
+    startCursorLoop();
   });
 
   function animateCursor() {
+    cursorRafId = null;
     // Velocidad instantánea del ratón para modular la visibilidad de la estela
     const dx = mouseX - prevMouseX;
     const dy = mouseY - prevMouseY;
@@ -129,31 +142,42 @@ if (cursorDot && window.matchMedia('(pointer: fine)').matches) {
     // El punto principal sigue al cursor de forma ágil y precisa (lerp 0.72)
     cursorX += (mouseX - cursorX) * 0.72;
     cursorY += (mouseY - cursorY) * 0.72;
+    const targetHoverScale = isHovering ? 2.8 : 1;
+    hoverScale += (targetHoverScale - hoverScale) * 0.24;
 
-    cursorDot.style.left = `${cursorX.toFixed(2)}px`;
-    cursorDot.style.top = `${cursorY.toFixed(2)}px`;
+    cursorDot.style.transform = `translate3d(${cursorX.toFixed(2)}px, ${cursorY.toFixed(2)}px, 0) translate(-50%, -50%) scale(${hoverScale.toFixed(3)})`;
 
     // Cada punto de la estela sigue en cadena decreciente
     let leadX = cursorX;
     let leadY = cursorY;
+    let maxTrailDelta = 0;
 
     for (let i = 0; i < TRAIL_COUNT; i++) {
       const t = trailDots[i];
-      t.x += (leadX - t.x) * t.speed;
-      t.y += (leadY - t.y) * t.speed;
+      const tdx = leadX - t.x;
+      const tdy = leadY - t.y;
+      t.x += tdx * t.speed;
+      t.y += tdy * t.speed;
       leadX = t.x;
       leadY = t.y;
+      maxTrailDelta = Math.max(maxTrailDelta, Math.abs(tdx), Math.abs(tdy));
 
       const effectiveOpacity = (isCursorVisible && !isHovering) ? (t.baseOpacity * motionAlpha) : 0;
-      t.el.style.left = `${t.x.toFixed(2)}px`;
-      t.el.style.top = `${t.y.toFixed(2)}px`;
-      t.el.style.transform = `translate(-50%, -50%) scale(${t.scale})`;
+      t.el.style.transform = `translate3d(${t.x.toFixed(2)}px, ${t.y.toFixed(2)}px, 0) translate(-50%, -50%) scale(${t.scale})`;
       t.el.style.opacity = effectiveOpacity.toFixed(3);
     }
 
-    requestAnimationFrame(animateCursor);
+    const stillMoving =
+      Math.abs(mouseX - cursorX) > 0.08 ||
+      Math.abs(mouseY - cursorY) > 0.08 ||
+      Math.abs(targetHoverScale - hoverScale) > 0.01 ||
+      motionSpeed > 0.05 ||
+      maxTrailDelta > 0.15;
+
+    if (stillMoving && isCursorVisible) {
+      cursorRafId = requestAnimationFrame(animateCursor);
+    }
   }
-  animateCursor();
 
   // Expansión al posar sobre links, botones e imágenes
   const interactiveSelector = 'a, button, .archive-item, input, textarea, select, [role="button"]';
@@ -161,12 +185,14 @@ if (cursorDot && window.matchMedia('(pointer: fine)').matches) {
     if (e.target.closest(interactiveSelector)) {
       isHovering = true;
       cursorDot.classList.add('is-hovering');
+      startCursorLoop();
     }
   });
   document.addEventListener('mouseout', (e) => {
     if (e.target.closest(interactiveSelector)) {
       isHovering = false;
       cursorDot.classList.remove('is-hovering');
+      startCursorLoop();
     }
   });
 }
@@ -558,6 +584,12 @@ function initBackgroundVideos() {
 
   function setupAndPlay(v) {
     if (!v) return;
+    const source = v.querySelector('source[data-src]');
+    if (source && !source.getAttribute('src')) {
+      source.setAttribute('src', source.getAttribute('data-src'));
+      v.preload = 'auto';
+      v.load();
+    }
     v.muted = true;
     v.defaultMuted = true;
     v.setAttribute('muted', '');
@@ -698,7 +730,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         opacity: 0
       });
       gsap.set(imgs, {
-        filter: 'grayscale(100%) brightness(0.5)'
+        opacity: 0.45
       });
     });
 
@@ -709,7 +741,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         pin: true,
         start: 'top top',
         end: () => '+=' + (window.innerHeight * 9.5),
-        scrub: 0.2,
+        scrub: 0.55,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onRefreshInit: () => {
@@ -785,9 +817,9 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       const colorDur = 0.55;
       const colorEnd = colorStart + colorDur; // enterStart + 2.19
 
-      // 4. Paso a COLOR NORMAL al quedar en su lugar
+      // 4. Paso a brillo completo al quedar en su lugar (100% compositor GPU)
       mainTl.to(imgs, {
-        filter: 'grayscale(0%) brightness(1)',
+        opacity: 1,
         duration: colorDur,
         ease: 'power2.out'
       }, colorStart);
@@ -813,7 +845,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       }
 
       mainTl.to(imgs, {
-        filter: 'grayscale(100%) brightness(0.5)',
+        opacity: 0.45,
         duration: 0.45
       }, exitStart);
 
@@ -975,6 +1007,10 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     let isTouching = false;
     let isProgrammaticNav = false;
     let glideRafId = null;
+    let wheelRafId = null;
+    let wheelTargetY = window.scrollY;
+    let wheelCurrentY = window.scrollY;
+    let wheelLastFrame = 0;
     let settleTimer = null;
     let touchReleaseTimer = null;
     let lastWheelTime = 0;
@@ -987,20 +1023,16 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       }
     }
 
-    function engageTopeAt(idx, stops) {
-      cancelGlide();
-      if (settleTimer) clearTimeout(settleTimer);
-      const clampedIdx = Math.max(0, Math.min(stops.length - 1, idx));
-      currentStopIdx = clampedIdx;
-      gestureOriginIdx = clampedIdx;
-      lockedScrollY = stops[clampedIdx];
-      topeLocked = true;
-      topeLockedAt = performance.now();
-      setScrollInstant(lockedScrollY);
+    function cancelWheelLoop() {
+      if (wheelRafId) {
+        cancelAnimationFrame(wheelRafId);
+        wheelRafId = null;
+      }
     }
 
-    function glideToStop(targetIdx, durationMs = 240) {
+    function glideToStop(targetIdx, durationMs = 620) {
       cancelGlide();
+      cancelWheelLoop();
       if (settleTimer) clearTimeout(settleTimer);
       const stops = getStopScrollPositions();
       const clampedIdx = Math.max(0, Math.min(stops.length - 1, targetIdx));
@@ -1011,6 +1043,8 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       currentStopIdx = clampedIdx;
       gestureOriginIdx = clampedIdx;
       lockedScrollY = targetY;
+      wheelTargetY = targetY;
+      wheelCurrentY = targetY;
 
       if (Math.abs(dist) <= 2) {
         setScrollInstant(targetY);
@@ -1022,14 +1056,16 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       const startTime = performance.now();
       function step(now) {
         const p = Math.min(1, (now - startTime) / durationMs);
-        const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
-        const nextY = Math.round(startY + dist * eased);
+        const eased = 1 - Math.pow(1 - p, 4); // easeOutQuart cinemático
+        const nextY = startY + dist * eased;
+        wheelCurrentY = nextY;
         setScrollInstant(nextY);
 
         if (p < 1) {
           glideRafId = requestAnimationFrame(step);
         } else {
           glideRafId = null;
+          wheelCurrentY = targetY;
           setScrollInstant(targetY);
           topeLocked = true;
           topeLockedAt = performance.now();
@@ -1058,79 +1094,115 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
           const nextIdx = gestureOriginIdx + 1;
           const segDist = Math.max(1, stops[nextIdx] - originY);
           if (diff >= segDist * 0.11) {
-            glideToStop(nextIdx, 240);
+            glideToStop(nextIdx, 580);
           } else {
-            glideToStop(gestureOriginIdx, 180);
+            glideToStop(gestureOriginIdx, 460);
           }
         } else if (diff < 0 && gestureOriginIdx > 0) {
           const prevIdx = gestureOriginIdx - 1;
           const segDist = Math.max(1, originY - stops[prevIdx]);
           if (Math.abs(diff) >= segDist * 0.11) {
-            glideToStop(prevIdx, 240);
+            glideToStop(prevIdx, 580);
           } else {
-            glideToStop(gestureOriginIdx, 180);
+            glideToStop(gestureOriginIdx, 460);
           }
         }
-      }, 130);
+      }, 150);
     }
 
-    // 1. Listener de Rueda / Trackpad (Desktop)
+    function runSmoothWheel(now) {
+      wheelRafId = null;
+      if (isTouching || isProgrammaticNav || glideRafId) return;
+      const dt = Math.min(0.05, Math.max(0.001, (now - wheelLastFrame) / 1000));
+      wheelLastFrame = now;
+      const alpha = 1 - Math.exp(-12 * dt);
+      const diff = wheelTargetY - wheelCurrentY;
+
+      if (Math.abs(diff) < 0.6) {
+        wheelCurrentY = wheelTargetY;
+        setScrollInstant(wheelCurrentY);
+        const stops = getStopScrollPositions();
+        const nearestIdx = findNearestStopIdx(wheelCurrentY, stops);
+        if (Math.abs(wheelCurrentY - stops[nearestIdx]) <= 2) {
+          currentStopIdx = nearestIdx;
+          gestureOriginIdx = nearestIdx;
+          lockedScrollY = stops[nearestIdx];
+          topeLocked = true;
+          topeLockedAt = performance.now();
+        }
+        return;
+      }
+
+      wheelCurrentY += diff * alpha;
+      setScrollInstant(wheelCurrentY);
+      wheelRafId = requestAnimationFrame(runSmoothWheel);
+    }
+
+    // 1. Listener de Rueda / Trackpad (Desktop) — interpolación continua sin saltos bruscos
     window.addEventListener('wheel', (e) => {
       if (isProgrammaticNav) return;
       if (menuOverlay && menuOverlay.classList.contains('is-open')) return;
       if (lightbox && lightbox.classList.contains('is-open')) return;
 
+      e.preventDefault();
+
       const now = performance.now();
       const wheelGap = now - lastWheelTime;
-      const absDelta = Math.abs(e.deltaY);
+      let delta = e.deltaY;
+      if (e.deltaMode === 1) delta *= 36;
+      else if (e.deltaMode === 2) delta *= window.innerHeight;
+      const absDelta = Math.abs(delta);
       const prevAbsDelta = lastWheelAbsDelta;
       lastWheelTime = now;
       lastWheelAbsDelta = absDelta;
 
       const stops = getStopScrollPositions();
 
-      // Si estamos en el TOPE de un proyecto, frenar la inercia o el giro largo
+      // Breve pausa al llegar a un proyecto para no saltar 2 proyectos con un solo giro
       if (topeLocked) {
         const elapsed = now - topeLockedAt;
         const canUnlock =
-          (elapsed > 210 && wheelGap > 135) ||
-          (elapsed > 440 && absDelta > prevAbsDelta * 1.3 && absDelta >= 12) ||
-          (elapsed > 640 && wheelGap > 55);
+          (elapsed > 150 && wheelGap > 80) ||
+          (elapsed > 260 && absDelta > prevAbsDelta * 1.15 && absDelta >= 10) ||
+          (elapsed > 420);
 
         if (canUnlock) {
           topeLocked = false;
           gestureOriginIdx = currentStopIdx;
+          wheelCurrentY = window.scrollY;
+          wheelTargetY = wheelCurrentY;
         } else {
-          e.preventDefault();
-          setScrollInstant(lockedScrollY);
           return;
         }
-      } else if (wheelGap > 240 && !glideRafId) {
+      } else if (wheelGap > 220 && !glideRafId && !wheelRafId) {
         gestureOriginIdx = findNearestStopIdx(window.scrollY, stops);
         currentStopIdx = gestureOriginIdx;
+        wheelCurrentY = window.scrollY;
+        wheelTargetY = wheelCurrentY;
       }
 
       if (glideRafId) {
-        e.preventDefault();
-        return;
+        // Si estaba en medio de un glide hacia un stop, permitir interrumpir suavemente si el usuario scrollea con intención
+        if (absDelta >= 14 && (now - topeLockedAt > 120)) {
+          cancelGlide();
+          wheelCurrentY = window.scrollY;
+          wheelTargetY = wheelCurrentY;
+        } else {
+          return;
+        }
       }
 
       const maxAllowedIdx = Math.min(stops.length - 1, gestureOriginIdx + 1);
       const minAllowedIdx = Math.max(0, gestureOriginIdx - 1);
       const maxAllowedY = stops[maxAllowedIdx];
       const minAllowedY = stops[minAllowedIdx];
-      const projectedY = window.scrollY + e.deltaY;
 
-      // Si este evento de rueda alcanzaría o cruzaría el TOPE del siguiente proyecto -> FRENAR EN EL TOPE
-      if (e.deltaY > 0 && projectedY >= maxAllowedY) {
-        e.preventDefault();
-        engageTopeAt(maxAllowedIdx, stops);
-        return;
-      }
-      if (e.deltaY < 0 && projectedY <= minAllowedY) {
-        e.preventDefault();
-        engageTopeAt(minAllowedIdx, stops);
-        return;
+      wheelTargetY = Math.max(minAllowedY, Math.min(maxAllowedY, wheelTargetY + delta));
+
+      if (!wheelRafId) {
+        wheelCurrentY = window.scrollY;
+        wheelLastFrame = performance.now();
+        wheelRafId = requestAnimationFrame(runSmoothWheel);
       }
 
       scheduleSettleCheck();
@@ -1143,6 +1215,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       if (lightbox && lightbox.classList.contains('is-open')) return;
 
       isTouching = true;
+      cancelWheelLoop();
       if (settleTimer) clearTimeout(settleTimer);
       if (touchReleaseTimer) clearTimeout(touchReleaseTimer);
 
@@ -1150,7 +1223,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       const now = performance.now();
 
       // Al apoyar el dedo nuevamente tras haber llegado a un tope, habilitar el avance al siguiente proyecto
-      if (topeLocked && (now - topeLockedAt > 110)) {
+      if (topeLocked && (now - topeLockedAt > 90)) {
         topeLocked = false;
         gestureOriginIdx = currentStopIdx;
       } else if (!topeLocked && !glideRafId) {
@@ -1178,18 +1251,18 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       }
       if (touchReleaseTimer) clearTimeout(touchReleaseTimer);
       touchReleaseTimer = setTimeout(() => {
-        if (!isTouching && topeLocked && (performance.now() - topeLockedAt > 240)) {
+        if (!isTouching && topeLocked && (performance.now() - topeLockedAt > 200)) {
           topeLocked = false;
           gestureOriginIdx = currentStopIdx;
         }
-      }, 260);
+      }, 220);
     };
     window.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('touchcancel', onTouchEnd, { passive: true });
 
-    // 3. Listener de Scroll General (atrapa la inercia táctil en iOS / Android exactamente en el TOPE)
+    // 3. Listener de Scroll General (en táctil desliza suavemente al tope sin teletransportar)
     window.addEventListener('scroll', () => {
-      if (isProgrammaticNav || glideRafId) return;
+      if (isProgrammaticNav || glideRafId || wheelRafId) return;
       const stops = getStopScrollPositions();
       const curY = window.scrollY;
 
@@ -1206,11 +1279,11 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       const minAllowedY = stops[minAllowedIdx];
 
       if (gestureOriginIdx < stops.length - 1 && curY >= maxAllowedY - 2) {
-        engageTopeAt(maxAllowedIdx, stops);
+        glideToStop(maxAllowedIdx, 420);
         return;
       }
       if (gestureOriginIdx > 0 && curY <= minAllowedY + 2) {
-        engageTopeAt(minAllowedIdx, stops);
+        glideToStop(minAllowedIdx, 420);
         return;
       }
 
@@ -1219,7 +1292,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       }
     }, { passive: true });
 
-    // 4. Navegación por teclado (flechas / RePág / AvPág con tope en cada proyecto)
+    // 4. Navegación por teclado (flechas / RePág / AvPág con transición suave)
     window.addEventListener('keydown', (e) => {
       const activeTag = document.activeElement ? document.activeElement.tagName : '';
       if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') return;
@@ -1230,11 +1303,11 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       if (e.key === 'ArrowDown' || e.key === 'PageDown') {
         e.preventDefault();
         const nextIdx = Math.min(stops.length - 1, currentStopIdx + 1);
-        glideToStop(nextIdx, 300);
+        glideToStop(nextIdx, 680);
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault();
         const prevIdx = Math.max(0, currentStopIdx - 1);
-        glideToStop(prevIdx, 300);
+        glideToStop(prevIdx, 680);
       }
     });
 
@@ -1243,22 +1316,13 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       const stops = getStopScrollPositions();
       const clampedIdx = Math.max(0, Math.min(stops.length - 1, targetIdx));
       cancelGlide();
+      cancelWheelLoop();
       isProgrammaticNav = true;
       topeLocked = false;
-      currentStopIdx = clampedIdx;
-      gestureOriginIdx = clampedIdx;
-      lockedScrollY = stops[clampedIdx];
-
-      window.scrollTo({
-        top: stops[clampedIdx],
-        behavior: 'smooth'
-      });
-
+      glideToStop(clampedIdx, 760);
       setTimeout(() => {
         isProgrammaticNav = false;
-        topeLocked = true;
-        topeLockedAt = performance.now();
-      }, 850);
+      }, 780);
     }
 
     // Clic en el enlace del Hero o en el botón "Proyectos destacados" -> va al Tope del Proyecto 1 (índice 1)

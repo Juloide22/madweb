@@ -441,7 +441,7 @@ html.is-mobile-view .video-bg--mobile {
   pointer-events: none;
   z-index: 2;
   opacity: 0.045; /* Muy sutil */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   background-repeat: repeat;
 }
 
@@ -465,10 +465,10 @@ html.is-mobile-view .video-bg--mobile {
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    transition: opacity 0.25s ease, transform 0.22s var(--ease-fluid);
+    transition: opacity 0.25s ease;
     mix-blend-mode: difference;
     opacity: 0;
-    will-change: left, top, transform, opacity;
+    will-change: transform, opacity;
   }
 
   .cursor-dot.is-active {
@@ -477,7 +477,7 @@ html.is-mobile-view .video-bg--mobile {
 
   /* Al posarse sobre enlaces o elementos interactivos: el punto se expande con inversión difference */
   .cursor-dot.is-hovering {
-    transform: translate(-50%, -50%) scale(2.8);
+    /* escala interpolada vía transform en main.js para evitar layout thrashing */
   }
 
   .cursor-dot.is-hidden {
@@ -498,7 +498,7 @@ html.is-mobile-view .video-bg--mobile {
     transform: translate(-50%, -50%);
     mix-blend-mode: difference;
     opacity: 0;
-    will-change: left, top, transform, opacity;
+    will-change: transform, opacity;
   }
 }
 
@@ -1017,9 +1017,9 @@ html.is-mobile-view .video-bg--mobile {
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: grayscale(100%) brightness(0.5);
-  will-change: filter, transform;
-  transition: transform 0.4s var(--ease-std);
+  opacity: 0.45;
+  will-change: opacity, transform;
+  transition: transform 0.45s var(--ease-std);
 }
 
 .project-grid .archive-item:hover img {
