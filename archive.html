@@ -16,6 +16,7 @@
   <title>Gallery — MADVIZ</title>
   <link rel="icon" type="image/png" href="images/logo-bg.png">
   <link rel="stylesheet" href="css/infinite-canvas.css?v=20261003_v2">
+  <link rel="stylesheet" href="css/flex-carousel.css?v=20261113">
 </head>
 <body class="page-archive page-infinite-gallery">
 
@@ -43,24 +44,37 @@
     </div>
   </div>
 
-  <!-- 3D Dome Gallery (React Bits DomeGallery Vanilla) -->
-  <div id="dome-root" class="sphere-root" role="region" aria-label="Galería 3D Dome">
+  <!-- Flex Carousel Gallery (Liquid Glass WebGL) -->
+  <div id="flex-gallery-root" class="flex-gallery-root" role="region" aria-label="Galería Flex Carousel">
     <canvas id="silk-canvas" class="silk-canvas" aria-hidden="true"></canvas>
-    <main id="sphere-main" class="sphere-main">
-      <div class="stage">
-        <div id="sphere" class="sphere"></div>
-      </div>
+    <main id="flex-carousel-mount" class="flex-gallery-stage"></main>
+  </div>
 
-      <div class="overlay"></div>
-      <div class="overlay overlay--blur"></div>
-      <div class="edge-fade edge-fade--top"></div>
-      <div class="edge-fade edge-fade--bottom"></div>
-
-      <div class="viewer" id="viewer">
-        <div id="scrim" class="scrim"></div>
-        <div id="frame" class="frame"></div>
+  <!-- Lightbox Fullscreen -->
+  <div id="flex-lightbox" class="flex-lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <button id="flex-lightbox-close" class="flex-lightbox__close" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <button id="flex-lightbox-prev" class="flex-lightbox__nav flex-lightbox__nav--prev" aria-label="Anterior">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <div class="flex-lightbox__inner">
+      <img id="flex-lightbox-img" class="flex-lightbox__img" src="" alt="MADVIZ Render">
+      <div class="flex-lightbox__meta">
+        <span id="flex-lightbox-title" class="flex-lightbox__title"></span>
+        <span class="flex-lightbox__brand">MADVIZ</span>
       </div>
-    </main>
+    </div>
+    <button id="flex-lightbox-next" class="flex-lightbox__nav flex-lightbox__nav--next" aria-label="Siguiente">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
   </div>
 
   <!-- Heads-Up Display (HUD) con Navegación General y Selector de Modos -->
@@ -130,27 +144,24 @@
       <span id="hud-status-text">Arrastrar para explorar · Clic en una imagen para acercar</span>
     </div>
 
-    <!-- Controles de Navegación y Zoom -->
+    <!-- Controles de Navegación del Carrusel -->
     <div class="hud__controls">
       <div class="hud-zoom-ctrl">
-        <button id="btn-zoom-out" class="hud-zoom-ctrl__btn" title="Alejar (-)" aria-label="Alejar">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
+        <button id="btn-prev" class="hud-zoom-ctrl__btn" title="Anterior" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
-        <span id="hud-zoom" class="hud-zoom-ctrl__label">100%</span>
-        <button id="btn-zoom-in" class="hud-zoom-ctrl__btn" title="Acercar (+)" aria-label="Acercar">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
+        <button id="btn-next" class="hud-zoom-ctrl__btn" title="Siguiente" aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
         </button>
-        <button id="btn-recenter" class="hud-zoom-ctrl__recenter" title="Reajustar a pantalla (0)">VISTA GENERAL</button>
       </div>
     </div>
   </aside>
 
-  <!-- Motor del Lienzo 3D DomeGallery -->
-  <script src="js/infinite-canvas.js?v=20261003_v2"></script>
+  <!-- Motor del Flex Carousel WebGL -->
+  <script type="module" src="js/archive-flex.js?v=20261113"></script>
 </body>
 </html>
