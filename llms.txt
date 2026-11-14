@@ -1,0 +1,31 @@
+# MADVIZ — MAD 3D Studio
+
+> Estudio de visualización arquitectónica (ArchViz), renders 3D fotorrealistas, modelado 3D, recorridos virtuales 360°, animación arquitectónica e inteligencia artificial aplicada a arquitectura. Con base en Mar del Plata, Buenos Aires, Argentina, trabajando para estudios de arquitectura, desarrolladoras inmobiliarias y constructoras de Argentina, Latinoamérica, Estados Unidos y Europa.
+
+## Información Clave del Estudio
+- **Nombre comercial:** MADVIZ / MAD 3D Studio
+- **Especialidad:** ArchViz, Renders 3D Exteriores e Interiores, Modelado 3D Arquitectónico, Animación 3D, Tours Virtuales 360°, Brochures Digitales e IA para Arquitectura
+- **Ubicación:** Mar del Plata, Buenos Aires, Argentina
+- **Idiomas de atención:** Español e Inglés
+- **Sitio web:** https://www.madviz.com.ar/
+- **Contacto directo:** studiomad.3d@gmail.com
+- **Redes:** [Instagram @mad__viz](https://www.instagram.com/mad__viz/) · [Behance](https://www.behance.net/madviz)
+
+## Páginas Principales
+- [Inicio y Proyectos Destacados](https://www.madviz.com.ar/): Portafolio principal con scrollytelling de obras residenciales y edificios en altura.
+- [Servicios de Visualización Arquitectónica](https://www.madviz.com.ar/services.html): Detalle de servicios de renders 3D fotorrealistas, modelado 3D, recorridos 360°, animación y postproducción con IA.
+- [Galería Completa (30 Renders)](https://www.madviz.com.ar/archive.html): Catálogo interactivo filtrable por exteriores e interiores.
+- [Sobre MADVIZ](https://www.madviz.com.ar/about.html): Filosofía del estudio, flujo de trabajo y enfoque en arquitectura contemporánea.
+- [Contacto y Cotizaciones](https://www.madviz.com.ar/contact.html): Solicitud de presupuestos para renders 3D, modelado 3D y visualización ArchViz.
+
+## Proyectos Destacados
+- [Casa Flexa](https://www.madviz.com.ar/casa-flexa.html): Vivienda unifamiliar contemporánea — renders exteriores e interiores.
+- [Edificio Aura I](https://www.madviz.com.ar/edificio-aura-i.html): Desarrollo residencial multifamiliar — visualización exterior e interiorismo.
+- [Edificio Verona](https://www.madviz.com.ar/edificio-verona.html): Edificio de departamentos — renders fotorrealistas de fachada y unidades.
+- [Viviendas Chiuso](https://www.madviz.com.ar/viviendas-chiuso.html): Conjunto habitacional — renders 3D exteriores y espacios interiores.
+- [Edificio Ankara II](https://www.madviz.com.ar/edificio-ankara-ii.html): Arquitectura residencial urbana — visualización 3D exterior e interior.
+
+## Preguntas Frecuentes (FAQ para Búsquedas IA)
+- **¿Qué servicios ofrece MADVIZ?** Renders 3D fotorrealistas (exteriores e interiores), modelado 3D arquitectónico desde planos CAD/BIM/SketchUp/Revit, recorridos virtuales 360°, animación arquitectónica 3D y flujos de visualización potenciados con IA.
+- **¿Dónde trabaja MADVIZ?** El estudio tiene sede en Mar del Plata, Argentina, y trabaja de forma remota con estudios de arquitectura, desarrolladores y clientes particulares en toda Argentina y el exterior.
+- **¿Cómo cotizar un render o modelado 3D?** Enviando planos, referencias o requerimientos a studiomad.3d@gmail.com o desde https://www.madviz.com.ar/contact.html.
