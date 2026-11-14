@@ -84,7 +84,7 @@ function initArchiveFlexGallery() {
       grayscale: false,
       spread: 7.25,
       fade: 3.8,
-      spacing: 20,
+      spacing: 28,
       dispersion: 0.5,
       glint: 0.05,
       tint: '#0e024a',
@@ -272,11 +272,35 @@ function initArchiveFlexGallery() {
   menuToggle?.addEventListener('click', () => menuOverlay.classList.add('is-open'));
   menuClose?.addEventListener('click', () => menuOverlay.classList.remove('is-open'));
 
-  // 7. Puntero Custom Dot
+  // 7. Puntero Custom Dot (GPU translate3d + pausa en reposo)
   const cursor = document.getElementById('cursor-dot');
   if (cursor && !window.matchMedia('(pointer: coarse)').matches) {
     let mouseX = -100, mouseY = -100;
     let currX = -100, currY = -100;
+    let hoverScale = 1;
+    let isHovering = false;
+    let cursorRaf = 0;
+
+    const cursorLoop = () => {
+      cursorRaf = 0;
+      const dx = mouseX - currX;
+      const dy = mouseY - currY;
+      const targetScale = isHovering ? 2.8 : 1;
+      const ds = targetScale - hoverScale;
+      currX += dx * 0.48;
+      currY += dy * 0.48;
+      hoverScale += ds * 0.25;
+
+      cursor.style.transform = `translate3d(${currX.toFixed(2)}px, ${currY.toFixed(2)}px, 0) translate(-50%, -50%) scale(${hoverScale.toFixed(3)})`;
+
+      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1 || Math.abs(ds) > 0.01) {
+        cursorRaf = requestAnimationFrame(cursorLoop);
+      }
+    };
+
+    const wakeCursor = () => {
+      if (!cursorRaf) cursorRaf = requestAnimationFrame(cursorLoop);
+    };
 
     window.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
@@ -286,22 +310,18 @@ function initArchiveFlexGallery() {
         currX = mouseX;
         currY = mouseY;
       }
+      wakeCursor();
     }, { passive: true });
 
     window.addEventListener('mouseout', () => cursor.classList.remove('is-active'));
 
-    const cursorLoop = () => {
-      currX += (mouseX - currX) * 0.45;
-      currY += (mouseY - currY) * 0.45;
-      cursor.style.left = `${currX}px`;
-      cursor.style.top = `${currY}px`;
-      requestAnimationFrame(cursorLoop);
-    };
-    requestAnimationFrame(cursorLoop);
-
     window.addEventListener('mouseover', (e) => {
-      const isClickable = e.target?.closest('a, button, [role="button"]');
-      cursor.classList.toggle('is-hovering', !!isClickable);
+      const nextHover = !!e.target?.closest('a, button, [role="button"]');
+      if (nextHover !== isHovering) {
+        isHovering = nextHover;
+        cursor.classList.toggle('is-hovering', isHovering);
+        wakeCursor();
+      }
     }, { passive: true });
   }
 }

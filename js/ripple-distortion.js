@@ -180,7 +180,7 @@ export class VanillaRippleDistortion {
     const renderer = new Renderer({
       alpha: false,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
+      dpr: Math.min(window.devicePixelRatio || 1, 1.35)
     });
     this.renderer = renderer;
     const gl = renderer.gl;

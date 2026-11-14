@@ -52,8 +52,8 @@ const BEND_PRESETS = {
 };
 
 const FIT_ASPECT = { portrait: 0.75, square: 1, landscape: 4 / 3 };
-const TAPS = 12;
-const PIXEL_BUDGET = 2.6e6;
+const TAPS = 6;
+const PIXEL_BUDGET = 2.0e6;
 const INTRO_DURATION = { rise: 2.1, bloom: 1.6, spin: 2.2, deal: 1.5, fade: 0.35 };
 
 const wrap = (value, size) => ((((value + size / 2) % size) + size) % size) - size / 2;
@@ -407,6 +407,8 @@ export class VanillaFlexCarousel {
 
     this.reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
     this.anisotropy = renderer.getExtension('EXT_texture_filter_anisotropic') ? 4 : 0;
+    this.maxDpr = 1.5;
+    this.slowFrames = 0;
     this.loadGeneration = 0;
     this.uploadQueue = [];
 
@@ -767,7 +769,7 @@ export class VanillaFlexCarousel {
   resize() {
     this.width = Math.max(1, this.container.clientWidth);
     this.height = Math.max(1, this.container.clientHeight);
-    this.renderer.dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(PIXEL_BUDGET / (this.width * this.height)));
+    this.renderer.dpr = Math.min(window.devicePixelRatio || 1, this.maxDpr || 1.5, Math.sqrt(PIXEL_BUDGET / (this.width * this.height)));
     this.renderer.setSize(this.width, this.height);
     this.target.setSize(Math.max(2, Math.round(this.width * this.renderer.dpr)), Math.max(2, Math.round(this.height * this.renderer.dpr)));
     this.lensUniforms.tScene.value = this.target.texture;
@@ -779,8 +781,19 @@ export class VanillaFlexCarousel {
     this.raf = 0;
     if (!this.alive) return;
     const s = this.settings;
-    const dt = Math.min(0.05, Math.max(0.001, (now - this.last) / 1000));
+    const rawMs = now - this.last;
+    const dt = Math.min(0.05, Math.max(0.001, rawMs / 1000));
     this.last = now;
+    if (this.maxDpr > 1 && rawMs > 28 && rawMs < 200) {
+      this.slowFrames += 1;
+      if (this.slowFrames >= 5) {
+        this.maxDpr = 1;
+        this.slowFrames = 0;
+        this.resize();
+      }
+    } else if (rawMs <= 24) {
+      this.slowFrames = 0;
+    }
     if (!s || !this.slots.length) {
       if (this.visible) this.raf = requestAnimationFrame(this.frame);
       return;
