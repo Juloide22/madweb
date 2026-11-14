@@ -727,10 +727,13 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       if (header) gsap.set(header, { opacity: 0, y: -10 });
       gsap.set(cards, {
         x: (i, target) => getCardEntranceX(target),
+        y: 28,
         opacity: 0
       });
       gsap.set(imgs, {
-        opacity: 0.45
+        opacity: 0.45,
+        scale: 1.12,
+        filter: 'blur(8px)'
       });
     });
 
@@ -793,40 +796,53 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         }, enterStart);
       }
 
-      // 3. Entrada escalonada de cada una de las 4 imágenes desde la derecha en escala de grises
-      const cardStagger = 0.28;
-      const cardDur = 1.05;
+      // 3. Entrada escalonada cinematográfica (desplazamiento + enfoque gradual de blur y escala)
+      const cardStagger = 0.36;
+      const cardDur = 1.15;
       cards.forEach((card, cIndex) => {
+        const cardAt = enterStart + (cIndex * cardStagger);
         mainTl.fromTo(card,
           {
             x: () => getCardEntranceX(card),
+            y: 28,
             opacity: 0
           },
           {
             x: 0,
+            y: 0,
             opacity: 1,
             duration: cardDur,
-            ease: 'power2.out'
+            ease: 'power3.out'
           },
-          enterStart + (cIndex * cardStagger)
+          cardAt
         );
+
+        const imgEl = imgs[cIndex];
+        if (imgEl) {
+          mainTl.fromTo(imgEl,
+            {
+              opacity: 0.45,
+              scale: 1.12,
+              filter: 'blur(8px)'
+            },
+            {
+              opacity: 1,
+              scale: 1,
+              filter: 'blur(0px)',
+              duration: cardDur * 0.92,
+              ease: 'power2.out'
+            },
+            cardAt + 0.1
+          );
+        }
       });
 
-      const cardsArrivalEnd = enterStart + ((cards.length - 1) * cardStagger) + cardDur; // enterStart + 1.89
-      const colorStart = cardsArrivalEnd - 0.25; // enterStart + 1.64
-      const colorDur = 0.55;
-      const colorEnd = colorStart + colorDur; // enterStart + 2.19
+      const cardsArrivalEnd = enterStart + ((cards.length - 1) * cardStagger) + cardDur; // enterStart + 2.23
+      const colorEnd = cardsArrivalEnd + 0.1; // enterStart + 2.33
 
-      // 4. Paso a brillo completo al quedar en su lugar (100% compositor GPU)
-      mainTl.to(imgs, {
-        opacity: 1,
-        duration: colorDur,
-        ease: 'power2.out'
-      }, colorStart);
-
-      // 5. Meseta de reposo en color + TOPE EXACTO del proyecto
-      const topeTime = colorEnd + 0.35; // enterStart + 2.54 (100% en color y centrado)
-      const exitStart = colorEnd + 0.85; // enterStart + 3.04
+      // 5. Meseta de reposo en foco + TOPE EXACTO del proyecto
+      const topeTime = colorEnd + 0.25; // enterStart + 2.58 (100% nítido y centrado)
+      const exitStart = colorEnd + 0.75; // enterStart + 3.08
 
       mainTl.addLabel(`proj_${k}_tope`, topeTime);
       mainTl.addLabel(`proj_${k}_exit`, exitStart);
@@ -834,9 +850,10 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       // 6. Transición / salida del proyecto hacia la IZQUIERDA al volver a scrollear
       mainTl.to(cards, {
         x: (i, target) => getCardExitLeftX(target),
+        y: -12,
         opacity: 0,
         duration: 1.05,
-        stagger: 0.09,
+        stagger: 0.1,
         ease: 'power2.in'
       }, exitStart);
 
@@ -846,6 +863,8 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
 
       mainTl.to(imgs, {
         opacity: 0.45,
+        scale: 1.06,
+        filter: 'blur(4px)',
         duration: 0.45
       }, exitStart);
 
@@ -1030,7 +1049,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       }
     }
 
-    function glideToStop(targetIdx, durationMs = 620) {
+    function glideToStop(targetIdx, durationMs = 760) {
       cancelGlide();
       cancelWheelLoop();
       if (settleTimer) clearTimeout(settleTimer);

@@ -1018,7 +1018,7 @@ html.is-mobile-view .video-bg--mobile {
   object-fit: cover;
   display: block;
   opacity: 0.45;
-  will-change: opacity, transform;
+  will-change: opacity, transform, filter;
   transition: transform 0.45s var(--ease-std);
 }
 
